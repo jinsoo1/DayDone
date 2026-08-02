@@ -5,7 +5,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.hilt)
-    alias(libs.plugins.kotlin.kapt)
+    alias(libs.plugins.ksp)
 }
 
 // 배포용 서명 정보는 git에 올리지 않는 keystore.properties 에서 읽는다.
@@ -86,10 +86,6 @@ android {
     buildFeatures {
         compose = true
     }
-
-    kapt {
-        correctErrorTypes = true
-    }
 }
 
 dependencies {
@@ -115,14 +111,14 @@ dependencies {
     // Room
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
-    kapt(libs.room.compiler)
+    ksp(libs.room.compiler)
 
     // Coroutines
     implementation(libs.coroutines.core)
 
     // Hilt
     implementation(libs.hilt.android)
-    kapt(libs.hilt.compiler)
+    ksp(libs.hilt.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
 
     implementation(libs.datastore.preferences)
