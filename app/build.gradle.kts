@@ -107,9 +107,6 @@ dependencies {
     implementation(libs.material.icons.extended)
     implementation("androidx.compose.foundation:foundation")
     implementation(libs.androidx.material3)
-    implementation(libs.androidx.hilt.common)
-    implementation(libs.androidx.hilt.work)
-    kapt(libs.androidx.hilt.compiler)
     debugImplementation(libs.compose.ui.tooling)
 
     // Navigation
@@ -129,15 +126,6 @@ dependencies {
     implementation(libs.androidx.hilt.navigation.compose)
 
     implementation(libs.datastore.preferences)
-
-    // For AppWidgets support
-    implementation("androidx.glance:glance-appwidget:1.1.1")
-// For interop APIs with Material 3
-    implementation("androidx.glance:glance-material3:1.1.1")
-// For interop APIs with Material 2
-    implementation("androidx.glance:glance-material:1.1.1")
-
-    implementation(libs.androidx.work.runtime.ktx)
 
     // 계산 로직 유닛 테스트 (순수 함수 UseCase)
     testImplementation(libs.junit)
