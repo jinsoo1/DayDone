@@ -1,0 +1,32 @@
+<style>
+  html, body { margin: 0; padding: 0; background: #2E7DF7; }
+  svg { display: block; }
+</style>
+<!--
+  Play 스토어 등록용 512x512 아이콘.
+  viewBox 를 18 18 72 72 로 잡아, 어댑티브 아이콘의 "보이는 영역"(중앙 72dp)만
+  잘라 확대한다 → 런처에서 보이는 크기와 동일하게 나온다.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="18 18 72 72">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="108" y2="108" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#2E7DF7"/>
+      <stop offset="0.55" stop-color="#4E82F4"/>
+      <stop offset="1" stop-color="#7C74F1"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="0" y="0" width="108" height="108" fill="url(#bg)"/>
+
+  <path d="M37.03,70.97 A24,24 0 1 1 70.97,70.97"
+        stroke="#FFFFFF" stroke-opacity="0.32" stroke-width="6.5"
+        stroke-linecap="round" fill="none"/>
+
+  <path d="M37.03,70.97 A24,24 0 0 1 69.43,35.62"
+        stroke="#FFFFFF" stroke-width="6.5"
+        stroke-linecap="round" fill="none"/>
+
+  <path d="M43.3,54 L50.9,61.6 L65.6,46.4"
+        stroke="#FFFFFF" stroke-width="7.5"
+        stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+</svg>

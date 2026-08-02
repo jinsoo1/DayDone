@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- 앱 시그니처 그라데이션 (하단 FAB와 동일 팔레트) -->
+    <path android:pathData="M0,0h108v108h-108z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:type="linear"
+                android:startX="0"
+                android:startY="0"
+                android:endX="108"
+                android:endY="108">
+                <item
+                    android:offset="0"
+                    android:color="#2E7DF7" />
+                <item
+                    android:offset="0.55"
+                    android:color="#4E82F4" />
+                <item
+                    android:offset="1"
+                    android:color="#7C74F1" />
+            </gradient>
+        </aapt:attr>
+    </path>
+</vector>

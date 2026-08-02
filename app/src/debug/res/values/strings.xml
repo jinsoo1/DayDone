@@ -1,0 +1,4 @@
+<resources>
+    <!-- 릴리즈 앱과 홈 화면에서 구분되도록 개발용 이름을 쓴다. -->
+    <string name="app_name">데이던 (개발)</string>
+</resources>
