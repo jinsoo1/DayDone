@@ -81,12 +81,23 @@ class ReportViewModel @Inject constructor(
                 }
                 val anchorMonth = YearMonth.from(period.startDate)
                 val firstRecordDate = getFirstExpenseDateUseCase()
+                // 지난 기간 대비 비교용 — 지난 기간의 지출도 함께 관찰한다
+                val previousPeriod = getBudgetPeriodForMonthUseCase(
+                    yearMonth = anchorMonth.minusMonths(1),
+                    budgetStartDay = profile.budgetStartDay
+                )
 
                 combine(
-                    observeExpensesByPeriodUseCase(
-                        startDate = period.startDate,
-                        endDate = period.endDate
-                    ),
+                    combine(
+                        observeExpensesByPeriodUseCase(
+                            startDate = period.startDate,
+                            endDate = period.endDate
+                        ),
+                        observeExpensesByPeriodUseCase(
+                            startDate = previousPeriod.startDate,
+                            endDate = previousPeriod.endDate
+                        )
+                    ) { current, prev -> current to prev },
                     observeExtraIncomesByPeriodUseCase(
                         startDate = period.startDate,
                         endDate = period.endDate
@@ -97,7 +108,8 @@ class ReportViewModel @Inject constructor(
                         anchorMonth = anchorMonth,
                         default = profile.monthlyIncome
                     )
-                ) { expenses, extraIncomes, deductions, overrides, monthlyBudget ->
+                ) { expensesPair, extraIncomes, deductions, overrides, monthlyBudget ->
+                    val (expenses, previousExpenses) = expensesPair
                     val deductionsInPeriod = resolveScheduledDeductionAmountsUseCase(
                         deductions = getScheduledDeductionsInPeriodUseCase(
                             deductions = deductions,
@@ -114,7 +126,9 @@ class ReportViewModel @Inject constructor(
                         deductions = deductionsInPeriod,
                         expenses = expenses,
                         firstRecordDate = firstRecordDate,
-                        firstUseDate = profile.firstUseDate
+                        firstUseDate = profile.firstUseDate,
+                        previousPeriod = previousPeriod,
+                        previousExpenses = previousExpenses
                     )
                 }
             }

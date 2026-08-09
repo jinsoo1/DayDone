@@ -38,6 +38,16 @@ data class DeductionShare(
 )
 
 /** 기간 리포트 (모든 값은 계산 시점 파생). 진행 중/결산 겸용. */
+/**
+ * 지난 기간 대비 비교 — 전부 "같은 시점(dayIndex)까지" 기준.
+ * 기간 전체와 비교하면 진행 중엔 항상 "덜 씀"으로 보이는 왜곡이 있어서다.
+ */
+data class PreviousComparison(
+    val spentDiff: Long,        // 이번 총지출 − 지난 기간 같은 시점 총지출 (양수 = 더 씀)
+    val prevDailyAverage: Long, // 지난 기간 같은 시점까지의 하루 평균 (일반 지출)
+    val prevNoSpendDays: Int    // 지난 기간의 같은 확정 일수 안 무지출
+)
+
 data class MonthlyReport(
     val isFinal: Boolean,       // 기간이 끝난 결산 리포트인지
     val periodText: String,
@@ -52,6 +62,7 @@ data class MonthlyReport(
     val dailyAverage: Long,     // 하루 평균 일반 지출
     val noSpendDays: Int,       // 일반 지출 없는 날 (지난 날 기준)
     val trackingStartDate: java.time.LocalDate? = null, // 기간 중간부터 기록 시작 시 그 날짜 (안내 문구용)
+    val previous: PreviousComparison? = null,           // 지난 기간 대비 (없거나 부분 기록이면 null)
     val essentialPercent: Int,  // 일반 지출 중 필수 비중 %
 
     val categories: List<ReportCategory>,

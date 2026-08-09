@@ -68,6 +68,21 @@ class BuildMonthlyReportUseCaseTest {
         expenses: List<Expense>
     ) = useCase(period, today, income, deductions, expenses)
 
+    // 지난 기간(6월) — 지난 기간 대비 테스트용
+    private val prevPeriod = BudgetPeriod(
+        startDate = LocalDate.of(2026, 6, 1),
+        endDate = LocalDate.of(2026, 6, 30)
+    )
+
+    private fun juneExpense(day: Int, amount: Long) = Expense(
+        id = 600L + day,
+        title = "지난 지출",
+        amount = amount,
+        date = LocalDate.of(2026, 6, day),
+        type = ExpenseType.GENERAL,
+        isEssential = false
+    )
+
     @Test
     fun `기간 절반에 소진율이 낮으면 훌륭한 페이스`() {
         // 16일째(51%)에 30,000원(10%)만 씀
@@ -222,6 +237,65 @@ class BuildMonthlyReportUseCaseTest {
         )
 
         assertEquals(null, result.trackingStartDate)
+    }
+
+    @Test
+    fun `지난 기간 대비는 같은 시점끼리 비교한다`() {
+        // 오늘 7/15 (15일째). 지난 기간 지출: 6/10 50,000(시점 안), 6/20 99,999(시점 밖 — 제외돼야 함)
+        val result = useCase(
+            period = period,
+            today = LocalDate.of(2026, 7, 15),
+            totalAvailableBudget = income,
+            deductions = deductions,
+            expenses = listOf(expense(3, 30_000L)),
+            firstRecordDate = LocalDate.of(2026, 6, 1),
+            previousPeriod = prevPeriod,
+            previousExpenses = listOf(juneExpense(10, 50_000L), juneExpense(20, 99_999L))
+        )
+
+        val previous = result.previous!!
+        // 이번 30,000 − 지난 같은 시점(6/1~6/15) 50,000 = -20,000 (덜 씀)
+        assertEquals(-20_000L, previous.spentDiff)
+        assertEquals(50_000L / 15, previous.prevDailyAverage)
+        // 지난 기간 확정 창 6/1~6/14 (14일) 중 6/10만 지출 → 무지출 13일
+        assertEquals(13, previous.prevNoSpendDays)
+    }
+
+    @Test
+    fun `지난 기간이 부분 기록이면 비교를 숨긴다`() {
+        // 기록 시작이 6/5 — 지난 기간 중간부터라 비교하면 어긋난 비교가 된다
+        val result = useCase(
+            period = period,
+            today = LocalDate.of(2026, 7, 15),
+            totalAvailableBudget = income,
+            deductions = deductions,
+            expenses = listOf(expense(3, 30_000L)),
+            firstRecordDate = LocalDate.of(2026, 6, 5),
+            previousPeriod = prevPeriod,
+            previousExpenses = listOf(juneExpense(10, 50_000L))
+        )
+
+        assertEquals(null, result.previous)
+    }
+
+    @Test
+    fun `결산 리포트의 지난 기간 대비는 기간 전체끼리 비교한다`() {
+        // 오늘 8/5 → 7월 결산 (dayIndex=31). 지난 기간(6월) 전체 지출과 비교
+        val result = useCase(
+            period = period,
+            today = LocalDate.of(2026, 8, 5),
+            totalAvailableBudget = income,
+            deductions = deductions,
+            expenses = listOf(expense(3, 100_000L)),
+            firstRecordDate = LocalDate.of(2026, 6, 1),
+            previousPeriod = prevPeriod,
+            previousExpenses = listOf(juneExpense(10, 50_000L), juneExpense(20, 30_000L))
+        )
+
+        val previous = result.previous!!
+        assertEquals(100_000L - 80_000L, previous.spentDiff)
+        // 6월 30일 전부 확정, 지출 2일 → 무지출 28일
+        assertEquals(28, previous.prevNoSpendDays)
     }
 
     @Test

@@ -93,6 +93,9 @@ private fun ReportContent(report: MonthlyReport) {
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         item { PaceCard(report) }
+        if (report.previous != null) {
+            item { PreviousComparisonLine(report) }
+        }
         item { MiniStatsRow(report) }
         report.trackingStartDate?.let { start ->
             item {
@@ -229,20 +232,62 @@ private fun PaceCard(report: MonthlyReport) {
     }
 }
 
+/** 지난 기간 같은 시점 대비 지출 비교 한 줄 (§13: 사실만, 덜 썼을 때만 성공 색). */
+@Composable
+private fun PreviousComparisonLine(report: MonthlyReport) {
+    val previous = report.previous ?: return
+    val diff = previous.spentDiff
+    val (text, color) = when {
+        diff < 0 -> {
+            val saved = (-diff).toMoneyText()
+            if (report.isFinal) {
+                "지난 기간보다 $saved 덜 썼어요" to DayDoneAccent.successText
+            } else {
+                "지난 기간 이맘때보다 $saved 덜 쓰고 있어요" to DayDoneAccent.successText
+            }
+        }
+        diff > 0 -> {
+            val more = diff.toMoneyText()
+            if (report.isFinal) {
+                "지난 기간보다 $more 더 썼어요" to MaterialTheme.colorScheme.onSurfaceVariant
+            } else {
+                "지난 기간 이맘때보다 $more 더 쓰고 있어요" to MaterialTheme.colorScheme.onSurfaceVariant
+            }
+        }
+        else ->
+            "지난 기간과 비슷하게 쓰고 있어요" to MaterialTheme.colorScheme.onSurfaceVariant
+    }
+
+    Text(
+        text = text,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 4.dp),
+        style = MaterialTheme.typography.bodySmall,
+        color = color
+    )
+}
+
 @Composable
 private fun MiniStatsRow(report: MonthlyReport) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        MiniStat(Modifier.weight(1f), "하루 평균", report.dailyAverage.toMoneyText())
-        MiniStat(Modifier.weight(1f), "무지출", "${report.noSpendDays}일")
+        MiniStat(
+            Modifier.weight(1f), "하루 평균", report.dailyAverage.toMoneyText(),
+            sub = report.previous?.let { "지난 기간 ${it.prevDailyAverage.toMoneyText()}" }
+        )
+        MiniStat(
+            Modifier.weight(1f), "무지출", "${report.noSpendDays}일",
+            sub = report.previous?.let { "지난 기간 ${it.prevNoSpendDays}일" }
+        )
         MiniStat(Modifier.weight(1f), "필수 비중", "${report.essentialPercent}%")
     }
 }
 
 @Composable
-private fun MiniStat(modifier: Modifier, label: String, value: String) {
+private fun MiniStat(modifier: Modifier, label: String, value: String, sub: String? = null) {
     Column(
         modifier = modifier
             .clip(RoundedCornerShape(12.dp))
@@ -260,6 +305,13 @@ private fun MiniStat(modifier: Modifier, label: String, value: String) {
             style = MaterialTheme.typography.titleSmall,
             fontWeight = FontWeight.SemiBold
         )
+        sub?.let {
+            Text(
+                text = it,
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.75f)
+            )
+        }
     }
 }
 

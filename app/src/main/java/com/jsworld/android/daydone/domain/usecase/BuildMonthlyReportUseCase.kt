@@ -6,6 +6,7 @@ import com.jsworld.android.daydone.domain.model.Expense
 import com.jsworld.android.daydone.domain.model.ExpenseCategory
 import com.jsworld.android.daydone.domain.model.ExpenseType
 import com.jsworld.android.daydone.domain.model.MonthlyReport
+import com.jsworld.android.daydone.domain.model.PreviousComparison
 import com.jsworld.android.daydone.domain.model.ReportCategory
 import com.jsworld.android.daydone.domain.model.ReportItem
 import com.jsworld.android.daydone.domain.model.ReportPace
@@ -33,7 +34,9 @@ class BuildMonthlyReportUseCase @Inject constructor(
         deductions: List<ScheduledDeduction>,  // 이번 기간 유효 금액으로 resolve된 목록
         expenses: List<Expense>,
         firstRecordDate: LocalDate? = null, // 전체 기록 중 최초 지출 날짜 — 그 전 날들은 무지출로 세지 않음
-        firstUseDate: LocalDate? = null     // 가입일 — "이전 지출 한 줄" 유저 구분에만 사용
+        firstUseDate: LocalDate? = null,    // 가입일 — "이전 지출 한 줄" 유저 구분에만 사용
+        previousPeriod: BudgetPeriod? = null,           // 지난 기간 (비교용)
+        previousExpenses: List<Expense> = emptyList()   // 지난 기간의 지출
     ): MonthlyReport {
         val savingTotal = deductions
             .filter { it.type == ScheduledDeductionType.SAVING }
@@ -101,6 +104,45 @@ class BuildMonthlyReportUseCase @Inject constructor(
         while (!cursor.isAfter(lastConfirmed) && !cursor.isAfter(period.endDate)) {
             if (cursor !in spentDates) noSpendDays++
             cursor = cursor.plusDays(1)
+        }
+
+        // 지난 기간 대비 — 전부 "같은 시점(dayIndex)까지"끼리 비교해야 진행 중 왜곡이 없다.
+        // 지난 기간이 처음부터 온전히 기록된 경우에만 계산(부분 기록과의 비교는 어긋난 비교).
+        val previous = if (
+            previousPeriod != null &&
+            firstRecordDate != null &&
+            !firstRecordDate.isAfter(previousPeriod.startDate)
+        ) {
+            val prevCutoff = minOf(
+                previousPeriod.startDate.plusDays((dayIndex - 1).toLong()),
+                previousPeriod.endDate
+            )
+            val prevUpToNow = previousExpenses.filter { !it.date.isAfter(prevCutoff) }
+            val prevGeneral = prevUpToNow.filter { it.type == ExpenseType.GENERAL }
+            val prevSpentDates = prevGeneral.map { it.date }.toSet()
+
+            // 이번 기간과 같은 확정 일수만큼만 무지출을 센다 (진행 중=어제까지 dayIndex-1일, 결산=dayIndex일)
+            val confirmedDays = if (isFinal) dayIndex else dayIndex - 1
+            var prevNoSpend = 0
+            if (confirmedDays >= 1) {
+                val prevLastConfirmed = minOf(
+                    previousPeriod.startDate.plusDays((confirmedDays - 1).toLong()),
+                    previousPeriod.endDate
+                )
+                var prevCursor = previousPeriod.startDate
+                while (!prevCursor.isAfter(prevLastConfirmed)) {
+                    if (prevCursor !in prevSpentDates) prevNoSpend++
+                    prevCursor = prevCursor.plusDays(1)
+                }
+            }
+
+            PreviousComparison(
+                spentDiff = totalSpent - prevUpToNow.sumOf { it.amount },
+                prevDailyAverage = prevGeneral.sumOf { it.amount } / dayIndex,
+                prevNoSpendDays = prevNoSpend
+            )
+        } else {
+            null
         }
 
         val essentialTotal = general.filter { it.isEssential }.sumOf { it.amount }
@@ -197,6 +239,7 @@ class BuildMonthlyReportUseCase @Inject constructor(
             dailyAverage = dailyAverage,
             noSpendDays = noSpendDays,
             trackingStartDate = trackingStartDate,
+            previous = previous,
             essentialPercent = essentialPercent,
             categories = categories,
             projectedLeftover = projectedLeftover,
