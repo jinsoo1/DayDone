@@ -123,10 +123,10 @@ fun OnboardingScreen(
                 suffix = { Text("일") },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 supportingText = {
-                    Text("한 달 예산을 계산하는 기준일이에요 (1~28일). 카드 결제일이나 월급일에 맞춰도 좋아요.")
+                    Text("한 달 예산을 계산하는 기준일이에요 (1~31일). 월급일이 말일이면 31일로 적어주세요 — 달에 없는 날짜는 말일로 계산돼요.")
                 },
                 isError = uiState.budgetStartDayInput.isNotBlank() &&
-                        uiState.budgetStartDay !in 1..28
+                        uiState.budgetStartDay !in 1..31
             )
 
             HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))

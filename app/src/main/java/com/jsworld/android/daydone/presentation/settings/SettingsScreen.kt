@@ -180,7 +180,11 @@ fun SettingsScreen(
                         HorizontalDivider(modifier = Modifier.padding(horizontal = 20.dp))
                         SettingsRow(
                             title = "예산 시작일",
-                            value = "매월 ${uiState.budgetStartDay}일",
+                            value = if (uiState.budgetStartDay == 31) {
+                                "매월 말일"
+                            } else {
+                                "매월 ${uiState.budgetStartDay}일"
+                            },
                             onClick = onStartDayClick
                         )
                     }
@@ -300,12 +304,12 @@ fun SettingsScreen(
     if (uiState.isStartDaySheetVisible) {
         SettingInputSheet(
             title = "예산 시작일 수정",
-            description = "한 달 예산을 계산하는 기준일이에요 (1~28일).",
+            description = "한 달 예산을 계산하는 기준일이에요 (1~31일). 31일처럼 달에 없는 날짜는 그 달의 말일로 계산해요.",
             label = "예산 시작일",
             suffix = "일",
             value = uiState.startDayInput,
             onValueChange = onStartDayChange,
-            saveEnabled = (uiState.startDayInput.toIntOrNull() ?: 0) in 1..28,
+            saveEnabled = (uiState.startDayInput.toIntOrNull() ?: 0) in 1..31,
             onSave = onStartDaySave,
             onDismiss = onStartDayDismiss,
             notice = {

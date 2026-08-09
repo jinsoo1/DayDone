@@ -225,8 +225,10 @@ class BackupRepositoryImpl @Inject constructor(
         runCatching {
             val d = LocalDate.parse(date)
             val ym = java.time.YearMonth.from(d)
-                .let { if (d.dayOfMonth >= budgetStartDay) it else it.minusMonths(1) }
-            "%04d-%02d".format(ym.year, ym.monthValue)
+            // 시작일이 그 달에 없으면 말일로 clamp (기간 UseCase와 같은 규칙 — 말일 시작 지원)
+            val startInMonth = minOf(budgetStartDay, ym.lengthOfMonth())
+            val anchor = if (d.dayOfMonth >= startInMonth) ym else ym.minusMonths(1)
+            "%04d-%02d".format(anchor.year, anchor.monthValue)
         }.getOrDefault(date.take(7))
 
     private data class HistoryRow(

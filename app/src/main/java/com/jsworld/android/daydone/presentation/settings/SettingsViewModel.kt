@@ -151,7 +151,7 @@ class SettingsViewModel @Inject constructor(
 
     fun onStartDaySave() {
         val day = _uiState.value.startDayInput.toIntOrNull() ?: 0
-        if (day !in 1..28) return
+        if (day !in 1..31) return
         viewModelScope.launch {
             updateBudgetProfileUseCase.updateBudgetStartDay(day)
             _uiState.value = _uiState.value.copy(isStartDaySheetVisible = false)

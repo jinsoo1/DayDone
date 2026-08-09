@@ -1429,7 +1429,7 @@ private fun BudgetSettingBottomSheet(
                     keyboardType = KeyboardType.Number
                 ),
                 supportingText = {
-                    Text("1~28일 사이로 입력해 주세요.")
+                    Text("1~31일 사이로 입력해 주세요. 31일은 매월 말일로 계산돼요.")
                 }
             )
 
@@ -1446,7 +1446,7 @@ private fun BudgetSettingBottomSheet(
                 modifier = Modifier.fillMaxWidth(),
                 enabled = monthlyIncomeInput.toLongOrNull() != null &&
                         monthlyIncomeInput.toLongOrNull()!! > 0L &&
-                        budgetStartDayInput.toIntOrNull() in 1..28
+                        budgetStartDayInput.toIntOrNull() in 1..31
             ) {
                 Text("저장하기")
             }

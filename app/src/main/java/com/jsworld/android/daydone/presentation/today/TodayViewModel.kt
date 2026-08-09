@@ -527,7 +527,7 @@ class TodayViewModel @Inject constructor(
             return
         }
 
-        if (budgetStartDay !in 1..28) {
+        if (budgetStartDay !in 1..31) {
             return
         }
 

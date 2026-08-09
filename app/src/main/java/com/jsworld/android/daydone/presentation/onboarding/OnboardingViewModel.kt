@@ -50,7 +50,7 @@ data class OnboardingUiState(
 
     val canComplete: Boolean
         get() = monthlyIncome > 0L &&
-                budgetStartDay in 1..28 &&
+                budgetStartDay in 1..31 &&
                 (isDeductionEmpty || isDeductionValid)
 }
 
@@ -94,7 +94,7 @@ class OnboardingViewModel @Inject constructor(
 
     /** 입력값으로 "오늘의 방어선"이 어떻게 계산될지 미리 보여준다. */
     private fun OnboardingUiState.withPreview(): OnboardingUiState {
-        if (monthlyIncome <= 0L || budgetStartDay !in 1..28) {
+        if (monthlyIncome <= 0L || budgetStartDay !in 1..31) {
             return copy(isPreviewVisible = false)
         }
 
