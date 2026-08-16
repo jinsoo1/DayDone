@@ -21,3 +21,6 @@ keystore.properties
 /.idea
 .kotlin/
 app/release/
+
+# 홍보용 원본 스크린샷 (기기 캡처 — 커밋하지 않음)
+store/raw/
