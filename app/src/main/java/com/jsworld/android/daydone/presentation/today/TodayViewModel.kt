@@ -24,6 +24,8 @@ import com.jsworld.android.daydone.domain.model.NoSpendChallengeSettings
 import com.jsworld.android.daydone.domain.model.NoSpendMode
 import com.jsworld.android.daydone.domain.usecase.EndScheduledDeductionUseCase
 import com.jsworld.android.daydone.domain.usecase.EvaluateNoSpendProgressUseCase
+import com.jsworld.android.daydone.domain.usecase.EvaluatePurchaseUseCase
+import com.jsworld.android.daydone.domain.usecase.HoldPurchaseUseCase
 import com.jsworld.android.daydone.domain.usecase.SaveNoSpendChallengeRecordUseCase
 import com.jsworld.android.daydone.domain.usecase.UpdateNoSpendChallengeUseCase
 import com.jsworld.android.daydone.domain.usecase.GetCurrentBudgetPeriodUseCase
@@ -46,6 +48,7 @@ import com.jsworld.android.daydone.domain.usecase.UpdateBudgetProfileUseCase
 import com.jsworld.android.daydone.domain.usecase.UpdateExpenseUseCase
 import com.jsworld.android.daydone.domain.usecase.UpdateExtraIncomeUseCase
 import com.jsworld.android.daydone.domain.usecase.UpdateScheduledDeductionUseCase
+import com.jsworld.android.daydone.presentation.today.model.PurchaseEvaluationUiModel
 import com.jsworld.android.daydone.presentation.today.model.QuickExpenseUiModel
 import com.jsworld.android.daydone.presentation.today.model.TodayExtraIncomeUiModel
 import com.jsworld.android.daydone.presentation.today.model.ScheduledDeductionSummaryUiModel
@@ -105,7 +108,9 @@ class TodayViewModel @Inject constructor(
     private val updateNoSpendChallengeUseCase: UpdateNoSpendChallengeUseCase,
     private val saveNoSpendChallengeRecordUseCase: SaveNoSpendChallengeRecordUseCase,
     private val observePreJoinSpendHandledUseCase: ObservePreJoinSpendHandledUseCase,
-    private val markPreJoinSpendHandledUseCase: MarkPreJoinSpendHandledUseCase
+    private val markPreJoinSpendHandledUseCase: MarkPreJoinSpendHandledUseCase,
+    private val evaluatePurchaseUseCase: EvaluatePurchaseUseCase,
+    private val holdPurchaseUseCase: HoldPurchaseUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(TodayUiState())
@@ -927,6 +932,94 @@ class TodayViewModel @Inject constructor(
                 extraIncomeAmountInput = "",
                 extraIncomeMemoInput = ""
             )
+        }
+    }
+
+    // --- 살까 말까 ---
+
+    fun onPurchaseDecisionClick() {
+        _uiState.value = _uiState.value.copy(
+            isFabMenuExpanded = false,
+            isPurchaseSheetVisible = true,
+            purchaseTitleInput = "",
+            purchaseAmountInput = "",
+            purchaseResult = null,
+            purchaseHeldDone = false
+        )
+    }
+
+    fun onPurchaseSheetDismiss() {
+        _uiState.value = _uiState.value.copy(
+            isPurchaseSheetVisible = false,
+            purchaseResult = null,
+            purchaseHeldDone = false
+        )
+    }
+
+    fun onPurchaseTitleChange(value: String) {
+        _uiState.value = _uiState.value.copy(purchaseTitleInput = value)
+    }
+
+    fun onPurchaseAmountChange(value: String) {
+        _uiState.value = _uiState.value.copy(
+            purchaseAmountInput = value.filter { it.isDigit() }
+        )
+    }
+
+    /** "얼마나 달라지는지 보기" — 오늘 탭과 같은 소스(남은 순수 생활비·남은 일수)로 계산. */
+    fun onPurchaseEvaluateClick() {
+        val currentState = _uiState.value
+        val title = currentState.purchaseTitleInput.trim()
+        val price = currentState.purchaseAmountInput.toLongOrNull() ?: 0L
+        if (title.isBlank() || price <= 0L) return
+
+        val evaluation = evaluatePurchaseUseCase(
+            pureBudgetLeft = currentState.remainingPureBudget,
+            remainingDays = currentState.remainingDays,
+            price = price
+        )
+
+        _uiState.value = currentState.copy(
+            purchaseResult = PurchaseEvaluationUiModel(
+                title = title,
+                price = price,
+                currentDaily = evaluation.currentDaily,
+                afterDaily = evaluation.afterDaily,
+                budgetLeft = currentState.remainingPureBudget,
+                budgetLeftAfter = currentState.remainingPureBudget - price,
+                remainingDays = currentState.remainingDays,
+                impact = evaluation.impact
+            )
+        )
+    }
+
+    /** "살게요" → 기존 지출 입력 시트에 품목명·가격·오늘 날짜 프리필. 새 저장 경로 없음. */
+    fun onPurchaseBuyClick() {
+        val result = _uiState.value.purchaseResult ?: return
+
+        _uiState.value = _uiState.value.copy(
+            isPurchaseSheetVisible = false,
+            purchaseResult = null,
+            isExpenseInputSheetVisible = true,
+            editingExpenseId = null,
+            expenseTitleInput = result.title,
+            expenseAmountInput = result.price.toString(),
+            expenseDateInput = todayFlow.value,
+            expenseEssentialInput = false
+        )
+    }
+
+    /** "보류할게요" → 보류함 저장 후 같은 시트에서 확인 문구. */
+    fun onPurchaseHoldClick() {
+        val result = _uiState.value.purchaseResult ?: return
+
+        viewModelScope.launch {
+            holdPurchaseUseCase(
+                title = result.title,
+                amount = result.price,
+                heldAt = todayFlow.value
+            )
+            _uiState.value = _uiState.value.copy(purchaseHeldDone = true)
         }
     }
 

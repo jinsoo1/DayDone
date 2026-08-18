@@ -15,6 +15,7 @@ import com.jsworld.android.daydone.domain.usecase.GetCurrentBudgetPeriodUseCase
 import com.jsworld.android.daydone.domain.usecase.ObserveBudgetProfileUseCase
 import com.jsworld.android.daydone.domain.usecase.ObserveFutureExpenseStatusesUseCase
 import com.jsworld.android.daydone.domain.usecase.ObserveFuturePrepareExpensesUseCase
+import com.jsworld.android.daydone.domain.usecase.ObserveHeldPurchasesUseCase
 import com.jsworld.android.daydone.domain.usecase.PrepareFutureExpenseUseCase
 import com.jsworld.android.daydone.domain.usecase.UndoFutureExpensePaymentUseCase
 import com.jsworld.android.daydone.domain.usecase.UpdateFutureExpenseUseCase
@@ -47,7 +48,8 @@ class VaultViewModel @Inject constructor(
     private val updateFutureExpenseUseCase: UpdateFutureExpenseUseCase,
     private val deleteFutureExpenseUseCase: DeleteFutureExpenseUseCase,
     private val undoFutureExpensePaymentUseCase: UndoFutureExpensePaymentUseCase,
-    private val withdrawFuturePreparedUseCase: WithdrawFuturePreparedUseCase
+    private val withdrawFuturePreparedUseCase: WithdrawFuturePreparedUseCase,
+    private val observeHeldPurchasesUseCase: ObserveHeldPurchasesUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(VaultUiState())
@@ -61,6 +63,7 @@ class VaultViewModel @Inject constructor(
 
     init {
         observeVault()
+        observeHeldPurchases()
     }
 
     private fun observeVault() {
@@ -80,6 +83,35 @@ class VaultViewModel @Inject constructor(
 
             render()
         }.launchIn(viewModelScope)
+    }
+
+    /** 보류함 진입 카드 — 아낀 돈(안 삼 + 30일 자동 전환)과 보류 중 건수. */
+    private fun observeHeldPurchases() {
+        observeHeldPurchasesUseCase()
+            .onEach { held ->
+                val today = LocalDate.now()
+                _uiState.value = _uiState.value.copy(
+                    heldSavedTotal = held.filter { it.isSaved(today) }.sumOf { it.amount },
+                    heldHoldingCount = held.count { it.isHolding(today) },
+                    heldDueBadge = held.any { it.isAutoPassed(today) }
+                )
+            }
+            .launchIn(viewModelScope)
+    }
+
+    /** 살까 말까 "금고에 준비하기" — 품목명·가격 프리필, 목표월은 3개월 뒤 기본값. */
+    fun onAddItemWithPrefill(title: String, amount: Long) {
+        _uiState.value = _uiState.value.copy(
+            isInputSheetVisible = true,
+            editingId = null,
+            titleInput = title,
+            categoryInput = FutureExpenseCategory.ETC,
+            totalAmountInput = amount.toString(),
+            targetMonthInput = currentAnchorMonth.plusMonths(3),
+            prepareStartMonthInput = currentAnchorMonth,
+            repeatInput = FutureExpenseRepeat.ONCE,
+            memoInput = ""
+        )
     }
 
     private fun render() {

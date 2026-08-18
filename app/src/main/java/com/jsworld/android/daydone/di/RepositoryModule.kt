@@ -7,6 +7,7 @@ import com.jsworld.android.daydone.data.repository.BackupRepositoryImpl
 import com.jsworld.android.daydone.data.repository.DataResetRepositoryImpl
 import com.jsworld.android.daydone.data.repository.ExtraIncomeRepositoryImpl
 import com.jsworld.android.daydone.data.repository.FutureExpenseRepositoryImpl
+import com.jsworld.android.daydone.data.repository.HeldPurchaseRepositoryImpl
 import com.jsworld.android.daydone.data.repository.MonthlyBudgetRepositoryImpl
 import com.jsworld.android.daydone.data.repository.NoSpendChallengeRecordRepositoryImpl
 import com.jsworld.android.daydone.data.repository.NoSpendChallengeRepositoryImpl
@@ -19,6 +20,7 @@ import com.jsworld.android.daydone.domain.repository.BackupRepository
 import com.jsworld.android.daydone.domain.repository.DataResetRepository
 import com.jsworld.android.daydone.domain.repository.ExtraIncomeRepository
 import com.jsworld.android.daydone.domain.repository.FutureExpenseRepository
+import com.jsworld.android.daydone.domain.repository.HeldPurchaseRepository
 import com.jsworld.android.daydone.domain.repository.MonthlyBudgetRepository
 import com.jsworld.android.daydone.domain.repository.NoSpendChallengeRecordRepository
 import com.jsworld.android.daydone.domain.repository.NoSpendChallengeRepository
@@ -113,4 +115,10 @@ abstract class RepositoryModule {
     abstract fun bindNoSpendChallengeRecordRepository(
         impl: NoSpendChallengeRecordRepositoryImpl
     ): NoSpendChallengeRecordRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindHeldPurchaseRepository(
+        impl: HeldPurchaseRepositoryImpl
+    ): HeldPurchaseRepository
 }

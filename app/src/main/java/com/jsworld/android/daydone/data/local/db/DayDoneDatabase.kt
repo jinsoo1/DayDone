@@ -6,6 +6,7 @@ import com.jsworld.android.daydone.data.local.dao.BackupDao
 import com.jsworld.android.daydone.data.local.dao.ExpenseDao
 import com.jsworld.android.daydone.data.local.dao.ExtraIncomeDao
 import com.jsworld.android.daydone.data.local.dao.FutureExpenseDao
+import com.jsworld.android.daydone.data.local.dao.HeldPurchaseDao
 import com.jsworld.android.daydone.data.local.dao.MonthlyBudgetDao
 import com.jsworld.android.daydone.data.local.dao.NoSpendChallengeRecordDao
 import com.jsworld.android.daydone.data.local.dao.QuickExpenseDao
@@ -14,6 +15,7 @@ import com.jsworld.android.daydone.data.local.dao.ScheduledDeductionDao
 import com.jsworld.android.daydone.data.local.entity.ExpenseEntity
 import com.jsworld.android.daydone.data.local.entity.ExtraIncomeEntity
 import com.jsworld.android.daydone.data.local.entity.FutureExpenseEntity
+import com.jsworld.android.daydone.data.local.entity.HeldPurchaseEntity
 import com.jsworld.android.daydone.data.local.entity.MonthlyBudgetEntity
 import com.jsworld.android.daydone.data.local.entity.NoSpendChallengeRecordEntity
 import com.jsworld.android.daydone.data.local.entity.QuickExpenseEntity
@@ -29,9 +31,10 @@ import com.jsworld.android.daydone.data.local.entity.ScheduledDeductionEntity
         MonthlyBudgetEntity::class,
         ScheduledDeductionAmountEntity::class,
         FutureExpenseEntity::class,
-        NoSpendChallengeRecordEntity::class
+        NoSpendChallengeRecordEntity::class,
+        HeldPurchaseEntity::class
     ],
-    version = 6,
+    version = 7,
     exportSchema = true
 )
 abstract class DayDoneDatabase : RoomDatabase() {
@@ -51,6 +54,8 @@ abstract class DayDoneDatabase : RoomDatabase() {
     abstract fun futureExpenseDao(): FutureExpenseDao
 
     abstract fun noSpendChallengeRecordDao(): NoSpendChallengeRecordDao
+
+    abstract fun heldPurchaseDao(): HeldPurchaseDao
 
     abstract fun backupDao(): BackupDao
 }

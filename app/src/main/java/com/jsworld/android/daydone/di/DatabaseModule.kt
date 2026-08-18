@@ -8,6 +8,7 @@ import com.jsworld.android.daydone.data.local.dao.BackupDao
 import com.jsworld.android.daydone.data.local.dao.ExpenseDao
 import com.jsworld.android.daydone.data.local.dao.ExtraIncomeDao
 import com.jsworld.android.daydone.data.local.dao.FutureExpenseDao
+import com.jsworld.android.daydone.data.local.dao.HeldPurchaseDao
 import com.jsworld.android.daydone.data.local.dao.MonthlyBudgetDao
 import com.jsworld.android.daydone.data.local.dao.NoSpendChallengeRecordDao
 import com.jsworld.android.daydone.data.local.dao.QuickExpenseDao
@@ -101,6 +102,24 @@ object DatabaseModule {
         }
     }
 
+    private val MIGRATION_6_7 = object : Migration(6, 7) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            db.execSQL(
+                """
+                CREATE TABLE IF NOT EXISTS `held_purchases` (
+                    `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                    `title` TEXT NOT NULL,
+                    `amount` INTEGER NOT NULL,
+                    `heldAt` TEXT NOT NULL,
+                    `status` TEXT NOT NULL,
+                    `resolvedAt` TEXT,
+                    `createdAt` INTEGER NOT NULL
+                )
+                """.trimIndent()
+            )
+        }
+    }
+
     @Provides
     @Singleton
     fun provideDayDoneDatabase(
@@ -110,7 +129,10 @@ object DatabaseModule {
             context,
             DayDoneDatabase::class.java,
             "day_done.db"
-        ).addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6)
+        ).addMigrations(
+            MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4,
+            MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7
+        )
             .fallbackToDestructiveMigration()
             .build()
     }
@@ -176,5 +198,12 @@ object DatabaseModule {
         database: DayDoneDatabase
     ): NoSpendChallengeRecordDao {
         return database.noSpendChallengeRecordDao()
+    }
+
+    @Provides
+    fun provideHeldPurchaseDao(
+        database: DayDoneDatabase
+    ): HeldPurchaseDao {
+        return database.heldPurchaseDao()
     }
 }

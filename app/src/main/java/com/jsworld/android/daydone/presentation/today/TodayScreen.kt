@@ -126,6 +126,14 @@ fun TodayScreen(
     onExtraIncomeDateChange: (LocalDate) -> Unit,
     onSaveExtraIncomeClick: () -> Unit,
     onDeleteExtraIncomeClick: () -> Unit,
+
+    onPurchaseSheetDismiss: () -> Unit = {},
+    onPurchaseTitleChange: (String) -> Unit = {},
+    onPurchaseAmountChange: (String) -> Unit = {},
+    onPurchaseEvaluateClick: () -> Unit = {},
+    onPurchaseBuyClick: () -> Unit = {},
+    onPurchaseHoldClick: () -> Unit = {},
+    onPurchasePrepareInVaultClick: () -> Unit = {},
 ) {
     Box(
         modifier = modifier.fillMaxSize()
@@ -284,6 +292,22 @@ fun TodayScreen(
             onAmountChange = onQuickExpenseAmountChange,
             onSaveClick = onSaveQuickExpenseClick,
             onDismiss = onQuickExpenseInputDismiss
+        )
+    }
+
+    if (uiState.isPurchaseSheetVisible) {
+        PurchaseDecisionSheet(
+            titleInput = uiState.purchaseTitleInput,
+            amountInput = uiState.purchaseAmountInput,
+            result = uiState.purchaseResult,
+            heldDone = uiState.purchaseHeldDone,
+            onTitleChange = onPurchaseTitleChange,
+            onAmountChange = onPurchaseAmountChange,
+            onEvaluateClick = onPurchaseEvaluateClick,
+            onBuyClick = onPurchaseBuyClick,
+            onHoldClick = onPurchaseHoldClick,
+            onPrepareInVaultClick = onPurchasePrepareInVaultClick,
+            onDismiss = onPurchaseSheetDismiss
         )
     }
 

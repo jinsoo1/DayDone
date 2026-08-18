@@ -23,6 +23,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.outlined.AccountBalanceWallet
 import androidx.compose.material.icons.outlined.Autorenew
+import androidx.compose.material.icons.outlined.Balance
 import androidx.compose.material.icons.outlined.CalendarMonth
 import androidx.compose.material.icons.outlined.Payments
 import androidx.compose.material.icons.outlined.Savings
@@ -30,6 +31,7 @@ import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Today
 import androidx.compose.material.icons.outlined.TrendingUp
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -69,8 +71,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jsworld.android.daydone.domain.usecase.ObserveOnboardingDoneUseCase
 import com.jsworld.android.daydone.presentation.challenge.ChallengeHistoryRoute
+import com.jsworld.android.daydone.presentation.held.HeldPurchasesRoute
 import com.jsworld.android.daydone.presentation.monthly.MonthlyRoute
 import com.jsworld.android.daydone.presentation.navigation.AddType
+import com.jsworld.android.daydone.presentation.navigation.VaultAddPrefill
 import com.jsworld.android.daydone.presentation.notices.NoticesRoute
 import com.jsworld.android.daydone.presentation.onboarding.OnboardingRoute
 import com.jsworld.android.daydone.presentation.report.ReportRoute
@@ -117,6 +121,7 @@ private val homeTabs = listOf(
 private const val NOTICES_ROUTE = "notices"
 private const val CHALLENGE_HISTORY_ROUTE = "challenge_history"
 private const val REPORT_ROUTE = "report"
+private const val HELD_PURCHASES_ROUTE = "held_purchases"
 
 private val BarHeight = 64.dp
 private val FabOverhang = 28.dp
@@ -166,6 +171,8 @@ private fun DayDoneHome() {
 
     var showChooser by remember { mutableStateOf(false) }
     var pendingAdd by remember { mutableStateOf<AddType?>(null) }
+    // 살까 말까 "금고에 준비하기" → 금고 탭 추가 시트 프리필
+    var pendingVaultPrefill by remember { mutableStateOf<VaultAddPrefill?>(null) }
     // 금고 편집 등 전체화면 진입 시 하단바 숨김
     var fullScreen by remember { mutableStateOf(false) }
 
@@ -173,6 +180,7 @@ private fun DayDoneHome() {
     val barHidden = fullScreen ||
             currentRoute == NOTICES_ROUTE ||
             currentRoute == CHALLENGE_HISTORY_ROUTE ||
+            currentRoute == HELD_PURCHASES_ROUTE ||
             currentRoute?.startsWith(REPORT_ROUTE) == true
 
     fun goToTab(route: String) {
@@ -202,6 +210,10 @@ private fun DayDoneHome() {
                     onPendingAddConsumed = { pendingAdd = null },
                     onOpenReport = { month ->
                         navController.navigate("$REPORT_ROUTE?month=$month")
+                    },
+                    onPrepareInVault = { title, amount ->
+                        pendingVaultPrefill = VaultAddPrefill(title, amount)
+                        goToTab(HomeTab.Vault.route)
                     }
                 )
             }
@@ -215,7 +227,14 @@ private fun DayDoneHome() {
                 )
             }
             composable(HomeTab.Vault.route) {
-                VaultRoute(onFullScreenChange = { fullScreen = it })
+                VaultRoute(
+                    onFullScreenChange = { fullScreen = it },
+                    pendingPrefill = pendingVaultPrefill,
+                    onPendingPrefillConsumed = { pendingVaultPrefill = null },
+                    onNavigateToHeldPurchases = {
+                        navController.navigate(HELD_PURCHASES_ROUTE)
+                    }
+                )
             }
             composable(HomeTab.Settings.route) {
                 SettingsRoute(
@@ -230,6 +249,9 @@ private fun DayDoneHome() {
             }
             composable(CHALLENGE_HISTORY_ROUTE) {
                 ChallengeHistoryRoute(onBack = { navController.popBackStack() })
+            }
+            composable(HELD_PURCHASES_ROUTE) {
+                HeldPurchasesRoute(onBack = { navController.popBackStack() })
             }
             composable(
                 route = "$REPORT_ROUTE?month={month}",
@@ -411,6 +433,20 @@ private fun AddChooserSheet(
             AddChooserRow(Icons.Outlined.TrendingUp, "수익") { onSelect(AddType.INCOME) }
             AddChooserRow(Icons.Outlined.Autorenew, "저축 / 고정비") { onSelect(AddType.DEDUCTION) }
             AddChooserRow(Icons.Outlined.AccountBalanceWallet, "이번 달 예산") { onSelect(AddType.BUDGET) }
+
+            // 살까 말까는 기록이 아니라 도구 — 구분선으로 나눠 보여준다
+            HorizontalDivider(
+                modifier = Modifier.padding(vertical = 8.dp),
+                color = MaterialTheme.colorScheme.outline
+            )
+
+            Text(
+                text = "사기 전에 — 지금 사면 하루 권장 금액이 얼마나 달라지는지 미리 봐요",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+
+            AddChooserRow(Icons.Outlined.Balance, "살까 말까?") { onSelect(AddType.PURCHASE) }
         }
     }
 }

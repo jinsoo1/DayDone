@@ -7,6 +7,7 @@ import androidx.room.Query
 import com.jsworld.android.daydone.data.local.entity.ExpenseEntity
 import com.jsworld.android.daydone.data.local.entity.ExtraIncomeEntity
 import com.jsworld.android.daydone.data.local.entity.FutureExpenseEntity
+import com.jsworld.android.daydone.data.local.entity.HeldPurchaseEntity
 import com.jsworld.android.daydone.data.local.entity.MonthlyBudgetEntity
 import com.jsworld.android.daydone.data.local.entity.NoSpendChallengeRecordEntity
 import com.jsworld.android.daydone.data.local.entity.QuickExpenseEntity
@@ -45,6 +46,9 @@ interface BackupDao {
     @Query("SELECT * FROM no_spend_records")
     suspend fun getNoSpendRecords(): List<NoSpendChallengeRecordEntity>
 
+    @Query("SELECT * FROM held_purchases")
+    suspend fun getHeldPurchases(): List<HeldPurchaseEntity>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertExpenses(items: List<ExpenseEntity>)
 
@@ -68,4 +72,7 @@ interface BackupDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertNoSpendRecords(items: List<NoSpendChallengeRecordEntity>)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertHeldPurchases(items: List<HeldPurchaseEntity>)
 }

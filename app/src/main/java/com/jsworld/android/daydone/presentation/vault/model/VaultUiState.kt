@@ -33,6 +33,11 @@ data class VaultUiState(
     val items: List<VaultItemUiModel> = emptyList(),
     val completedItems: List<VaultItemUiModel> = emptyList(),
 
+    // 소비 보류함 진입 카드 (금고=모아둔 돈, 보류함=아낀 돈)
+    val heldSavedTotal: Long = 0L,      // 아낀 돈 (안 삼 + 30일 자동 전환)
+    val heldHoldingCount: Int = 0,      // 보류 중 건수
+    val heldDueBadge: Boolean = false,  // 30일 도래 항목 존재 (점 뱃지)
+
     // 준비하기 금액 입력 다이얼로그
     val isPrepareDialogVisible: Boolean = false,
     val prepareTargetId: Long? = null,

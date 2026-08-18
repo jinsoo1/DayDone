@@ -22,6 +22,7 @@ fun TodayRoute(
     pendingAdd: AddType?,
     onPendingAddConsumed: () -> Unit,
     onOpenReport: (String) -> Unit = {},
+    onPrepareInVault: (title: String, amount: Long) -> Unit = { _, _ -> },
     viewModel: TodayViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -41,6 +42,7 @@ fun TodayRoute(
             AddType.INCOME -> viewModel.onExtraIncomeInputClick()
             AddType.DEDUCTION -> viewModel.onScheduledDeductionInputClick()
             AddType.BUDGET -> viewModel.onBudgetSettingClick()
+            AddType.PURCHASE -> viewModel.onPurchaseDecisionClick()
             null -> {}
         }
         if (pendingAdd != null) {
@@ -104,6 +106,20 @@ fun TodayRoute(
             onExtraIncomeDateChange = viewModel::onExtraIncomeDateChange,
             onSaveExtraIncomeClick = viewModel::onSaveExtraIncomeClick,
             onDeleteExtraIncomeClick = viewModel::onDeleteExtraIncomeClick,
+
+            onPurchaseSheetDismiss = viewModel::onPurchaseSheetDismiss,
+            onPurchaseTitleChange = viewModel::onPurchaseTitleChange,
+            onPurchaseAmountChange = viewModel::onPurchaseAmountChange,
+            onPurchaseEvaluateClick = viewModel::onPurchaseEvaluateClick,
+            onPurchaseBuyClick = viewModel::onPurchaseBuyClick,
+            onPurchaseHoldClick = viewModel::onPurchaseHoldClick,
+            onPurchasePrepareInVaultClick = {
+                val result = uiState.purchaseResult
+                viewModel.onPurchaseSheetDismiss()
+                if (result != null) {
+                    onPrepareInVault(result.title, result.price)
+                }
+            },
         )
     }
 

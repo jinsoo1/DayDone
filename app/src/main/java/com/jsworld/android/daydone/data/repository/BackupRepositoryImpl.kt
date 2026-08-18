@@ -17,6 +17,7 @@ import com.jsworld.android.daydone.data.local.db.DayDoneDatabase
 import com.jsworld.android.daydone.data.local.entity.ExpenseEntity
 import com.jsworld.android.daydone.data.local.entity.ExtraIncomeEntity
 import com.jsworld.android.daydone.data.local.entity.FutureExpenseEntity
+import com.jsworld.android.daydone.data.local.entity.HeldPurchaseEntity
 import com.jsworld.android.daydone.data.local.entity.MonthlyBudgetEntity
 import com.jsworld.android.daydone.data.local.entity.NoSpendChallengeRecordEntity
 import com.jsworld.android.daydone.data.local.entity.QuickExpenseEntity
@@ -403,6 +404,18 @@ class BackupRepositoryImpl @Inject constructor(
                     put("createdAt", r.createdAt)
                 }
             })
+
+            put(KEY_HELD_PURCHASES, backupDao.getHeldPurchases().toJsonArray { h ->
+                JSONObject().apply {
+                    put("id", h.id)
+                    put("title", h.title)
+                    put("amount", h.amount)
+                    put("heldAt", h.heldAt)
+                    put("status", h.status)
+                    put("resolvedAt", h.resolvedAt ?: JSONObject.NULL)
+                    put("createdAt", h.createdAt)
+                }
+            })
         }
 
         root.toString(2)
@@ -502,6 +515,18 @@ class BackupRepositoryImpl @Inject constructor(
                 createdAt = o.optLong("createdAt", System.currentTimeMillis())
             )
         }
+        // v1.2 이전 백업에는 없는 키 — 없으면 빈 목록 (하위 호환)
+        val heldPurchases = root.array(KEY_HELD_PURCHASES).map { o ->
+            HeldPurchaseEntity(
+                id = o.getLong("id"),
+                title = o.getString("title"),
+                amount = o.getLong("amount"),
+                heldAt = o.getString("heldAt"),
+                status = o.getString("status"),
+                resolvedAt = o.stringOrNull("resolvedAt"),
+                createdAt = o.optLong("createdAt", System.currentTimeMillis())
+            )
+        }
 
         // 전체 대체
         database.clearAllTables()
@@ -513,6 +538,7 @@ class BackupRepositoryImpl @Inject constructor(
         backupDao.insertMonthlyBudgets(monthlyBudgets)
         backupDao.insertQuickExpenses(quickExpenses)
         backupDao.insertNoSpendRecords(noSpendRecords)
+        backupDao.insertHeldPurchases(heldPurchases)
 
         // 설정 복원
         root.optJSONObject(KEY_SETTINGS)?.let { s ->
@@ -583,5 +609,6 @@ class BackupRepositoryImpl @Inject constructor(
         private const val KEY_QUICK_EXPENSES = "quickExpenses"
         private const val KEY_FUTURE_EXPENSES = "futureExpenses"
         private const val KEY_NO_SPEND_RECORDS = "noSpendRecords"
+        private const val KEY_HELD_PURCHASES = "heldPurchases"
     }
 }

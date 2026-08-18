@@ -83,4 +83,11 @@ data class TodayUiState(
     val extraIncomeAmountInput: String = "",
     val extraIncomeMemoInput: String = "",
     val extraIncomeDateInput: LocalDate = LocalDate.now(),
+
+    // 살까 말까 (+ 시트에서 진입)
+    val isPurchaseSheetVisible: Boolean = false,
+    val purchaseTitleInput: String = "",
+    val purchaseAmountInput: String = "",
+    val purchaseResult: PurchaseEvaluationUiModel? = null, // null = 입력 단계
+    val purchaseHeldDone: Boolean = false,                 // 보류 저장 후 확인 단계
 )

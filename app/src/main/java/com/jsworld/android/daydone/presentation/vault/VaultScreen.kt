@@ -86,7 +86,8 @@ fun VaultScreen(
     onRepeatChange: (FutureExpenseRepeat) -> Unit,
     onMemoChange: (String) -> Unit,
     onSaveItemClick: () -> Unit,
-    onDeleteItemClick: () -> Unit
+    onDeleteItemClick: () -> Unit,
+    onHeldPurchasesClick: () -> Unit = {}
 ) {
     BackHandler(enabled = uiState.isInputSheetVisible) { onInputDismiss() }
 
@@ -183,6 +184,15 @@ fun VaultScreen(
                     Text("+ 준비 항목 추가")
                 }
             }
+
+            item {
+                HeldPurchasesCard(
+                    savedTotal = uiState.heldSavedTotal,
+                    holdingCount = uiState.heldHoldingCount,
+                    dueBadge = uiState.heldDueBadge,
+                    onClick = onHeldPurchasesClick
+                )
+            }
         }
     }
 
@@ -195,6 +205,68 @@ fun VaultScreen(
             onConfirm = onPrepareConfirm,
             onDismiss = onPrepareDialogDismiss
         )
+    }
+}
+
+/** 소비 보류함 진입 카드 — 금고=모아둔 돈, 보류함=아낀 돈. */
+@Composable
+private fun HeldPurchasesCard(
+    savedTotal: Long,
+    holdingCount: Int,
+    dueBadge: Boolean,
+    onClick: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(20.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    Text(
+                        text = "소비 보류함",
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                    if (dueBadge) {
+                        Box(
+                            modifier = Modifier
+                                .size(7.dp)
+                                .clip(CircleShape)
+                                .background(MaterialTheme.colorScheme.primary)
+                        )
+                    }
+                }
+
+                Text(
+                    text = if (savedTotal > 0L || holdingCount > 0) {
+                        "아낀 돈 ${savedTotal.toMoneyText()} · 보류 중 ${holdingCount}건"
+                    } else {
+                        "고민되는 물건은 '살까 말까'로 잠깐 보류해보세요"
+                    },
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
     }
 }
 

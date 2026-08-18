@@ -5,5 +5,6 @@ enum class AddType {
     EXPENSE,   // 지출
     INCOME,    // 수익
     DEDUCTION, // 저축 / 고정비
-    BUDGET     // 이번 달 예산
+    BUDGET,    // 이번 달 예산
+    PURCHASE   // 살까 말까?
 }
