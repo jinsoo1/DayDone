@@ -202,7 +202,28 @@ v1.0에서 실제 출금 완료 체크는 제외(v1.1+).
 - `ExtraIncomeEntity`: 추가 수익
 - ~~`VaultTransactionEntity`~~: **도입 안 함** — 금고는 FUTURE_PREPARE 지출 합으로 파생(이중계산 방지). 필요 시 v1.1 표시용으로만.
 
-Room 마이그레이션: 스키마 변경 시 정식 `Migration` 제공(데이터 보존) + `fallbackToDestructiveMigration` 병행. 현재 **DB version 6** (1→2 monthly_budgets, 2→3 scheduled_deduction_amounts, 3→4 future_expenses, 4→5 expenses.isEssential, 5→6 no_spend_records).
+- `HeldPurchaseEntity`(held_purchases): title · amount · heldAt · status(HELD/PASSED/BOUGHT) · resolvedAt — **소비 보류함** (아래 참고)
+
+Room 마이그레이션: 스키마 변경 시 정식 `Migration` 제공(데이터 보존) + `fallbackToDestructiveMigration` 병행. 현재 **DB version 7** (1→2 monthly_budgets, 2→3 scheduled_deduction_amounts, 3→4 future_expenses, 4→5 expenses.isEssential, 5→6 no_spend_records, 6→7 held_purchases).
+
+### 살까 말까 (구현됨, v1.2) — 구매 결정 도우미 ⭐
+
+- **점수·판정이 아니라 결과를 보여준다**: "지금 사면 하루 권장이 A→B가 돼요". 앱은 사라/사지 마라를 말하지 않는다(§13). 진입: 하단 `+` 시트의 "살까 말까?"(`AddType.PURCHASE`) → 오늘 탭 위 시트. 오늘 탭 상주 카드는 만들지 않는다.
+- 계산: `EvaluatePurchaseUseCase(pureBudgetLeft, remainingDays, price)` **순수 함수**. A=R÷D, B=(R−P)÷D. **R·D는 오늘 탭과 같은 소스**(`TodayUiState.remainingPureBudget`·`remainingDays`) — 숫자가 오늘 탭과 다르면 신뢰가 깨진다. 4상태 `PurchaseImpact`: 거의 무변화(감소<5%) / 여유(B≥70%A, 경계 포함) / 빠듯(0≤B<70%A, "살 수는 있어요"로 시작) / 불가(R−P<0, 금고 제안 + [그래도 살게요] 반드시 유지). 경계값 테스트 있음.
+- 결과는 계산 시점 스냅샷(`PurchaseEvaluationUiModel`)으로 고정 — 시트가 열린 동안 값이 흔들리지 않게.
+- **[살게요]** → 기존 지출 입력 시트 프리필(품목명·가격·오늘). **새 저장 경로 없음.** / **[보류할게요]** → 보류함 저장 + 같은 시트에서 확인 문구. / **[금고에 준비하기]** → `VaultAddPrefill`로 금고 탭 이동 후 준비 항목 추가 시트 프리필(목표월=+3개월 기본).
+- 안 하는 것: 카테고리별 판단·과거 이력 참조·점수/등급·만족도 추적·알림 (전부 "앱이 모르는 걸 아는 척"하는 방향).
+
+### 소비 보류함 (구현됨, v1.2, DB v7)
+
+- "말까"의 목적지. **30일 룰 + 아낀 돈 집계** — 사라고 밀지 않고 안 산 걸 축하한다. 용어는 **"아낀 돈"**(결산 리포트의 "지켜냈어요"와 어휘 분리).
+- **30일 자동 전환은 저장하지 않고 조회 시 파생**: status는 HELD 그대로, `HeldPurchase.isAutoPassed(today)`(heldAt+30≤today)로 판정 — 백그라운드 작업·알림 없음("권한 없음" 유지). 아낀 돈 = PASSED 합 + 자동 전환 합(`isSaved`).
+- 30일 도래 카드: "일단 아낀 돈에 넣어뒀어요" + [그래도 샀어요](BOUGHT 전환만, **지출 생성 안 함** — 실제 지출은 유저가 입력) / [아낀 돈으로](PASSED 확정, resolvedAt=heldAt+30).
+- 보류 중 항목: [지금 살게요]→지출 시트 프리필, 저장 시 BOUGHT 확정 / [안 살래요]→PASSED 즉시 확정 / 항목 탭→**오늘 기준 재계산**된 살까 말까 결과 시트.
+- **삭제**: 보류 중=재계산 시트의 "보류함에서 삭제하기", 지난 기록=행 탭 → 공용 확인 다이얼로그(아낀 돈 집계 항목이면 "합계에서도 빠져요" 안내). 하드 삭제 — 아낀 돈은 행의 합으로 파생이라 별도 보정 불필요.
+- ⚠️ 재계산은 `ObservePureBudgetUseCase` — **`TodayViewModel.loadToday`와 같은 식**(유효 월예산+추가수익−예정차감(이월 반영)−오늘까지 지출, 미래 날짜 지출 제외). **계산식을 바꿀 땐 양쪽을 함께 바꿀 것.**
+- 진입: **금고 탭 하단 카드만**(아낀 돈·보류 중 건수, 30일 도래 시 점 뱃지). 오늘 탭 배너는 쓰지 않는다(과밀). 별도 라우트 `HeldPurchasesRoute`(하단바 숨김).
+- 백업: `heldPurchases` 키(새 배열 키 추가는 하위 호환이라 `BACKUP_VERSION=1` 유지). **엑셀 내보내기엔 미포함**(지출 이력이 아님). 초기화는 `clearAllTables()`에 자동 포함.
 
 ### 이번 기간 리포트 (구현됨) — 진행 중 전용
 
