@@ -68,6 +68,18 @@ android {
                 )
             }
         }
+
+        // QA: 릴리즈와 같은 R8/리소스 축소를 켜되, 별도 패키지로 나란히 설치된다.
+        // 스토어 버전(실제 데이터)을 덮어쓰지 않고 축소 빌드를 검증하기 위한 용도.
+        // 디버그 키로 서명하므로 실수로 스토어에 올릴 수 없다.
+        create("qa") {
+            initWith(getByName("release"))
+            applicationIdSuffix = ".qa"
+            versionNameSuffix = "-qa"
+            signingConfig = signingConfigs.getByName("debug")
+            isDebuggable = false
+            matchingFallbacks += listOf("release")
+        }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -100,6 +112,8 @@ dependencies {
     implementation(libs.compose.ui.tooling.preview)
     implementation(libs.compose.material3)
     implementation(libs.material.icons.extended)
+    implementation(libs.glance.appwidget)
+    implementation(libs.glance.material3)
     implementation("androidx.compose.foundation:foundation")
     implementation(libs.androidx.material3)
     debugImplementation(libs.compose.ui.tooling)

@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">데이던</string>
+    <string name="widget_description">오늘 써도 되는 금액을 홈 화면에서 바로 봐요</string>
 </resources>

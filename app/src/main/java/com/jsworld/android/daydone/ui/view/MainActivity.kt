@@ -2,6 +2,7 @@ package com.jsworld.android.daydone.ui.view
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -82,6 +83,8 @@ import com.jsworld.android.daydone.presentation.settings.SettingsRoute
 import com.jsworld.android.daydone.presentation.today.TodayRoute
 import com.jsworld.android.daydone.presentation.vault.VaultRoute
 import com.jsworld.android.daydone.ui.theme.DayDoneTheme
+import com.jsworld.android.daydone.widget.refreshDayDoneWidget
+import kotlinx.coroutines.launch
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
@@ -97,6 +100,19 @@ class MainActivity : ComponentActivity() {
                 DayDoneRoot()
             }
         }
+    }
+
+    /**
+     * 앱을 벗어날 때 위젯을 한 번 더 갱신한다.
+     *
+     * 데이터가 바뀔 때마다 갱신 요청은 나가지만(DayDoneApp), 실제 합성은 WorkManager 워커가
+     * 하기 때문에 홈으로 나가며 프로세스가 얼면 반영이 늦는다.
+     * 홈 화면을 보러 나가는 바로 이 순간이 마지막으로 확실히 살아 있는 시점이라
+     * 여기서 한 번 더 밀어준다.
+     */
+    override fun onStop() {
+        super.onStop()
+        lifecycleScope.launch { refreshDayDoneWidget(applicationContext) }
     }
 }
 
