@@ -419,6 +419,37 @@ private fun TodayDefenseCard(
                     color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
                 )
             }
+
+            // 내일 권장 금액 — 재분배를 숫자로 보여준다.
+            // 기간 마지막 날에는 나눌 내일이 없으니(null) 금액 대신 새 기간 안내를 띄운다.
+            val tomorrowText = when {
+                uiState.tomorrowRecommended != null -> uiState.tomorrowRecommended.toMoneyText()
+                uiState.remainingDays == 1 -> "새 기간이 시작돼요"
+                else -> null
+            }
+
+            if (tomorrowText != null) {
+                HorizontalDivider(
+                    color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.2f)
+                )
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "내일부터",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.75f)
+                    )
+                    Text(
+                        text = tomorrowText,
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+            }
         }
     }
 }

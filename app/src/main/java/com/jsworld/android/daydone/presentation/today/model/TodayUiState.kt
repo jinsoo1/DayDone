@@ -12,6 +12,8 @@ data class TodayUiState(
     val isTodayOverDefenseLine: Boolean = false,
     val remainingPureBudget: Long = 0L,
     val remainingDays: Int = 0,
+    /** 내일 권장 금액. 기간 마지막 날이면 null(나눌 내일이 없음) → 줄 자체를 숨긴다 */
+    val tomorrowRecommended: Long? = null,
     val budgetPeriodText: String = "",
     val message: String = "",
     val dateChips: List<TodayDateChipUiModel> = emptyList(),

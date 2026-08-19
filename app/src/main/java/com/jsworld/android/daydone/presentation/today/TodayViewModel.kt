@@ -14,7 +14,7 @@ import com.jsworld.android.daydone.domain.usecase.AddExpenseUseCase
 import com.jsworld.android.daydone.domain.usecase.AddExtraIncomeUseCase
 import com.jsworld.android.daydone.domain.usecase.AddQuickExpenseUseCase
 import com.jsworld.android.daydone.domain.usecase.AddScheduledDeductionUseCase
-import com.jsworld.android.daydone.domain.usecase.CalculateTodayDefenseLineUseCase
+import com.jsworld.android.daydone.domain.usecase.CalculateDailyBudgetUseCase
 import com.jsworld.android.daydone.domain.usecase.DeleteExpenseUseCase
 import com.jsworld.android.daydone.domain.usecase.DeleteExtraIncomeUseCase
 import com.jsworld.android.daydone.domain.usecase.DeleteQuickExpenseUseCase
@@ -72,12 +72,11 @@ import java.time.YearMonth
 import java.time.temporal.ChronoUnit
 import kotlin.collections.filter
 import kotlin.collections.map
-import kotlin.math.abs
 
 @HiltViewModel
 class TodayViewModel @Inject constructor(
     private val getCurrentBudgetPeriodUseCase: GetCurrentBudgetPeriodUseCase,
-    private val calculateTodayDefenseLineUseCase: CalculateTodayDefenseLineUseCase,
+    private val calculateDailyBudgetUseCase: CalculateDailyBudgetUseCase,
     private val getTodayDateChipsUseCase: GetTodayDateChipsUseCase,
     private val observeExpensesByPeriodUseCase: ObserveExpensesByPeriodUseCase,
     private val addExpenseUseCase: AddExpenseUseCase,
@@ -1036,7 +1035,6 @@ class TodayViewModel @Inject constructor(
 
         val extraIncomeAmount = extraIncomes.sumOf { it.amount }
         val totalAvailableBudget = monthlyIncome + extraIncomeAmount
-        val futurePrepareAmount = 0L
 
         val budgetPeriod = getCurrentBudgetPeriodUseCase(
             today = today,
@@ -1096,10 +1094,17 @@ class TodayViewModel @Inject constructor(
                     )
                 }
 
-        val remainingDays = ChronoUnit.DAYS.between(
-            today,
-            budgetPeriod.endDate
-        ).toInt() + 1
+        // 권장 금액 산술은 전부 여기 한 곳 (위젯·보류함과 같은 UseCase)
+        val budget = calculateDailyBudgetUseCase(
+            today = today,
+            period = budgetPeriod,
+            monthlyBudget = monthlyIncome,
+            extraIncomeTotal = extraIncomeAmount,
+            scheduledDeductionTotal = scheduledDeductionTotalAmount,
+            expenses = expenses
+        )
+
+        val remainingDays = budget.remainingDays
 
         // 새 기간 첫 3일 동안 지난 기간 결산 리포트 안내
         // (단, 지난 기간이 앱을 쓰기 전이면 안내하지 않음 — 신규 유저 첫 기간 보호)
@@ -1136,42 +1141,16 @@ class TodayViewModel @Inject constructor(
                 budgetPeriod.startDate.isBefore(firstUseDate) &&
                 ChronoUnit.DAYS.between(firstUseDate, today) <= 3
 
-        val todayExpenseAmount = expenses
-            .filter { it.date == today }
-            .sumOf { it.amount }
-
+        val todayExpenseAmount = budget.todaySpent
         val pastExpenseAmount = expenses
             .filter { it.date.isBefore(today) }
             .sumOf { it.amount }
 
-        val remainingPureBudgetBeforeTodayExpense =
-            totalAvailableBudget -
-                    scheduledSaving -
-                    fixedExpense -
-                    pastExpenseAmount -
-                    futurePrepareAmount
-
-        val todayStartDefenseLine = calculateTodayDefenseLineUseCase(
-            remainingPureBudget = remainingPureBudgetBeforeTodayExpense,
-            today = today,
-            budgetPeriod = budgetPeriod
-        )
-
-        val todayRemainingDefenseLine =
-            todayStartDefenseLine - todayExpenseAmount
-
-        val isTodayOverDefenseLine =
-            todayRemainingDefenseLine < 0L
-
-        val todayOverAmount =
-            if (isTodayOverDefenseLine) {
-                abs(todayRemainingDefenseLine)
-            } else {
-                0L
-            }
-
-        val remainingPureBudget =
-            remainingPureBudgetBeforeTodayExpense - todayExpenseAmount
+        val todayStartDefenseLine = budget.todayRecommended
+        val todayRemainingDefenseLine = budget.todayLeft
+        val isTodayOverDefenseLine = budget.isTodayOver
+        val todayOverAmount = budget.todayOverAmount
+        val remainingPureBudget = budget.remainingPureBudget
 
         val expenseDates = expenses
             .map { it.date }
@@ -1197,6 +1176,7 @@ class TodayViewModel @Inject constructor(
 
             remainingPureBudget = remainingPureBudget,
             remainingDays = remainingDays,
+            tomorrowRecommended = budget.tomorrowRecommended,
             budgetPeriodText = "${budgetPeriod.startDate} ~ ${budgetPeriod.endDate}",
             message = if (isTodayOverDefenseLine) {
                 "괜찮아요. 남은 날에 다시 나눠볼게요."

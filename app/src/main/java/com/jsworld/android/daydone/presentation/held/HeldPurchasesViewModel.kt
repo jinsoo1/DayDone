@@ -4,12 +4,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jsworld.android.daydone.domain.model.HeldPurchase
 import com.jsworld.android.daydone.domain.model.HeldPurchaseStatus
-import com.jsworld.android.daydone.domain.model.PureBudgetSnapshot
+import com.jsworld.android.daydone.domain.model.DailyBudgetSnapshot
 import com.jsworld.android.daydone.domain.usecase.AddExpenseUseCase
 import com.jsworld.android.daydone.domain.usecase.DeleteHeldPurchaseUseCase
 import com.jsworld.android.daydone.domain.usecase.EvaluatePurchaseUseCase
 import com.jsworld.android.daydone.domain.usecase.ObserveHeldPurchasesUseCase
-import com.jsworld.android.daydone.domain.usecase.ObservePureBudgetUseCase
+import com.jsworld.android.daydone.domain.usecase.ObserveDailyBudgetUseCase
 import com.jsworld.android.daydone.domain.usecase.ResolveHeldPurchaseUseCase
 import com.jsworld.android.daydone.presentation.today.model.PurchaseEvaluationUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -76,7 +76,7 @@ data class HeldPurchasesUiState(
 @HiltViewModel
 class HeldPurchasesViewModel @Inject constructor(
     observeHeldPurchasesUseCase: ObserveHeldPurchasesUseCase,
-    observePureBudgetUseCase: ObservePureBudgetUseCase,
+    observeDailyBudgetUseCase: ObserveDailyBudgetUseCase,
     private val evaluatePurchaseUseCase: EvaluatePurchaseUseCase,
     private val resolveHeldPurchaseUseCase: ResolveHeldPurchaseUseCase,
     private val deleteHeldPurchaseUseCase: DeleteHeldPurchaseUseCase,
@@ -88,12 +88,12 @@ class HeldPurchasesViewModel @Inject constructor(
 
     private val today: LocalDate = LocalDate.now()
     private var currentItems: List<HeldPurchase> = emptyList()
-    private var currentBudget = PureBudgetSnapshot(remainingPureBudget = 0L, remainingDays = 1)
+    private var currentBudget: DailyBudgetSnapshot? = null
 
     init {
         combine(
             observeHeldPurchasesUseCase(),
-            observePureBudgetUseCase(today)
+            observeDailyBudgetUseCase(today)
         ) { items, budget -> items to budget }
             .onEach { (items, budget) ->
                 currentItems = items
@@ -158,9 +158,11 @@ class HeldPurchasesViewModel @Inject constructor(
     fun onItemClick(id: Long) {
         val item = currentItems.find { it.id == id } ?: return
 
+        val budget = currentBudget ?: return
+
         val evaluation = evaluatePurchaseUseCase(
-            pureBudgetLeft = currentBudget.remainingPureBudget,
-            remainingDays = currentBudget.remainingDays,
+            pureBudgetLeft = budget.remainingPureBudget,
+            remainingDays = budget.remainingDays,
             price = item.amount
         )
 
@@ -171,9 +173,9 @@ class HeldPurchasesViewModel @Inject constructor(
                 price = item.amount,
                 currentDaily = evaluation.currentDaily,
                 afterDaily = evaluation.afterDaily,
-                budgetLeft = currentBudget.remainingPureBudget,
-                budgetLeftAfter = currentBudget.remainingPureBudget - item.amount,
-                remainingDays = currentBudget.remainingDays,
+                budgetLeft = budget.remainingPureBudget,
+                budgetLeftAfter = budget.remainingPureBudget - item.amount,
+                remainingDays = budget.remainingDays,
                 impact = evaluation.impact
             )
         )

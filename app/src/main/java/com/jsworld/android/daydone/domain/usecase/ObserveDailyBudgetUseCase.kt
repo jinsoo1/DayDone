@@ -1,6 +1,6 @@
 package com.jsworld.android.daydone.domain.usecase
 
-import com.jsworld.android.daydone.domain.model.PureBudgetSnapshot
+import com.jsworld.android.daydone.domain.model.DailyBudgetSnapshot
 import jakarta.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -8,18 +8,15 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import java.time.LocalDate
 import java.time.YearMonth
-import java.time.temporal.ChronoUnit
 
 /**
- * 오늘 기준 "남은 순수 생활비"와 "남은 일수"를 관찰한다.
+ * 오늘 기준 생활비 스냅샷을 DB에서 직접 읽어 흘려보낸다.
  *
- * ⚠️ TodayViewModel.loadToday 와 반드시 같은 값이 나와야 한다 (같은 소스·같은 식):
- *   남은 순수 생활비 = 유효 월 예산 + 추가수익 − 저축/고정비(이월 반영, 기간 내)
- *                     − 오늘까지의 지출 합 (미래 날짜 지출은 제외 — 오늘 탭과 동일)
- * 살까 말까를 오늘 탭 밖(보류함)에서 재계산할 때 쓴다. 숫자가 오늘 탭과 1원이라도
- * 다르면 신뢰가 깨지므로, 계산식을 바꿀 땐 양쪽을 함께 바꿀 것.
+ * 데이터를 이미 들고 있는 오늘 탭은 이걸 쓰지 않고 [CalculateDailyBudgetUseCase]를 직접 부른다.
+ * 이 UseCase는 **앱 화면 밖**(보류함 재계산, 홈 위젯)에서 쓴다.
+ * 산술은 전부 [CalculateDailyBudgetUseCase]에 있으므로 두 경로의 숫자는 항상 같다.
  */
-class ObservePureBudgetUseCase @Inject constructor(
+class ObserveDailyBudgetUseCase @Inject constructor(
     private val observeBudgetProfileUseCase: ObserveBudgetProfileUseCase,
     private val getCurrentBudgetPeriodUseCase: GetCurrentBudgetPeriodUseCase,
     private val observeEffectiveMonthlyBudgetUseCase: ObserveEffectiveMonthlyBudgetUseCase,
@@ -28,10 +25,11 @@ class ObservePureBudgetUseCase @Inject constructor(
     private val observeScheduledDeductionsUseCase: ObserveScheduledDeductionsUseCase,
     private val observeScheduledDeductionAmountsUseCase: ObserveScheduledDeductionAmountsUseCase,
     private val getScheduledDeductionsInPeriodUseCase: GetScheduledDeductionsInPeriodUseCase,
-    private val resolveScheduledDeductionAmountsUseCase: ResolveScheduledDeductionAmountsUseCase
+    private val resolveScheduledDeductionAmountsUseCase: ResolveScheduledDeductionAmountsUseCase,
+    private val calculateDailyBudgetUseCase: CalculateDailyBudgetUseCase
 ) {
     @OptIn(ExperimentalCoroutinesApi::class)
-    operator fun invoke(today: LocalDate): Flow<PureBudgetSnapshot> {
+    operator fun invoke(today: LocalDate): Flow<DailyBudgetSnapshot> {
         return observeBudgetProfileUseCase().flatMapLatest { profile ->
             val period = getCurrentBudgetPeriodUseCase(
                 today = today,
@@ -64,21 +62,13 @@ class ObservePureBudgetUseCase @Inject constructor(
                     anchorMonth = anchorMonth
                 ).sumOf { it.amount }
 
-                val spentUntilToday = expenses
-                    .filter { !it.date.isAfter(today) }
-                    .sumOf { it.amount }
-
-                val remaining = monthlyBudget +
-                        extraIncomes.sumOf { it.amount } -
-                        deductionTotal -
-                        spentUntilToday
-
-                val remainingDays = ChronoUnit.DAYS.between(today, period.endDate)
-                    .toInt() + 1
-
-                PureBudgetSnapshot(
-                    remainingPureBudget = remaining,
-                    remainingDays = remainingDays
+                calculateDailyBudgetUseCase(
+                    today = today,
+                    period = period,
+                    monthlyBudget = monthlyBudget,
+                    extraIncomeTotal = extraIncomes.sumOf { it.amount },
+                    scheduledDeductionTotal = deductionTotal,
+                    expenses = expenses
                 )
             }
         }
