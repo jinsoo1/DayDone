@@ -10,7 +10,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class DayDoneWidgetReceiver : GlanceAppWidgetReceiver() {
     override val glanceAppWidget: GlanceAppWidget
-        get() = DayDoneWidget(::loadWidgetState)
+        get() = DayDoneWidget
 }
 
 /**
@@ -21,7 +21,7 @@ class DayDoneWidgetReceiver : GlanceAppWidgetReceiver() {
  */
 suspend fun refreshDayDoneWidget(context: Context) {
     runCatching {
-        DayDoneWidget(::loadWidgetState).updateAll(context)
+        DayDoneWidget.updateAll(context)
     }.onFailure {
         // 위젯 갱신 실패가 앱을 죽이면 안 되지만, 조용히 사라져도 안 된다
         Log.w(WIDGET_LOG, "위젯 갱신 실패", it)

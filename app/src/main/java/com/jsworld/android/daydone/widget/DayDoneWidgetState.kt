@@ -9,6 +9,9 @@ package com.jsworld.android.daydone.widget
  */
 sealed interface DayDoneWidgetState {
 
+    /** 첫 구독 전 아주 잠깐. */
+    data object Loading : DayDoneWidgetState
+
     /** 온보딩 전 — 예산이 없어 계산할 수 없다. */
     data object NeedsSetup : DayDoneWidgetState
 

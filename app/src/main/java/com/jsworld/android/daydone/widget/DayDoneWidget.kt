@@ -2,6 +2,9 @@ package com.jsworld.android.daydone.widget
 
 import android.content.Context
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.glance.GlanceId
@@ -45,18 +48,19 @@ private val track = ColorProvider(WidgetColors.trackLight, WidgetColors.trackDar
  * - 4×2: 위 + 기간 · 내일 금액 · 오늘 사용액
  * - 초과여도 빨간 숫자를 쓰지 않는다 — 대신 내일 권장 금액을 보여준다.
  */
-class DayDoneWidget(
-    private val loadState: suspend (Context) -> DayDoneWidgetState
-) : GlanceAppWidget() {
+object DayDoneWidget : GlanceAppWidget() {
 
     override val sizeMode: SizeMode = SizeMode.Exact
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
-        // 자정을 넘겼는지는 여기서 매번 오늘 날짜를 다시 읽어 판단한다
-        val state = loadState(context)
         provideContent {
+            // 화면 안에서 구독한다. 세션이 살아 있는 동안에도 데이터가 바뀌면
+            // 재구성으로 곧바로 따라온다 (값 하나를 미리 읽어 넘기면 갱신이 밀린다).
+            val state by remember { widgetStateFlow(context) }
+                .collectAsState(initial = null)
+
             GlanceTheme {
-                WidgetBody(state)
+                WidgetBody(state ?: DayDoneWidgetState.Loading)
             }
         }
     }
@@ -76,6 +80,11 @@ private fun WidgetBody(state: DayDoneWidgetState) {
         verticalAlignment = Alignment.Vertical.CenterVertically
     ) {
         when (state) {
+            DayDoneWidgetState.Loading -> MessageBody(
+                title = "불러오는 중이에요",
+                sub = ""
+            )
+
             DayDoneWidgetState.NeedsSetup -> MessageBody(
                 title = "예산을 먼저 설정해 주세요",
                 sub = "탭하면 데이던이 열려요"
