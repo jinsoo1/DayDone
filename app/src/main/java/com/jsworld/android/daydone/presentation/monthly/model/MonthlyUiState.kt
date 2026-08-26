@@ -19,6 +19,9 @@ data class MonthlyUiState(
     val canGoPrevious: Boolean = true, // 앱 시작 달 이전으로는 이동 불가
     val mode: MonthViewMode = MonthViewMode.CURRENT,
 
+    /** 큰 지출 예상 달 안내(설·추석·5월·12월). 해당 없거나 지난 달이면 null. */
+    val bigSpendNotice: String? = null,
+
     val monthlyBudget: Long = 0L,
     val extraIncomeAmount: Long = 0L,
     val totalAvailableBudget: Long = 0L,

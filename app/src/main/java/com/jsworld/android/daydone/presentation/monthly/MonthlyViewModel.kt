@@ -16,6 +16,7 @@ import com.jsworld.android.daydone.domain.usecase.DeleteScheduledDeductionUseCas
 import com.jsworld.android.daydone.domain.model.NoSpendChallengeSettings
 import com.jsworld.android.daydone.domain.usecase.EndScheduledDeductionUseCase
 import com.jsworld.android.daydone.domain.usecase.EvaluateNoSpendProgressUseCase
+import com.jsworld.android.daydone.domain.usecase.GetBigSpendMonthNoticeUseCase
 import com.jsworld.android.daydone.domain.usecase.GetBudgetPeriodForMonthUseCase
 import com.jsworld.android.daydone.domain.usecase.GetScheduledDeductionsInPeriodUseCase
 import com.jsworld.android.daydone.domain.usecase.ObserveBudgetProfileUseCase
@@ -73,7 +74,8 @@ class MonthlyViewModel @Inject constructor(
     private val resolveScheduledDeductionAmountsUseCase: ResolveScheduledDeductionAmountsUseCase,
     private val setScheduledDeductionAmountUseCase: SetScheduledDeductionAmountUseCase,
     private val observeNoSpendChallengeUseCase: ObserveNoSpendChallengeUseCase,
-    private val evaluateNoSpendProgressUseCase: EvaluateNoSpendProgressUseCase
+    private val evaluateNoSpendProgressUseCase: EvaluateNoSpendProgressUseCase,
+    private val getBigSpendMonthNoticeUseCase: GetBigSpendMonthNoticeUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(MonthlyUiState())
@@ -202,6 +204,14 @@ class MonthlyViewModel @Inject constructor(
             else -> MonthViewMode.CURRENT
         }
 
+        // 큰 지출 예상 달 안내 — 미리 준비가 의미 있는 진행 중/다가올 달에만 (지난 달 결산엔 무의미).
+        // 알림 5번(기간 첫날 아침)과 같은 UseCase라 문구가 항상 일치한다.
+        val bigSpendNotice = if (mode != MonthViewMode.PAST) {
+            getBigSpendMonthNoticeUseCase(yearMonth)
+        } else {
+            null
+        }
+
         val summaries = deductionsInPeriod
             .mapNotNull { deduction ->
                 val withdrawalDate = resolveWithdrawalDateInPeriod(
@@ -281,6 +291,7 @@ class MonthlyViewModel @Inject constructor(
             canGoPrevious = minAnchorMonth?.let { yearMonth.isAfter(it) } ?: true,
             periodText = "${period.startDate} ~ ${period.endDate}",
             mode = mode,
+            bigSpendNotice = bigSpendNotice,
             monthlyBudget = data.monthlyBudget,
             extraIncomeAmount = extraIncomeAmount,
             totalAvailableBudget = totalAvailableBudget,

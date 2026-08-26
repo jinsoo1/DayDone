@@ -138,6 +138,13 @@ fun MonthlyScreen(
                 )
             }
 
+            // 큰 지출 예상 달 안내 (설·추석·5월·12월, 진행 중/다가올 달에만)
+            uiState.bigSpendNotice?.let { notice ->
+                item {
+                    BigSpendNoticeRow(text = notice)
+                }
+            }
+
             // 진행 중: 페이스 리포트 / 지난 달: 결산 리포트
             if (uiState.mode == MonthViewMode.CURRENT) {
                 item {
@@ -269,6 +276,31 @@ private fun MonthNavigator(
                 }
             )
         }
+    }
+}
+
+/**
+ * 큰 지출 예상 달 안내 한 줄. 문구는 알림 5번과 같은
+ * [GetBigSpendMonthNoticeUseCase][com.jsworld.android.daydone.domain.usecase.GetBigSpendMonthNoticeUseCase] 파생.
+ */
+@Composable
+private fun BigSpendNoticeRow(text: String) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(14.dp))
+            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.55f))
+            .padding(horizontal = 16.dp, vertical = 10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Text(text = "💡", style = MaterialTheme.typography.bodyMedium)
+        Text(
+            text = text,
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.weight(1f)
+        )
     }
 }
 
