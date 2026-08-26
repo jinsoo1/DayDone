@@ -21,6 +21,12 @@ class MonthlyBudgetRepositoryImpl @Inject constructor(
             .map { entity -> entity?.income ?: default }
     }
 
+    override fun observeIncomeRecord(anchorMonth: YearMonth): Flow<Long?> {
+        return monthlyBudgetDao
+            .observeEffectiveBudget(anchorMonth.toString())
+            .map { entity -> entity?.income }
+    }
+
     override suspend fun setIncome(
         anchorMonth: YearMonth,
         income: Long

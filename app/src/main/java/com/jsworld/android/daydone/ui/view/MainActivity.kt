@@ -1,5 +1,6 @@
 package com.jsworld.android.daydone.ui.view
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.lifecycle.lifecycleScope
@@ -40,6 +41,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -77,11 +79,14 @@ import com.jsworld.android.daydone.presentation.monthly.MonthlyRoute
 import com.jsworld.android.daydone.presentation.navigation.AddType
 import com.jsworld.android.daydone.presentation.navigation.VaultAddPrefill
 import com.jsworld.android.daydone.presentation.notices.NoticesRoute
+import com.jsworld.android.daydone.presentation.notification.NotificationSettingsRoute
 import com.jsworld.android.daydone.presentation.onboarding.OnboardingRoute
 import com.jsworld.android.daydone.presentation.report.ReportRoute
 import com.jsworld.android.daydone.presentation.settings.SettingsRoute
 import com.jsworld.android.daydone.presentation.today.TodayRoute
 import com.jsworld.android.daydone.presentation.vault.VaultRoute
+import com.jsworld.android.daydone.notification.DayDoneNotifier
+import com.jsworld.android.daydone.notification.NotificationTarget
 import com.jsworld.android.daydone.ui.theme.DayDoneTheme
 import com.jsworld.android.daydone.widget.refreshDayDoneWidget
 import kotlinx.coroutines.launch
@@ -92,14 +97,28 @@ import kotlinx.coroutines.flow.Flow
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    /** 알림을 눌러 들어온 경우의 목적지 (없으면 null) */
+    private val notificationTarget = mutableStateOf<String?>(null)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        notificationTarget.value = intent?.getStringExtra(DayDoneNotifier.EXTRA_TARGET)
 
         setContent {
             DayDoneTheme {
-                DayDoneRoot()
+                DayDoneRoot(
+                    notificationTarget = notificationTarget.value,
+                    onNotificationTargetConsumed = { notificationTarget.value = null }
+                )
             }
         }
+    }
+
+    /** 앱이 떠 있는 상태에서 알림을 누른 경우 */
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        notificationTarget.value = intent.getStringExtra(DayDoneNotifier.EXTRA_TARGET)
     }
 
     /**
@@ -138,6 +157,7 @@ private const val NOTICES_ROUTE = "notices"
 private const val CHALLENGE_HISTORY_ROUTE = "challenge_history"
 private const val REPORT_ROUTE = "report"
 private const val HELD_PURCHASES_ROUTE = "held_purchases"
+private const val NOTIFICATION_SETTINGS_ROUTE = "notification_settings"
 
 private val BarHeight = 64.dp
 private val FabOverhang = 28.dp
@@ -160,6 +180,8 @@ class RootViewModel @Inject constructor(
 
 @Composable
 fun DayDoneRoot(
+    notificationTarget: String? = null,
+    onNotificationTargetConsumed: () -> Unit = {},
     rootViewModel: RootViewModel = hiltViewModel()
 ) {
     val onboardingDone by rootViewModel.isOnboardingDone
@@ -174,13 +196,19 @@ fun DayDoneRoot(
         when (onboardingDone) {
             null -> Unit // 로딩 중 (깜빡임 방지)
             false -> OnboardingRoute()
-            true -> DayDoneHome()
+            true -> DayDoneHome(
+                notificationTarget = notificationTarget,
+                onNotificationTargetConsumed = onNotificationTargetConsumed
+            )
         }
     }
 }
 
 @Composable
-private fun DayDoneHome() {
+private fun DayDoneHome(
+    notificationTarget: String? = null,
+    onNotificationTargetConsumed: () -> Unit = {}
+) {
     val navController = rememberNavController()
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = backStackEntry?.destination?.route
@@ -197,6 +225,7 @@ private fun DayDoneHome() {
             currentRoute == NOTICES_ROUTE ||
             currentRoute == CHALLENGE_HISTORY_ROUTE ||
             currentRoute == HELD_PURCHASES_ROUTE ||
+            currentRoute == NOTIFICATION_SETTINGS_ROUTE ||
             currentRoute?.startsWith(REPORT_ROUTE) == true
 
     fun goToTab(route: String) {
@@ -257,6 +286,9 @@ private fun DayDoneHome() {
                     onNavigateToNotices = { navController.navigate(NOTICES_ROUTE) },
                     onNavigateToChallengeHistory = {
                         navController.navigate(CHALLENGE_HISTORY_ROUTE)
+                    },
+                    onNavigateToNotificationSettings = {
+                        navController.navigate(NOTIFICATION_SETTINGS_ROUTE)
                     }
                 )
             }
@@ -268,6 +300,9 @@ private fun DayDoneHome() {
             }
             composable(HELD_PURCHASES_ROUTE) {
                 HeldPurchasesRoute(onBack = { navController.popBackStack() })
+            }
+            composable(NOTIFICATION_SETTINGS_ROUTE) {
+                NotificationSettingsRoute(onBack = { navController.popBackStack() })
             }
             composable(
                 route = "$REPORT_ROUTE?month={month}",
@@ -291,6 +326,25 @@ private fun DayDoneHome() {
                 modifier = Modifier.align(Alignment.BottomCenter)
             )
         }
+    }
+
+    // 알림을 눌러 들어왔으면 해당 화면으로 보낸다
+    LaunchedEffect(notificationTarget) {
+        when (notificationTarget) {
+            NotificationTarget.TODAY.name -> goToTab(HomeTab.Today.route)
+            NotificationTarget.EXPENSE_INPUT.name -> {
+                goToTab(HomeTab.Today.route)
+                pendingAdd = AddType.EXPENSE
+            }
+            NotificationTarget.HELD_PURCHASES.name -> {
+                goToTab(HomeTab.Vault.route)
+                navController.navigate(HELD_PURCHASES_ROUTE)
+            }
+            NotificationTarget.REPORT.name -> navController.navigate(REPORT_ROUTE)
+            NotificationTarget.VAULT.name -> goToTab(HomeTab.Vault.route)
+            else -> Unit
+        }
+        if (notificationTarget != null) onNotificationTargetConsumed()
     }
 
     if (showChooser) {

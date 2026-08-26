@@ -49,6 +49,7 @@ import com.jsworld.android.daydone.ui.component.NoticeBox
 fun SettingsRoute(
     onNavigateToNotices: () -> Unit = {},
     onNavigateToChallengeHistory: () -> Unit = {},
+    onNavigateToNotificationSettings: () -> Unit = {},
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -103,6 +104,7 @@ fun SettingsRoute(
         uiState = uiState,
         onNavigateToNotices = onNavigateToNotices,
         onNavigateToChallengeHistory = onNavigateToChallengeHistory,
+        onNavigateToNotificationSettings = onNavigateToNotificationSettings,
         onIncomeClick = viewModel::onIncomeClick,
         onIncomeChange = viewModel::onIncomeChange,
         onIncomeDismiss = viewModel::onIncomeDismiss,
@@ -129,6 +131,7 @@ fun SettingsScreen(
     onBackupMessageShown: () -> Unit = {},
     onNavigateToNotices: () -> Unit,
     onNavigateToChallengeHistory: () -> Unit,
+    onNavigateToNotificationSettings: () -> Unit = {},
     onIncomeClick: () -> Unit,
     onIncomeChange: (String) -> Unit,
     onIncomeDismiss: () -> Unit,
@@ -211,6 +214,16 @@ fun SettingsScreen(
                             title = "도전 기록",
                             value = "",
                             onClick = onNavigateToChallengeHistory
+                        )
+                        HorizontalDivider(modifier = Modifier.padding(horizontal = 20.dp))
+                        SettingsRow(
+                            title = "알림",
+                            value = if (uiState.notificationOnCount > 0) {
+                                "${uiState.notificationOnCount}개 켜짐"
+                            } else {
+                                "꺼짐"
+                            },
+                            onClick = onNavigateToNotificationSettings
                         )
                     }
                 }
@@ -297,7 +310,21 @@ fun SettingsScreen(
             onValueChange = onIncomeChange,
             saveEnabled = (uiState.incomeInput.toLongOrNull() ?: 0L) > 0L,
             onSave = onIncomeSave,
-            onDismiss = onIncomeDismiss
+            onDismiss = onIncomeDismiss,
+            notice = uiState.currentMonthBudgetOverride?.let { override ->
+                {
+                    // 월별 예산 레코드가 있으면 이 기본값은 이번 기간에 쓰이지 않는다(§8 이월).
+                    // 저장은 되는데 숫자가 안 바뀌어 "반영 안 됨"으로 읽히던 걸 여기서 설명한다.
+                    NoticeBox(
+                        title = "이번 기간엔 월 탭에서 정한 예산이 쓰여요",
+                        lines = listOf(
+                            "지금 이번 기간 예산은 ${override.toMoneyText()}이고, 여기서 기본값을 바꿔도 그대로예요.",
+                            "이번 기간 금액을 바꾸려면 월 탭의 예산 요약에서 수정해주세요.",
+                            "여기 기본값은 예산을 따로 정하지 않은 다음 기간부터 쓰여요."
+                        )
+                    )
+                }
+            }
         )
     }
 

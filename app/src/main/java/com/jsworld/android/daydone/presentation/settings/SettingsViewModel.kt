@@ -6,11 +6,14 @@ import com.jsworld.android.daydone.domain.usecase.ExportBackupToDownloadsUseCase
 import com.jsworld.android.daydone.domain.usecase.ExportBackupUseCase
 import com.jsworld.android.daydone.domain.model.BackupFileInfo
 import com.jsworld.android.daydone.domain.usecase.ExportExcelUseCase
+import com.jsworld.android.daydone.domain.usecase.GetCurrentBudgetPeriodUseCase
 import com.jsworld.android.daydone.domain.usecase.ImportBackupFromFileUseCase
 import com.jsworld.android.daydone.domain.usecase.ImportBackupUseCase
 import com.jsworld.android.daydone.domain.usecase.ListBackupFilesUseCase
 import com.jsworld.android.daydone.domain.usecase.ObserveBudgetProfileUseCase
+import com.jsworld.android.daydone.domain.usecase.ObserveMonthlyBudgetRecordUseCase
 import com.jsworld.android.daydone.domain.usecase.ObserveNoSpendChallengeUseCase
+import com.jsworld.android.daydone.domain.usecase.ObserveNotificationSettingsUseCase
 import com.jsworld.android.daydone.domain.usecase.ResetAllDataUseCase
 import com.jsworld.android.daydone.domain.usecase.UpdateBudgetProfileUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,15 +21,28 @@ import jakarta.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import java.time.LocalDate
+import java.time.YearMonth
 import java.time.temporal.ChronoUnit
 
 data class SettingsUiState(
     val monthlyIncome: Long = 0L,
     val budgetStartDay: Int = 1,
+
+    /** 켜져 있는 알림 개수 (설정 행에 표시) */
+    val notificationOnCount: Int = 0,
+
+    /**
+     * 이번 기간에 적용되는 월별 예산 레코드 금액. null 이면 레코드가 없어
+     * [monthlyIncome] 기본값이 그대로 쓰이는 상태다.
+     * 값이 있으면 수입 시트에서 "이 달은 월 탭 예산이 우선"임을 안내한다.
+     */
+    val currentMonthBudgetOverride: Long? = null,
 
     // 기본 수입 수정 시트
     val isIncomeSheetVisible: Boolean = false,
@@ -52,6 +68,7 @@ data class SettingsUiState(
     val restoreCandidate: BackupFileInfo? = null   // 확인 다이얼로그에 띄울 파일
 )
 
+@OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val observeBudgetProfileUseCase: ObserveBudgetProfileUseCase,
@@ -63,18 +80,50 @@ class SettingsViewModel @Inject constructor(
     private val exportExcelUseCase: ExportExcelUseCase,
     private val importBackupUseCase: ImportBackupUseCase,
     private val listBackupFilesUseCase: ListBackupFilesUseCase,
-    private val importBackupFromFileUseCase: ImportBackupFromFileUseCase
+    private val importBackupFromFileUseCase: ImportBackupFromFileUseCase,
+    observeNotificationSettingsUseCase: ObserveNotificationSettingsUseCase,
+    getCurrentBudgetPeriodUseCase: GetCurrentBudgetPeriodUseCase,
+    observeMonthlyBudgetRecordUseCase: ObserveMonthlyBudgetRecordUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SettingsUiState())
     val uiState: StateFlow<SettingsUiState> = _uiState.asStateFlow()
 
     init {
+        observeNotificationSettingsUseCase()
+            .onEach { noti ->
+                _uiState.value = _uiState.value.copy(
+                    notificationOnCount = listOf(
+                        noti.morningEnabled,
+                        noti.eveningEnabled,
+                        noti.upcomingDeductionEnabled,
+                        noti.heldPurchaseEnabled,
+                        noti.periodReportEnabled,
+                        noti.bigSpendMonthEnabled
+                    ).count { it }
+                )
+            }
+            .launchIn(viewModelScope)
+
+        // 월별 예산 레코드가 있으면 설정 탭의 "월 수입(기본값)"은 이 달에 쓰이지 않는다(§8 이월).
+        // 저장은 되는데 화면 숫자가 안 바뀌어 "반영 안 됨"으로 읽히므로 그 사실을 알려준다.
         observeBudgetProfileUseCase()
-            .onEach { profile ->
+            .flatMapLatest { profile ->
+                val anchorMonth = YearMonth.from(
+                    getCurrentBudgetPeriodUseCase(
+                        today = LocalDate.now(),
+                        budgetStartDay = profile.budgetStartDay
+                    ).startDate
+                )
+                observeMonthlyBudgetRecordUseCase(anchorMonth).map { record ->
+                    profile to record
+                }
+            }
+            .onEach { (profile, record) ->
                 _uiState.value = _uiState.value.copy(
                     monthlyIncome = profile.monthlyIncome,
-                    budgetStartDay = profile.budgetStartDay
+                    budgetStartDay = profile.budgetStartDay,
+                    currentMonthBudgetOverride = record
                 )
             }
             .launchIn(viewModelScope)
