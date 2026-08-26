@@ -12,6 +12,7 @@ import com.jsworld.android.daydone.data.repository.MonthlyBudgetRepositoryImpl
 import com.jsworld.android.daydone.data.repository.NoSpendChallengeRecordRepositoryImpl
 import com.jsworld.android.daydone.data.repository.NoSpendChallengeRepositoryImpl
 import com.jsworld.android.daydone.data.repository.NoticeRepositoryImpl
+import com.jsworld.android.daydone.data.repository.NotificationSettingsRepositoryImpl
 import com.jsworld.android.daydone.data.repository.QuickExpenseRepositoryImpl
 import com.jsworld.android.daydone.data.repository.ScheduledDeductionAmountRepositoryImpl
 import com.jsworld.android.daydone.data.repository.ScheduledDeductionRepositoryImpl
@@ -25,6 +26,7 @@ import com.jsworld.android.daydone.domain.repository.MonthlyBudgetRepository
 import com.jsworld.android.daydone.domain.repository.NoSpendChallengeRecordRepository
 import com.jsworld.android.daydone.domain.repository.NoSpendChallengeRepository
 import com.jsworld.android.daydone.domain.repository.NoticeRepository
+import com.jsworld.android.daydone.domain.repository.NotificationSettingsRepository
 import com.jsworld.android.daydone.domain.repository.QuickExpenseRepository
 import com.jsworld.android.daydone.domain.repository.ScheduledDeductionAmountRepository
 import com.jsworld.android.daydone.domain.repository.ScheduledDeductionRepository
@@ -115,6 +117,12 @@ abstract class RepositoryModule {
     abstract fun bindNoSpendChallengeRecordRepository(
         impl: NoSpendChallengeRecordRepositoryImpl
     ): NoSpendChallengeRecordRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindNotificationSettingsRepository(
+        impl: NotificationSettingsRepositoryImpl
+    ): NotificationSettingsRepository
 
     @Binds
     @Singleton

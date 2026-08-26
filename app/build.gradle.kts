@@ -96,6 +96,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -112,6 +113,7 @@ dependencies {
     implementation(libs.compose.ui.tooling.preview)
     implementation(libs.compose.material3)
     implementation(libs.material.icons.extended)
+    implementation(libs.work.runtime.ktx)
     implementation(libs.glance.appwidget)
     implementation(libs.glance.material3)
     implementation("androidx.compose.foundation:foundation")

@@ -3,6 +3,8 @@ package com.jsworld.android.daydone.base
 import android.app.Application
 import android.util.Log
 import com.jsworld.android.daydone.domain.usecase.ObserveDailyBudgetUseCase
+import com.jsworld.android.daydone.domain.usecase.ObserveNotificationSettingsUseCase
+import com.jsworld.android.daydone.notification.NotificationScheduler
 import com.jsworld.android.daydone.widget.refreshDayDoneWidget
 import dagger.hilt.android.HiltAndroidApp
 import jakarta.inject.Inject
@@ -12,7 +14,9 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 
 @HiltAndroidApp
@@ -21,11 +25,28 @@ class DayDoneApp : Application() {
     @Inject
     lateinit var observeDailyBudgetUseCase: ObserveDailyBudgetUseCase
 
+    @Inject
+    lateinit var observeNotificationSettingsUseCase: ObserveNotificationSettingsUseCase
+
+    @Inject
+    lateinit var notificationScheduler: NotificationScheduler
+
     private val appScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
     override fun onCreate() {
         super.onCreate()
         observeBudgetForWidget()
+        restoreNotificationSchedule()
+    }
+
+    /** 켜둔 알림의 예약이 유실됐을 수 있으니 앱이 뜰 때 한 번 다시 건다. */
+    private fun restoreNotificationSchedule() {
+        appScope.launch {
+            val settings = observeNotificationSettingsUseCase().first()
+            if (settings.anyEnabled) {
+                notificationScheduler.reschedule(settings)
+            }
+        }
     }
 
     /**
