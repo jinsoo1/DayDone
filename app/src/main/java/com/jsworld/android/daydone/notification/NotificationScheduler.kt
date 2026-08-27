@@ -25,14 +25,26 @@ class NotificationScheduler @Inject constructor(
     @ApplicationContext private val context: Context
 ) {
 
-    /** 설정에 맞춰 예약을 다시 건다. 꺼진 알림은 취소한다. */
-    fun reschedule(settings: NotificationSettings) {
+    /**
+     * 설정에 맞춰 예약을 다시 건다. 꺼진 알림은 취소한다.
+     *
+     * ⚠️ [policy] 를 반드시 구분해서 넘긴다.
+     * - 설정을 바꿀 때는 [ExistingWorkPolicy.REPLACE] — 새 시각을 적용해야 하니까.
+     * - 앱 시작·부팅처럼 **그냥 복구하는** 경로는 [ExistingWorkPolicy.KEEP].
+     *   REPLACE 로 복구하면 아직 발송되지 않고 대기 중인 작업(밤새 Doze 로 밀린 아침 알림)이
+     *   취소되고 다음 날로 다시 잡혀서, 아침에 앱을 열어보는 사람은 그 알림을 영영 못 받는다.
+     *   KEEP 은 대기 중인 작업은 그대로 두고, 끝났거나 없을 때만 새로 건다.
+     */
+    fun reschedule(
+        settings: NotificationSettings,
+        policy: ExistingWorkPolicy = ExistingWorkPolicy.REPLACE
+    ) {
         val workManager = WorkManager.getInstance(context)
 
         if (settings.anyMorningEnabled) {
             workManager.enqueueUniqueWork(
                 WORK_MORNING,
-                ExistingWorkPolicy.REPLACE,
+                policy,
                 OneTimeWorkRequestBuilder<MorningNotificationWorker>()
                     .setInitialDelay(delayUntil(settings.morningHour))
                     .build()
@@ -44,7 +56,7 @@ class NotificationScheduler @Inject constructor(
         if (settings.anyEveningEnabled) {
             workManager.enqueueUniqueWork(
                 WORK_EVENING,
-                ExistingWorkPolicy.REPLACE,
+                policy,
                 OneTimeWorkRequestBuilder<EveningNotificationWorker>()
                     .setInitialDelay(delayUntil(settings.eveningHour))
                     .build()

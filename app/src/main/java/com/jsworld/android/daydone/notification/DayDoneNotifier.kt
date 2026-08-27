@@ -8,6 +8,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
@@ -43,7 +44,10 @@ class DayDoneNotifier @Inject constructor(
         body: String,
         target: NotificationTarget
     ) {
-        if (!canPost()) return
+        if (!canPost()) {
+            Log.w(TAG, "알림을 표시할 수 없음 (권한 없음 또는 시스템에서 알림 꺼짐)")
+            return
+        }
 
         ensureChannel()
 
@@ -70,7 +74,8 @@ class DayDoneNotifier @Inject constructor(
 
         runCatching {
             NotificationManagerCompat.from(context).notify(id, notification)
-        }
+            Log.i(TAG, "알림 발송 id=$id target=$target")
+        }.onFailure { Log.w(TAG, "알림 발송 실패 id=$id", it) }
     }
 
     /** 권한이 없거나 시스템에서 알림을 끈 상태면 조용히 넘어간다. */
@@ -103,6 +108,7 @@ class DayDoneNotifier @Inject constructor(
     }
 
     companion object {
+        private const val TAG = "DayDoneNoti"
         const val CHANNEL_ID = "daydone_daily"
         const val EXTRA_TARGET = "daydone_notification_target"
 

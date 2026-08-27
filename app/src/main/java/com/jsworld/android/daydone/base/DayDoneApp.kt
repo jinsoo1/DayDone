@@ -3,6 +3,7 @@ package com.jsworld.android.daydone.base
 import android.app.Application
 import android.util.Log
 import com.jsworld.android.daydone.domain.usecase.ObserveDailyBudgetUseCase
+import androidx.work.ExistingWorkPolicy
 import com.jsworld.android.daydone.domain.usecase.ObserveNotificationSettingsUseCase
 import com.jsworld.android.daydone.notification.NotificationScheduler
 import com.jsworld.android.daydone.widget.refreshDayDoneWidget
@@ -39,12 +40,17 @@ class DayDoneApp : Application() {
         restoreNotificationSchedule()
     }
 
-    /** 켜둔 알림의 예약이 유실됐을 수 있으니 앱이 뜰 때 한 번 다시 건다. */
+    /**
+     * 켜둔 알림의 예약이 유실됐을 수 있으니 앱이 뜰 때 한 번 다시 건다.
+     *
+     * ⚠️ **KEEP 으로 건다.** REPLACE 로 걸면 아직 발송 전인 대기 작업(밤새 밀린 아침 알림)이
+     * 취소되고 다음 날로 미뤄져서, 아침에 앱을 먼저 열어보는 사람은 그 알림을 못 받는다.
+     */
     private fun restoreNotificationSchedule() {
         appScope.launch {
             val settings = observeNotificationSettingsUseCase().first()
             if (settings.anyEnabled) {
-                notificationScheduler.reschedule(settings)
+                notificationScheduler.reschedule(settings, ExistingWorkPolicy.KEEP)
             }
         }
     }
