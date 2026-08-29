@@ -176,7 +176,7 @@ fun SettingsScreen(
                 Card(modifier = Modifier.fillMaxWidth()) {
                     Column(modifier = Modifier.padding(vertical = 4.dp)) {
                         SettingsRow(
-                            title = "월 수입 (기본값)",
+                            title = "월 수입",
                             value = uiState.monthlyIncome.toMoneyText(),
                             onClick = onIncomeClick
                         )
@@ -303,28 +303,15 @@ fun SettingsScreen(
     if (uiState.isIncomeSheetVisible) {
         SettingInputSheet(
             title = "월 수입 수정",
-            description = "달마다 예산을 따로 정하지 않았을 때 쓰는 기본값이에요. 특정 달의 예산은 월 탭에서 바꿀 수 있어요.",
+            description = "이번 기간부터 적용돼요. 지난 기간 금액은 그대로 남고, " +
+                    "특정 달만 다르게 하려면 월 탭에서 그 달을 바꾸면 돼요.",
             label = "월 수입",
             suffix = "원",
             value = uiState.incomeInput,
             onValueChange = onIncomeChange,
             saveEnabled = (uiState.incomeInput.toLongOrNull() ?: 0L) > 0L,
             onSave = onIncomeSave,
-            onDismiss = onIncomeDismiss,
-            notice = uiState.currentMonthBudgetOverride?.let { override ->
-                {
-                    // 월별 예산 레코드가 있으면 이 기본값은 이번 기간에 쓰이지 않는다(§8 이월).
-                    // 저장은 되는데 숫자가 안 바뀌어 "반영 안 됨"으로 읽히던 걸 여기서 설명한다.
-                    NoticeBox(
-                        title = "이번 기간엔 월 탭에서 정한 예산이 쓰여요",
-                        lines = listOf(
-                            "지금 이번 기간 예산은 ${override.toMoneyText()}이고, 여기서 기본값을 바꿔도 그대로예요.",
-                            "이번 기간 금액을 바꾸려면 월 탭의 예산 요약에서 수정해주세요.",
-                            "여기 기본값은 예산을 따로 정하지 않은 다음 기간부터 쓰여요."
-                        )
-                    )
-                }
-            }
+            onDismiss = onIncomeDismiss
         )
     }
 
