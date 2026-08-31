@@ -346,6 +346,17 @@ Room 마이그레이션: 스키마 변경 시 정식 `Migration` 제공(데이�
 - 표시 조건: `!preJoinSpendHandled && firstUseDate ∈ 현재 기간 && period.start < firstUseDate && 가입 후 3일 이내`(늦은 노출 방지). 저장/건너뛰기 시 `preJoinSpendHandled`(DataStore) on — 다시 묻지 않음. 다이얼로그 바깥 탭은 플래그 유지(배너 잔존). 다이얼로그에 "월 탭 캘린더의 {시작일} 내역에서 고칠 수 있다" 안내 포함.
 - 리포트 무지출 일수는 `max(period.start, 전체 기록의 최초 지출 날짜)`부터 집계(기록 시작 전 가짜 무지출 방지 — firstUseDate 대신 데이터 파생, §12 리포트 참고). 챌린지는 유저가 시작일을 정하므로 clamp 안 함.
 
+**🌏 해외 배포 (일본 먼저) — 2단계 분할 결정**
+- **v1.5.0 = 국제화 기반만, 한국어 그대로 출시**(유저 체감 변화 0) / **v1.6.0 = 일본어 리소스 추가**. 한 번에 하면 회귀 범위가 앱 전체가 돼서 나눴다.
+- 현황: `strings.xml` 4줄, kt 안 한글 리터럴 **1,543개** — 그중 **745개(48%)가 `ClassifyExpenseCategoryUseCase` 키워드 사전**(번역이 아니라 **재작성**). 실제 UI 문자열은 798개(고유 ≈591), 보간 135개.
+- 한국어·일본어 모두 복수형이 없어 **`plurals` 불필요**(영어부터 갔으면 필요했다).
+- ⚠️ **domain 레이어가 표시용 한글을 만든다**(UseCase 22개 — 리포트·알림·`ExpenseCategory.label`). UseCase엔 Context가 없어 `stringResource`를 못 쓴다. `StringProvider` 주입은 쉽지만 **순수 JVM 테스트 108개가 깨진다** → 테스트 걸린 UseCase는 타입만 반환하고 문구는 presentation에서 조립, 단순 enum은 `@StringRes labelRes`로.
+- ⚠️ **백업 폴더명 `Download/DayDone/…`은 로케일화 금지** — `ListBackupFilesUseCase`가 이 경로로 조회한다. 파일명만 바꾼다. 백업 JSON에 한글 키는 없어서 `BACKUP_VERSION` 유지 가능.
+- 로케일별로 갈라야 할 **지식 주입 3종**: `GetBigSpendMonthNoticeUseCase`(일본은 전부 양력이라 음력 표 불필요 — 1월 お正月/4월 新生活/5월 GW+自動車税/8월 お盆/12월 年末年始), 카테고리 사전, 미래지출 프리셋(自動車税·車検·固定資産税). `MoneyFormat`은 `Locale.KOREA`+"원" 하드코딩이라 통화 위치(¥ 앞 / 円 뒤)를 다루도록 수정.
+- 🟡 車検은 **2년 주기**인데 `FutureExpense.repeat`는 ONCE/YEARLY뿐 — ONCE로 등록 가능하니 블로커는 아님.
+- 미국/영어권은 **격주 급여(bi-weekly)**가 흔해 §3의 "월당 기간 1개(anchorMonth 유일)" 불변식과 충돌한다 → 가려면 "월 예산 유저 한정"을 먼저 결정할 것. 일본은 월급제라 구조 변경 0.
+- 번역은 §13 톤이 정체성이라 **기계번역 금지**(초벌 후 네이티브 감수). 일본어는 한국어보다 길어 버튼·칩·위젯 오버플로 QA 필요.
+
 **✅ 온보딩/설정 (구현됨)**
 - 온보딩: `onboarding_done` 플래그(DataStore)로 첫 실행 게이팅. 월 수입·예산 시작일을 먼저 받음(`CompleteOnboardingUseCase`). **온보딩 완료일(`firstUseDate`)도 저장** → 그 날이 속한 기간의 달이 **탐색 하한**: 월 탭은 그 이전 달로 못 가고(◀ 비활성), 오늘 탭 결산 배너도 시작 달 이전 기간이면 안 뜸(가짜 "전액 지켜냄" 결산 방지).
 - 설정 탭: 월 수입(기본값)·예산 시작일 수정(전역 재계산 경고 문구 포함)·데이터 초기화. `payday`는 계산 미사용이라 **노출 안 함**.
