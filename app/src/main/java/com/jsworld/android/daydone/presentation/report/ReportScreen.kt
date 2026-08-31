@@ -346,6 +346,9 @@ private fun CategoryCard(report: MonthlyReport) {
     }
 }
 
+/** 카테고리를 펼쳤을 때 개별로 보여줄 항목 수. 나머지는 "외 N개"로 합친다. */
+private const val DETAIL_ITEM_LIMIT = 6
+
 @Composable
 private fun CategoryRow(category: ReportCategory, maxTotal: Long) {
     var expanded by rememberSaveable(category.category.name) { mutableStateOf(false) }
@@ -385,7 +388,7 @@ private fun CategoryRow(category: ReportCategory, maxTotal: Long) {
         )
 
         if (expanded) {
-            category.items.take(6).forEach { item ->
+            category.items.take(DETAIL_ITEM_LIMIT).forEach { item ->
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -401,6 +404,29 @@ private fun CategoryRow(category: ReportCategory, maxTotal: Long) {
                         text = item.total.toMoneyText(),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+
+            // 잘린 항목을 그냥 버리면 펼친 내역의 합이 위 카테고리 금액과 안 맞는다.
+            // 건수와 금액을 함께 남겨 숫자가 항상 맞아떨어지게 한다.
+            val rest = category.items.drop(DETAIL_ITEM_LIMIT)
+            if (rest.isNotEmpty()) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 8.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = "외 ${rest.size}개",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.75f)
+                    )
+                    Text(
+                        text = rest.sumOf { it.total }.toMoneyText(),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.75f)
                     )
                 }
             }
