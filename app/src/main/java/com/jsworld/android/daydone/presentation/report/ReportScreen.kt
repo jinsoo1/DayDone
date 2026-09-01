@@ -8,7 +8,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -96,7 +98,7 @@ private fun ReportContent(report: MonthlyReport) {
         if (report.previous != null) {
             item { PreviousComparisonLine(report) }
         }
-        item { MiniStatsRow(report) }
+        item { MiniStatsSection(report) }
         report.trackingStartDate?.let { start ->
             item {
                 Text(
@@ -269,20 +271,55 @@ private fun PreviousComparisonLine(report: MonthlyReport) {
 }
 
 @Composable
-private fun MiniStatsRow(report: MonthlyReport) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        MiniStat(
-            Modifier.weight(1f), "하루 평균", report.dailyAverage.toMoneyText(),
-            sub = report.previous?.let { "지난 기간 ${it.prevDailyAverage.toMoneyText()}" }
-        )
-        MiniStat(
-            Modifier.weight(1f), "무지출", "${report.noSpendDays}일",
-            sub = report.previous?.let { "지난 기간 ${it.prevNoSpendDays}일" }
-        )
-        MiniStat(Modifier.weight(1f), "필수 비중", "${report.essentialPercent}%")
+private fun MiniStatsSection(report: MonthlyReport) {
+    Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+        Row(
+            // 보조 줄("지난 기간 이맘때 …")이 있는 카드와 없는 카드가 섞이고 줄바꿈도 달라서
+            // 높이를 가장 높은 카드에 맞춘다 (IntrinsicSize.Min + fillMaxHeight).
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(IntrinsicSize.Min),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            val previousLabel = if (report.isFinal) "지난 기간" else "지난 기간 이맘때"
+
+            MiniStat(
+                Modifier
+                    .weight(1f)
+                    .fillMaxHeight(),
+                "하루 평균", report.dailyAverage.toMoneyText(),
+                sub = report.previous?.let {
+                    "$previousLabel ${it.prevDailyAverage.toMoneyText()}"
+                }
+            )
+            MiniStat(
+                Modifier
+                    .weight(1f)
+                    .fillMaxHeight(),
+                "무지출", "${report.noSpendDays}일",
+                sub = report.previous?.let { "$previousLabel ${it.prevNoSpendDays}일" }
+            )
+            MiniStat(
+                Modifier
+                    .weight(1f)
+                    .fillMaxHeight(),
+                "필수 비중", "${report.essentialPercent}%"
+            )
+        }
+
+        // 보조 줄이 "지난 기간 전체"가 아니라 "같은 시점까지"라는 걸 한 번 설명해준다.
+        report.previous?.let {
+            Text(
+                text = if (report.isFinal) {
+                    "카드 아래 '지난 기간'은 지난 기간 전체를 같은 방식으로 계산한 값이에요."
+                } else {
+                    "카드 아래 '지난 기간 이맘때'는 지난 기간의 같은 ${report.dayIndex}일째까지만 " +
+                            "모아본 값이에요. 진행 중인 이번 기간과 공평하게 견주려고요."
+                },
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
     }
 }
 
