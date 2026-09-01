@@ -26,6 +26,15 @@ object DayDoneAccent {
         @Composable @ReadOnlyComposable
         get() = if (isSystemInDarkTheme()) Color(0xFF9FE1CB) else Color(0xFF085041)
 
+    /**
+     * 내역 화면에서 "나간 돈" 구분색.
+     * 경고가 아니라 수입과 구별하기 위한 색이라 경고 빨강보다 톤을 눌러둔다
+     * (초과를 실패로 표현하지 않는 §13 톤 — 위젯에서 빨간 숫자를 뺀 것과 같은 이유).
+     */
+    val spendText: Color
+        @Composable @ReadOnlyComposable
+        get() = if (isSystemInDarkTheme()) Color(0xFFF0A9A2) else Color(0xFFB3352B)
+
     /** 캘린더 무지출 성공 체크 */
     val noSpendCheck: Color
         @Composable @ReadOnlyComposable

@@ -127,6 +127,8 @@ fun TodayScreen(
     onSaveExtraIncomeClick: () -> Unit,
     onDeleteExtraIncomeClick: () -> Unit,
 
+    onOpenLedgerClick: () -> Unit = {},
+
     onPurchaseSheetDismiss: () -> Unit = {},
     onPurchaseTitleChange: (String) -> Unit = {},
     onPurchaseAmountChange: (String) -> Unit = {},
@@ -198,7 +200,8 @@ fun TodayScreen(
                     extraIncomes = uiState.selectedDateExtraIncomes,
                     scheduledDeductions = uiState.selectedDateScheduledDeductions,
                     onExpenseClick = onExpenseRowClick,
-                    onExtraIncomeClick = onExtraIncomeRowClick
+                    onExtraIncomeClick = onExtraIncomeRowClick,
+                    onOpenLedgerClick = onOpenLedgerClick
                 )
             }
 
@@ -1078,7 +1081,8 @@ private fun SelectedDateSection(
     extraIncomes: List<TodayExtraIncomeUiModel>,
     scheduledDeductions: List<TodayScheduledDeductionUiModel>,
     onExpenseClick: (TodayExpenseUiModel) -> Unit,
-    onExtraIncomeClick: (Long) -> Unit
+    onExtraIncomeClick: (Long) -> Unit,
+    onOpenLedgerClick: () -> Unit
 ) {
     Card(
         modifier = Modifier.fillMaxWidth()
@@ -1087,10 +1091,28 @@ private fun SelectedDateSection(
             modifier = Modifier.padding(20.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleMedium
-            )
+            // 하루치만 보여주는 섹션이라, 여기서 기간 전체 내역으로 넘어가는 게 가장 자연스럽다
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.weight(1f)
+                )
+
+                Text(
+                    text = "전체 보기 ›",
+                    style = MaterialTheme.typography.labelMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(8.dp))
+                        .clickable(onClick = onOpenLedgerClick)
+                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                )
+            }
 
             if (expenses.isEmpty() && extraIncomes.isEmpty() && scheduledDeductions.isEmpty()) {
                 Text(

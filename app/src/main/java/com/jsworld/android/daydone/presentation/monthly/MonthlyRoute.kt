@@ -14,6 +14,7 @@ import com.jsworld.android.daydone.presentation.today.ScheduledDeductionInputBot
 @Composable
 fun MonthlyRoute(
     onNavigateToReport: (String?) -> Unit = {},
+    onNavigateToLedger: (String) -> Unit = {},
     viewModel: MonthlyViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -31,6 +32,8 @@ fun MonthlyRoute(
                 if (uiState.mode == MonthViewMode.PAST) uiState.anchorMonthValue else null
             )
         },
+        // 내역은 리포트와 달리 보고 있는 달을 그대로 넘긴다 (지난/다가올 달도 열림)
+        onLedgerClick = { onNavigateToLedger(uiState.anchorMonthValue) },
         onPreviousMonth = viewModel::onPreviousMonth,
         onNextMonth = viewModel::onNextMonth,
         onGoToCurrentMonth = viewModel::onGoToCurrentMonth,

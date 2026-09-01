@@ -22,6 +22,7 @@ fun TodayRoute(
     pendingAdd: AddType?,
     onPendingAddConsumed: () -> Unit,
     onOpenReport: (String) -> Unit = {},
+    onOpenLedger: () -> Unit = {},
     onPrepareInVault: (title: String, amount: Long) -> Unit = { _, _ -> },
     viewModel: TodayViewModel = hiltViewModel()
 ) {
@@ -106,6 +107,8 @@ fun TodayRoute(
             onExtraIncomeDateChange = viewModel::onExtraIncomeDateChange,
             onSaveExtraIncomeClick = viewModel::onSaveExtraIncomeClick,
             onDeleteExtraIncomeClick = viewModel::onDeleteExtraIncomeClick,
+
+            onOpenLedgerClick = onOpenLedger,
 
             onPurchaseSheetDismiss = viewModel::onPurchaseSheetDismiss,
             onPurchaseTitleChange = viewModel::onPurchaseTitleChange,

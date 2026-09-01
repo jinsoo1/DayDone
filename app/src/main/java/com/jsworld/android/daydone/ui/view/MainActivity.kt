@@ -81,6 +81,7 @@ import com.jsworld.android.daydone.presentation.navigation.VaultAddPrefill
 import com.jsworld.android.daydone.presentation.notices.NoticesRoute
 import com.jsworld.android.daydone.presentation.notification.NotificationSettingsRoute
 import com.jsworld.android.daydone.presentation.onboarding.OnboardingRoute
+import com.jsworld.android.daydone.presentation.ledger.LedgerRoute
 import com.jsworld.android.daydone.presentation.report.ReportRoute
 import com.jsworld.android.daydone.presentation.settings.SettingsRoute
 import com.jsworld.android.daydone.presentation.today.TodayRoute
@@ -156,6 +157,7 @@ private val homeTabs = listOf(
 private const val NOTICES_ROUTE = "notices"
 private const val CHALLENGE_HISTORY_ROUTE = "challenge_history"
 private const val REPORT_ROUTE = "report"
+private const val LEDGER_ROUTE = "ledger"
 private const val HELD_PURCHASES_ROUTE = "held_purchases"
 private const val NOTIFICATION_SETTINGS_ROUTE = "notification_settings"
 
@@ -226,7 +228,8 @@ private fun DayDoneHome(
             currentRoute == CHALLENGE_HISTORY_ROUTE ||
             currentRoute == HELD_PURCHASES_ROUTE ||
             currentRoute == NOTIFICATION_SETTINGS_ROUTE ||
-            currentRoute?.startsWith(REPORT_ROUTE) == true
+            currentRoute?.startsWith(REPORT_ROUTE) == true ||
+            currentRoute?.startsWith(LEDGER_ROUTE) == true
 
     fun goToTab(route: String) {
         navController.navigate(route) {
@@ -256,6 +259,8 @@ private fun DayDoneHome(
                     onOpenReport = { month ->
                         navController.navigate("$REPORT_ROUTE?month=$month")
                     },
+                    // month 없이 = 현재 기간 내역
+                    onOpenLedger = { navController.navigate(LEDGER_ROUTE) },
                     onPrepareInVault = { title, amount ->
                         pendingVaultPrefill = VaultAddPrefill(title, amount)
                         goToTab(HomeTab.Vault.route)
@@ -268,6 +273,9 @@ private fun DayDoneHome(
                         navController.navigate(
                             if (month != null) "$REPORT_ROUTE?month=$month" else REPORT_ROUTE
                         )
+                    },
+                    onNavigateToLedger = { month ->
+                        navController.navigate("$LEDGER_ROUTE?month=$month")
                     }
                 )
             }
@@ -315,6 +323,18 @@ private fun DayDoneHome(
                 )
             ) {
                 ReportRoute(onBack = { navController.popBackStack() })
+            }
+            composable(
+                route = "$LEDGER_ROUTE?month={month}",
+                arguments = listOf(
+                    navArgument("month") {
+                        type = NavType.StringType
+                        nullable = true
+                        defaultValue = null
+                    }
+                )
+            ) {
+                LedgerRoute(onBack = { navController.popBackStack() })
             }
         }
 

@@ -65,6 +65,7 @@ import java.time.LocalDate
 fun MonthlyScreen(
     uiState: MonthlyUiState,
     onReportClick: () -> Unit = {},
+    onLedgerClick: () -> Unit = {},
     onPreviousMonth: () -> Unit,
     onNextMonth: () -> Unit,
     onGoToCurrentMonth: () -> Unit = {},
@@ -162,6 +163,16 @@ fun MonthlyScreen(
                         onClick = onReportClick
                     )
                 }
+            }
+
+            // 내역 전체 보기 — 리포트와 달리 지난/이번/다가올 달 모두에서 열린다
+            item {
+                ReportEntryCard(
+                    emoji = "🧾",
+                    title = "내역 전체 보기",
+                    subtitle = "이 기간에 들어오고 나간 돈을 날짜별로 쭉",
+                    onClick = onLedgerClick
+                )
             }
 
             item {
@@ -568,7 +579,8 @@ private fun MonthCalendarCard(
 private fun ReportEntryCard(
     title: String,
     subtitle: String,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    emoji: String = "📊"
 ) {
     Row(
         modifier = Modifier
@@ -587,7 +599,7 @@ private fun ReportEntryCard(
                 .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)),
             contentAlignment = Alignment.Center
         ) {
-            Text(text = "📊", style = MaterialTheme.typography.titleMedium)
+            Text(text = emoji, style = MaterialTheme.typography.titleMedium)
         }
 
         Column(
