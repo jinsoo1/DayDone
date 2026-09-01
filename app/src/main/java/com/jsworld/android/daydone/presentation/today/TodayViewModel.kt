@@ -291,6 +291,12 @@ class TodayViewModel @Inject constructor(
 
                 val anchorMonth = YearMonth.from(budgetPeriod.startDate)
 
+                // 날짜 칩은 예산 기간 경계를 넘어간다 (기간 첫날엔 지난 기간의 며칠이 칩으로 뜬다).
+                // 조회를 기간으로 잘라버리면 그 칩들이 "내역이 없어요"로 보이므로 칩 범위까지 함께 읽는다.
+                // 예산 계산에 쓰는 건 loadToday에서 다시 이번 기간으로 자른다.
+                val visibleStart = minOf(budgetPeriod.startDate, chipWindowStart(today))
+                val visibleEnd = maxOf(budgetPeriod.endDate, chipWindowEnd(today))
+
                 val budgetAndOverrides = combine(
                     observeEffectiveMonthlyBudgetUseCase(
                         anchorMonth = anchorMonth,
@@ -304,14 +310,14 @@ class TodayViewModel @Inject constructor(
 
                 combine(
                     observeExpensesByPeriodUseCase(
-                        startDate = budgetPeriod.startDate,
-                        endDate = budgetPeriod.endDate
+                        startDate = visibleStart,
+                        endDate = visibleEnd
                     ),
                     observeScheduledDeductionsUseCase(),
                     observeQuickExpensesUseCase(),
                     observeExtraIncomesByPeriodUseCase(
-                        startDate = budgetPeriod.startDate,
-                        endDate = budgetPeriod.endDate
+                        startDate = visibleStart,
+                        endDate = visibleEnd
                     ),
                     budgetAndOverrides
                 ) { expenses, scheduledDeductions, quickExpenses, extraIncomes, budgetOverrides ->
@@ -715,6 +721,69 @@ class TodayViewModel @Inject constructor(
         }
     }
 
+    private fun chipWindowStart(today: LocalDate): LocalDate =
+        today.minusDays(GetTodayDateChipsUseCase.DAYS_BEFORE.toLong())
+
+    private fun chipWindowEnd(today: LocalDate): LocalDate =
+        today.plusDays(GetTodayDateChipsUseCase.DAYS_AFTER.toLong())
+
+    /** 날짜 칩이 이번 기간을 벗어날 때만 그 이웃 기간을 함께 본다. */
+    private fun neighborPeriodsForChips(
+        budgetPeriod: BudgetPeriod,
+        today: LocalDate,
+        budgetStartDay: Int
+    ): List<BudgetPeriod> = buildList {
+        if (chipWindowStart(today) < budgetPeriod.startDate) {
+            add(
+                getCurrentBudgetPeriodUseCase(
+                    today = budgetPeriod.startDate.minusDays(1),
+                    budgetStartDay = budgetStartDay
+                )
+            )
+        }
+        if (chipWindowEnd(today) > budgetPeriod.endDate) {
+            add(
+                getCurrentBudgetPeriodUseCase(
+                    today = budgetPeriod.endDate.plusDays(1),
+                    budgetStartDay = budgetStartDay
+                )
+            )
+        }
+    }
+
+    /** 해당 기간의 출금 예정 목록 (금액은 그 기간 anchorMonth 기준 이월값). */
+    private fun deductionSummariesInPeriod(
+        budgetPeriod: BudgetPeriod,
+        deductions: List<ScheduledDeduction>,
+        overrides: List<ScheduledDeductionAmount>
+    ): List<ScheduledDeductionSummaryUiModel> {
+        val resolved = resolveScheduledDeductionAmountsUseCase(
+            deductions = getScheduledDeductionsInPeriodUseCase(
+                deductions = deductions,
+                budgetPeriod = budgetPeriod
+            ),
+            overrides = overrides,
+            anchorMonth = YearMonth.from(budgetPeriod.startDate)
+        )
+
+        return resolved
+            .mapNotNull { deduction ->
+                val withdrawalDate = resolveWithdrawalDateInPeriod(
+                    withdrawalDay = deduction.withdrawalDay,
+                    budgetPeriod = budgetPeriod
+                ) ?: return@mapNotNull null
+
+                ScheduledDeductionSummaryUiModel(
+                    id = deduction.id,
+                    title = deduction.title,
+                    amount = deduction.amount,
+                    type = deduction.type,
+                    withdrawalDate = withdrawalDate
+                )
+            }
+            .sortedBy { it.withdrawalDate }
+    }
+
     private fun resolveWithdrawalDateInPeriod(
         withdrawalDay: Int,
         budgetPeriod: BudgetPeriod
@@ -1033,15 +1102,20 @@ class TodayViewModel @Inject constructor(
     ) {
         val today = todayFlow.value
 
-        val extraIncomeAmount = extraIncomes.sumOf { it.amount }
-        val totalAvailableBudget = monthlyIncome + extraIncomeAmount
-
         val budgetPeriod = getCurrentBudgetPeriodUseCase(
             today = today,
             budgetStartDay = budgetProfile.budgetStartDay
         )
 
         val anchorMonth = YearMonth.from(budgetPeriod.startDate)
+
+        // 넘겨받은 목록은 날짜 칩 때문에 기간보다 넓다 (observeTodayData).
+        // 예산 계산은 이번 기간 안에 든 것만, 칩 마커·선택 날짜 내역만 전체를 본다.
+        val periodExpenses = expenses.filter { budgetPeriod.contains(it.date) }
+        val periodExtraIncomes = extraIncomes.filter { budgetPeriod.contains(it.date) }
+
+        val extraIncomeAmount = periodExtraIncomes.sumOf { it.amount }
+        val totalAvailableBudget = monthlyIncome + extraIncomeAmount
 
         val scheduledDeductionsInPeriod =
             resolveScheduledDeductionAmountsUseCase(
@@ -1064,25 +1138,29 @@ class TodayViewModel @Inject constructor(
         val scheduledDeductionTotalAmount =
             scheduledSaving + fixedExpense
 
-        val scheduledDeductionSummaries = scheduledDeductionsInPeriod
-            .mapNotNull { deduction ->
-                val withdrawalDate = resolveWithdrawalDateInPeriod(
-                    withdrawalDay = deduction.withdrawalDay,
-                    budgetPeriod = budgetPeriod
-                ) ?: return@mapNotNull null
+        val scheduledDeductionSummaries = deductionSummariesInPeriod(
+            budgetPeriod = budgetPeriod,
+            deductions = scheduledDeductions,
+            overrides = deductionOverrides
+        )
 
-                ScheduledDeductionSummaryUiModel(
-                    id = deduction.id,
-                    title = deduction.title,
-                    amount = deduction.amount,
-                    type = deduction.type,
-                    withdrawalDate = withdrawalDate
-                )
-            }
-            .sortedBy { it.withdrawalDate }
+        // 칩이 기간을 넘어가면 그 날의 출금도 함께 보여준다 (지출과 같은 이유).
+        // 요약 카드와 계산에 쓰는 scheduledDeductionSummaries 는 이번 기간 그대로 둔다.
+        val visibleDeductionSummaries = scheduledDeductionSummaries +
+                neighborPeriodsForChips(
+                    budgetPeriod = budgetPeriod,
+                    today = today,
+                    budgetStartDay = budgetProfile.budgetStartDay
+                ).flatMap { neighbor ->
+                    deductionSummariesInPeriod(
+                        budgetPeriod = neighbor,
+                        deductions = scheduledDeductions,
+                        overrides = deductionOverrides
+                    )
+                }
 
         val selectedDateScheduledDeductions =
-            scheduledDeductionSummaries
+            visibleDeductionSummaries
                 .filter { it.withdrawalDate == selectedDate }
                 .map { item ->
                     TodayScheduledDeductionUiModel(
@@ -1101,7 +1179,7 @@ class TodayViewModel @Inject constructor(
             monthlyBudget = monthlyIncome,
             extraIncomeTotal = extraIncomeAmount,
             scheduledDeductionTotal = scheduledDeductionTotalAmount,
-            expenses = expenses
+            expenses = periodExpenses
         )
 
         val remainingDays = budget.remainingDays
@@ -1142,7 +1220,7 @@ class TodayViewModel @Inject constructor(
                 ChronoUnit.DAYS.between(firstUseDate, today) <= 3
 
         val todayExpenseAmount = budget.todaySpent
-        val pastExpenseAmount = expenses
+        val pastExpenseAmount = periodExpenses
             .filter { it.date.isBefore(today) }
             .sumOf { it.amount }
 
@@ -1156,7 +1234,7 @@ class TodayViewModel @Inject constructor(
             .map { it.date }
             .toSet()
 
-        val scheduledDeductionDates = scheduledDeductionSummaries
+        val scheduledDeductionDates = visibleDeductionSummaries
             .map { it.withdrawalDate }
             .toSet()
 
