@@ -26,8 +26,8 @@ android {
         applicationId = "com.jsworld.android.daydone"
         minSdk = 28
         targetSdk = 36
-        versionCode = 8
-        versionName = "1.4.1"
+        versionCode = 9
+        versionName = "1.4.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
