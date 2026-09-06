@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.jsworld.android.daydone.domain.model.BudgetPeriod
 import com.jsworld.android.daydone.domain.model.BudgetProfile
 import com.jsworld.android.daydone.domain.model.Expense
+import com.jsworld.android.daydone.domain.model.ExpenseType
 import com.jsworld.android.daydone.domain.model.ExtraIncome
 import com.jsworld.android.daydone.domain.model.QuickExpense
 import com.jsworld.android.daydone.domain.model.ScheduledDeduction
@@ -29,6 +30,7 @@ import com.jsworld.android.daydone.domain.usecase.HoldPurchaseUseCase
 import com.jsworld.android.daydone.domain.usecase.SaveNoSpendChallengeRecordUseCase
 import com.jsworld.android.daydone.domain.usecase.UpdateNoSpendChallengeUseCase
 import com.jsworld.android.daydone.domain.usecase.GetCurrentBudgetPeriodUseCase
+import com.jsworld.android.daydone.domain.usecase.GetPeriodEndSurplusUseCase
 import com.jsworld.android.daydone.domain.usecase.GetScheduledDeductionsInPeriodUseCase
 import com.jsworld.android.daydone.domain.usecase.GetTodayDateChipsUseCase
 import com.jsworld.android.daydone.domain.usecase.ObserveBudgetProfileUseCase
@@ -55,6 +57,7 @@ import com.jsworld.android.daydone.presentation.today.model.ScheduledDeductionSu
 import com.jsworld.android.daydone.presentation.today.model.TodayExpenseUiModel
 import com.jsworld.android.daydone.presentation.today.model.TodayScheduledDeductionUiModel
 import com.jsworld.android.daydone.presentation.today.model.TodayUiState
+import com.jsworld.android.daydone.presentation.util.toMoneyText
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -109,7 +112,8 @@ class TodayViewModel @Inject constructor(
     private val observePreJoinSpendHandledUseCase: ObservePreJoinSpendHandledUseCase,
     private val markPreJoinSpendHandledUseCase: MarkPreJoinSpendHandledUseCase,
     private val evaluatePurchaseUseCase: EvaluatePurchaseUseCase,
-    private val holdPurchaseUseCase: HoldPurchaseUseCase
+    private val holdPurchaseUseCase: HoldPurchaseUseCase,
+    private val getPeriodEndSurplusUseCase: GetPeriodEndSurplusUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(TodayUiState())
@@ -1230,6 +1234,40 @@ class TodayViewModel @Inject constructor(
         val todayOverAmount = budget.todayOverAmount
         val remainingPureBudget = budget.remainingPureBudget
 
+        // 기간 막바지 여유분 → 금고 안내.
+        // ⚠️ 입력 기준을 **리포트와 똑같이** 맞춘다 — 기간에 적힌 지출 전부(미래 날짜 포함)를
+        //    뺀 remaining 과 일반 지출 전체. 오늘 탭 기준(미래 날짜 제외)을 쓰면 이미 쓰기로
+        //    적어둔 돈까지 "남는 돈"으로 세어 리포트와 다른 숫자를 말하게 된다.
+        // 오늘이 권장을 넘긴 날엔 아예 계산하지 않는다 — 메시지가 초과 안내에 밀려
+        //   금액 없는 버튼만 덩그러니 남기 때문(문구와 버튼은 항상 같이 뜨거나 같이 사라진다).
+        val totalPureBudget = totalAvailableBudget - scheduledDeductionTotalAmount
+        val periodEndSurplus = if (isTodayOverDefenseLine) {
+            null
+        } else {
+            getPeriodEndSurplusUseCase(
+                remaining = totalPureBudget - periodExpenses.sumOf { it.amount },
+                generalSpent = periodExpenses
+                    .filter { it.type == ExpenseType.GENERAL }
+                    .sumOf { it.amount },
+                totalPureBudget = totalPureBudget,
+                dayIndex = dayIndexInPeriod,
+                remainingDays = remainingDays
+            )
+        }
+
+        // 한 줄 메시지 우선순위: 초과 재분배 > 막바지 여유분 > 기간 초 원리 설명 > 기본.
+        // 기간 초 설명은 "남은 날이 많아서 작다"가 아니다 — 권장대로 쓰면 금액은 내내 같고,
+        // 아껴 쓴 만큼만 커진다. 그 사실을 알려줘야 후반 몰아쓰기를 유도하지 않는다.
+        val message = when {
+            isTodayOverDefenseLine -> "괜찮아요. 남은 날에 다시 나눠볼게요."
+            periodEndSurplus != null ->
+                "지금 페이스면 이번 기간이 끝날 때 ${periodEndSurplus.toMoneyText()}이 남아요. " +
+                        "미리 금고에 넣어두면 다음 큰 지출이 편해져요."
+            dayIndexInPeriod <= EARLY_DAYS ->
+                "이 금액은 남은 날로 똑같이 나눈 값이에요. 아껴 쓴 만큼 뒤로 갈수록 커져요."
+            else -> "오늘은 이 금액 안에서 쓰면 괜찮아요."
+        }
+
         val expenseDates = expenses
             .map { it.date }
             .toSet()
@@ -1256,11 +1294,8 @@ class TodayViewModel @Inject constructor(
             remainingDays = remainingDays,
             tomorrowRecommended = budget.tomorrowRecommended,
             budgetPeriodText = "${budgetPeriod.startDate} ~ ${budgetPeriod.endDate}",
-            message = if (isTodayOverDefenseLine) {
-                "괜찮아요. 남은 날에 다시 나눠볼게요."
-            } else {
-                "오늘은 이 금액 안에서 쓰면 괜찮아요."
-            },
+            message = message,
+            periodEndSurplus = periodEndSurplus,
 
             monthlyIncome = monthlyIncome,
             extraIncomeAmount = extraIncomeAmount,
@@ -1325,6 +1360,9 @@ class TodayViewModel @Inject constructor(
         }
     }
 }
+
+/** 기간 첫 며칠에만 권장 금액이 어떻게 나오는지 한 줄로 설명한다 */
+private const val EARLY_DAYS = 3
 
 private data class TodayData(
     val budgetProfile: BudgetProfile,

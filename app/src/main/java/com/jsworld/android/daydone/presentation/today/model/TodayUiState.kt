@@ -16,6 +16,8 @@ data class TodayUiState(
     val tomorrowRecommended: Long? = null,
     val budgetPeriodText: String = "",
     val message: String = "",
+    /** 기간 막바지 예상 잔액(금고 안내용). null이면 안내 없음 — message 만 바뀐다 */
+    val periodEndSurplus: Long? = null,
     val dateChips: List<TodayDateChipUiModel> = emptyList(),
     val selectedDateTitle: String = "오늘 내역",
     val quickExpenses: List<QuickExpenseUiModel> = emptyList(),

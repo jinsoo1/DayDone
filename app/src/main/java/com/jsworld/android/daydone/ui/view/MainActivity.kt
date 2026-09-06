@@ -261,8 +261,8 @@ private fun DayDoneHome(
                     },
                     // month 없이 = 현재 기간 내역
                     onOpenLedger = { navController.navigate(LEDGER_ROUTE) },
-                    onPrepareInVault = { title, amount ->
-                        pendingVaultPrefill = VaultAddPrefill(title, amount)
+                    onPrepareInVault = { title, amount, monthsAhead ->
+                        pendingVaultPrefill = VaultAddPrefill(title, amount, monthsAhead)
                         goToTab(HomeTab.Vault.route)
                     }
                 )

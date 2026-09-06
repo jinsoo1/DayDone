@@ -22,7 +22,8 @@ fun VaultRoute(
         if (pendingPrefill != null) {
             viewModel.onAddItemWithPrefill(
                 title = pendingPrefill.title,
-                amount = pendingPrefill.amount
+                amount = pendingPrefill.amount,
+                monthsAhead = pendingPrefill.monthsAhead
             )
             onPendingPrefillConsumed()
         }

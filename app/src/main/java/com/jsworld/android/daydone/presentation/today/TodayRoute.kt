@@ -23,7 +23,7 @@ fun TodayRoute(
     onPendingAddConsumed: () -> Unit,
     onOpenReport: (String) -> Unit = {},
     onOpenLedger: () -> Unit = {},
-    onPrepareInVault: (title: String, amount: Long) -> Unit = { _, _ -> },
+    onPrepareInVault: (title: String, amount: Long, monthsAhead: Int) -> Unit = { _, _, _ -> },
     viewModel: TodayViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -109,6 +109,12 @@ fun TodayRoute(
             onDeleteExtraIncomeClick = viewModel::onDeleteExtraIncomeClick,
 
             onOpenLedgerClick = onOpenLedger,
+            // 제목은 비워둔다 — 무엇을 위해 모을지는 유저가 정한다. 금액만 채운다.
+            // 이번 기간에 바로 옮겨둘 돈이라 목표월은 이번 기간(monthsAhead=0).
+            // 제목은 비워둔다 — 무엇을 위해 모을지는 유저가 정한다.
+            onPrepareSurplusClick = {
+                uiState.periodEndSurplus?.let { onPrepareInVault("", it, 0) }
+            },
 
             onPurchaseSheetDismiss = viewModel::onPurchaseSheetDismiss,
             onPurchaseTitleChange = viewModel::onPurchaseTitleChange,
@@ -120,7 +126,8 @@ fun TodayRoute(
                 val result = uiState.purchaseResult
                 viewModel.onPurchaseSheetDismiss()
                 if (result != null) {
-                    onPrepareInVault(result.title, result.price)
+                    // 모아서 사려는 물건이라 목표월은 기본(3개월 뒤)
+                    onPrepareInVault(result.title, result.price, 3)
                 }
             },
         )

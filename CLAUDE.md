@@ -264,6 +264,21 @@ Room 마이그레이션: 스키마 변경 시 정식 `Migration` 제공(데이�
 - 저축·고정비는 **레코드가 아니라 출금일 파생**이라 `GetDeductionsDueOnUseCase`(clamp 31→말일, 테스트 있음)로 날짜에 얹는다. `resolveWithdrawalDateInPeriod`를 또 복사하지 말 것(이미 Today·Monthly·GetScheduledDeductionsInPeriod에 사본이 3개다).
 - 지출 합계에 **준비금 포함**, 저축·고정비는 **따로 집계** — 월 탭 예산 요약 카드와 같은 구분이라 숫자가 어긋나지 않는다.
 
+### 기간 막바지 여유분 안내 (구현됨, v1.4.2)
+
+기간 마지막 며칠에 권장 금액이 크게 뜨면 앱이 "오늘 이만큼 써도 괜찮아요"라고 말하는 셈인데,
+그 돈은 **아껴서 지켜낸 돈이지 쓸 허가가 아니다.** 그 순간 금고로 옮길 길을 보여준다.
+
+- `GetPeriodEndSurplusUseCase`(순수 함수) — 남은 일수 ≤ `LATE_DAYS`(5) **그리고** 예상 잔액 ≥ 총 순수 생활비의 `MIN_SURPLUS_PERCENT`(10%)일 때만 금액을 돌려주고, 아니면 null.
+- ⚠️ **예상 잔액 식·입력 모두 리포트(`BuildMonthlyReportUseCase.projectedLeftover`)와 같아야 한다** — `remaining − (일반 지출 합 ÷ dayIndex) × 남은 일수`. 입력도 리포트 기준(**기간에 적힌 지출 전부**, 미래 날짜 포함)으로 넣는다. 오늘 탭 기준(`remainingPureBudget`, 미래 날짜 제외)을 쓰면 이미 쓰기로 적어둔 돈까지 "남는 돈"으로 세어 같은 날 리포트와 다른 숫자를 말한다. 테스트가 **리포트를 실제로 호출해** 두 값을 맞춰 고정한다(식을 베껴 적는 테스트는 이 회귀를 못 잡는다).
+- **기록이 없으면 안내하지 않는다**(`generalSpent <= 0`) — 안 쓴 게 아니라 안 적은 것일 수 있다.
+- **오늘 권장을 넘긴 날엔 계산 자체를 건너뛴다.** 메시지 우선순위가 초과 안내를 먼저 쓰기 때문에, 안 그러면 금액 없는 버튼만 덩그러니 남는다. **문구와 버튼은 항상 같이 뜨거나 같이 사라진다.**
+- 표시: 오늘 탭 권장 금액 카드의 **기존 `message` 줄**을 조건부로 바꾸고 그 아래 `금고에 준비하기 ›` 버튼. **새 카드·배너를 만들지 않는다**(오늘 탭 과밀 — 큰 지출 안내를 오늘 탭에 안 넣은 것과 같은 판단).
+- 메시지 우선순위: 초과 재분배 > 막바지 여유분 > **기간 첫 `EARLY_DAYS`(3)일 원리 설명** > 기본.
+- ⚠️ 기간 초 문구를 **"남은 날이 많아서 금액이 작다"로 쓰면 안 된다.** 권장대로 쓰면 금액은 기간 내내 같고, **아껴 쓴 만큼만** 커진다. 틀린 설명일 뿐 아니라 "뒤로 가면 커지겠지"라는 기대를 심어 **후반 몰아쓰기**를 유도한다.
+- 버튼 → `VaultAddPrefill(title="", amount, monthsAhead=0)`으로 금고 추가 시트 프리필. **`monthsAhead`가 핵심** — 살까 말까는 3개월 뒤(모아서 사기)지만 여유분은 **이번 기간(0)**이어야 이번 달 준비 제안액이 전액이 되어 지금 바로 옮길 수 있다. 새 저장 경로 없음.
+- 🟡 알려진 한계: 준비하기는 `LocalDate.now()` 지출을 만들고 `CalculateDailyBudgetUseCase`는 준비금도 오늘 지출로 세므로, 옮긴 직후 카드가 "오늘 권장보다 더 썼어요"로 바뀐다. **v1.4.2에서는 그대로 뒀다** — 고치려면 코어 계산에서 FUTURE_PREPARE를 예외 처리해야 하고 위젯·살까 말까·보류함이 같은 UseCase를 쓴다(무지출 판정이 이미 GENERAL만 보는 전례는 있다).
+
 ### 무지출 챌린지 (구현됨) — 예산 기간과 독립
 
 - **예산 기간과 무관**하다. 유저가 **도전 일수**를 정하고 "오늘부터 시작" → `startDate`부터 `targetDays`일 창으로 진행. (설정 탭에서 시작/그만두기)
@@ -321,7 +336,7 @@ Room 마이그레이션: 스키마 변경 시 정식 `Migration` 제공(데이�
 - **자정 갱신**: `TodayViewModel.todayFlow`(MutableStateFlow<LocalDate>)가 "오늘"의 단일 출처. 화면 복귀 시 `onResumed()`가 날짜 변경을 감지해 flow를 갱신 → 기간·권장 금액·챌린지가 새 날짜로 재계산된다(선택 날짜도 어제의 '오늘'이었다면 함께 이동). Monthly도 `onResumed()`로 오늘 마커·모드 재계산. Route에서 `LifecycleEventEffect(ON_RESUME)`로 연결. **화면 코드에서 `LocalDate.now()`를 직접 쓰지 말고 이 flow를 쓸 것.**
 - **강조 색상**: 컬러스킴에 없는 성공/초록 계열은 `ui/theme/AccentColors.kt`의 `DayDoneAccent`(successText·successContainer·onSuccessContainer·noSpendCheck)에서만 관리. 라이트/다크가 함께 정의돼 있으니 **화면에서 `Color(0xFF…)` 하드코딩 금지**.
 - **콘텐츠 색상**: 앱 루트(`DayDoneRoot`)를 `Surface(color = background)`로 감싸 `LocalContentColor`를 내려준다. 이게 없으면 Material 기본값(**검정**)이 쓰여 다크 모드에서 툴바 제목·섹션 헤더·화살표 아이콘이 안 보인다. 새 전체화면을 만들 때도 `Surface`로 감싸거나 색을 명시할 것(`DayDoneTopBar`는 자체적으로 `onSurface` 명시).
-- **유닛 테스트**(`app/src/test`, junit4, 118개): 기간 계산·권장 금액·금액 이월·무지출 판정·카테고리 분류·리포트 페이스·알림(출금일 clamp·저녁 합치기·큰 지출 달). 계산 로직을 바꾸면 `./gradlew :app:testDebugUnitTest`로 먼저 확인한다. 회귀 방지용으로 남긴 케이스: 초과 5,400원(퍼센트 절삭), 아이스크림/아이크림(긴 키워드 승리), 8월 수정 시 7월 보존(이월), 기간 첫날·마지막 날 칩이 이웃 기간을 포함(조회 범위 회귀), 내역 묶기(날짜 그룹·정렬·기간 밖 제외).
+- **유닛 테스트**(`app/src/test`, junit4, 130개): 기간 계산·권장 금액·금액 이월·무지출 판정·카테고리 분류·리포트 페이스·알림(출금일 clamp·저녁 합치기·큰 지출 달). 계산 로직을 바꾸면 `./gradlew :app:testDebugUnitTest`로 먼저 확인한다. 회귀 방지용으로 남긴 케이스: 초과 5,400원(퍼센트 절삭), 아이스크림/아이크림(긴 키워드 승리), 8월 수정 시 7월 보존(이월), 기간 첫날·마지막 날 칩이 이웃 기간을 포함(조회 범위 회귀), 내역 묶기(날짜 그룹·정렬·기간 밖 제외), 막바지 여유분이 리포트 예상 잔액과 같은 숫자(미래 날짜 지출 포함).
 
 ## 14. 응답 기준
 
@@ -378,7 +393,7 @@ Room 마이그레이션: 스키마 변경 시 정식 `Migration` 제공(데이�
 - **v1.5.0 = 국제화 기반만, 한국어 그대로 출시**(유저 체감 변화 0) / **v1.6.0 = 일본어 리소스 추가**. 한 번에 하면 회귀 범위가 앱 전체가 돼서 나눴다.
 - 현황(주석 제외 실측): `strings.xml` 4줄, kt 안 한글 리터럴 **1,487개** — 그중 **740개(50%)가 `ClassifyExpenseCategoryUseCase` 키워드 사전**(번역이 아니라 **재작성**). 번역 대상은 **747개(고유 568)**, 보간 약 135개. **v1.5.0 상세 계획은 `docs/v1.5-design.md`**.
 - 한국어·일본어 모두 복수형이 없어 **`plurals` 불필요**(영어부터 갔으면 필요했다).
-- ⚠️ **domain 레이어가 표시용 한글을 만든다**(UseCase 22개 — 리포트·알림·`ExpenseCategory.label`). UseCase엔 Context가 없어 `stringResource`를 못 쓴다. `StringProvider` 주입은 쉽지만 **순수 JVM 테스트 118개가 깨진다** → 테스트 걸린 UseCase는 타입만 반환하고 문구는 presentation에서 조립, 단순 enum은 `@StringRes labelRes`로.
+- ⚠️ **domain 레이어가 표시용 한글을 만든다**(UseCase 22개 — 리포트·알림·`ExpenseCategory.label`). UseCase엔 Context가 없어 `stringResource`를 못 쓴다. `StringProvider` 주입은 쉽지만 **순수 JVM 테스트 130개가 깨진다** → 테스트 걸린 UseCase는 타입만 반환하고 문구는 presentation에서 조립, 단순 enum은 `@StringRes labelRes`로.
 - ⚠️ **백업 폴더명 `Download/DayDone/…`은 로케일화 금지** — `ListBackupFilesUseCase`가 이 경로로 조회한다. 파일명만 바꾼다. 백업 JSON에 한글 키는 없어서 `BACKUP_VERSION` 유지 가능.
 - 로케일별로 갈라야 할 **지식 주입 3종**: `GetBigSpendMonthNoticeUseCase`(일본은 전부 양력이라 음력 표 불필요 — 1월 お正月/4월 新生活/5월 GW+自動車税/8월 お盆/12월 年末年始), 카테고리 사전, 미래지출 프리셋(自動車税·車検·固定資産税). `MoneyFormat`은 `Locale.KOREA`+"원" 하드코딩이라 통화 위치(¥ 앞 / 円 뒤)를 다루도록 수정.
 - 🟡 車検은 **2년 주기**인데 `FutureExpense.repeat`는 ONCE/YEARLY뿐 — ONCE로 등록 가능하니 블로커는 아님.

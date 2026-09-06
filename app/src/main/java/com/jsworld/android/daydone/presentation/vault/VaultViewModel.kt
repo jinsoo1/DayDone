@@ -100,14 +100,14 @@ class VaultViewModel @Inject constructor(
     }
 
     /** 살까 말까 "금고에 준비하기" — 품목명·가격 프리필, 목표월은 3개월 뒤 기본값. */
-    fun onAddItemWithPrefill(title: String, amount: Long) {
+    fun onAddItemWithPrefill(title: String, amount: Long, monthsAhead: Int = 3) {
         _uiState.value = _uiState.value.copy(
             isInputSheetVisible = true,
             editingId = null,
             titleInput = title,
             categoryInput = FutureExpenseCategory.ETC,
             totalAmountInput = amount.toString(),
-            targetMonthInput = currentAnchorMonth.plusMonths(3),
+            targetMonthInput = currentAnchorMonth.plusMonths(monthsAhead.toLong()),
             prepareStartMonthInput = currentAnchorMonth,
             repeatInput = FutureExpenseRepeat.ONCE,
             memoInput = ""

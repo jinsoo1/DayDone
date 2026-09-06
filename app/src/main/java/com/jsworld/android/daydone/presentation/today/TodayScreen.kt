@@ -128,6 +128,7 @@ fun TodayScreen(
     onDeleteExtraIncomeClick: () -> Unit,
 
     onOpenLedgerClick: () -> Unit = {},
+    onPrepareSurplusClick: () -> Unit = {},
 
     onPurchaseSheetDismiss: () -> Unit = {},
     onPurchaseTitleChange: (String) -> Unit = {},
@@ -158,7 +159,10 @@ fun TodayScreen(
             }
 
             item {
-                TodayDefenseCard(uiState = uiState)
+                TodayDefenseCard(
+                    uiState = uiState,
+                    onPrepareSurplusClick = onPrepareSurplusClick
+                )
             }
 
             if (uiState.showPreJoinBanner) {
@@ -334,7 +338,8 @@ fun TodayScreen(
 
 @Composable
 private fun TodayDefenseCard(
-    uiState: TodayUiState
+    uiState: TodayUiState,
+    onPrepareSurplusClick: () -> Unit
 ) {
     val titleText = if (uiState.isTodayOverDefenseLine) {
         "오늘 권장보다 조금 더 썼어요"
@@ -414,6 +419,21 @@ private fun TodayDefenseCard(
                 text = uiState.message,
                 style = MaterialTheme.typography.bodyMedium
             )
+
+            // 막바지 여유분 → 금고 추가 시트에 금액 프리필 (살까 말까와 같은 경로, 새 저장 경로 없음)
+            if (uiState.periodEndSurplus != null) {
+                TextButton(
+                    onClick = onPrepareSurplusClick,
+                    contentPadding = PaddingValues(horizontal = 0.dp, vertical = 0.dp)
+                ) {
+                    Text(
+                        text = "금고에 준비하기 ›",
+                        style = MaterialTheme.typography.labelLarge,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
+                }
+            }
 
             if (uiState.todayExpenseAmount > 0L) {
                 Text(
