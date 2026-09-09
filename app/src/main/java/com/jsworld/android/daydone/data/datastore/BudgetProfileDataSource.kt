@@ -24,6 +24,19 @@ class BudgetProfileDataSource @Inject constructor(
         val FIRST_USE_EPOCH_DAY = longPreferencesKey("first_use_epoch_day")
         val PRE_JOIN_SPEND_HANDLED = booleanPreferencesKey("pre_join_spend_handled")
         val LEDGER_SHOW_DEDUCTIONS = booleanPreferencesKey("ledger_show_deductions")
+        val LEDGER_ASCENDING = booleanPreferencesKey("ledger_ascending")
+    }
+
+    /** 내역 화면 정렬 — true=기간 첫날부터(기본). 눈 아이콘과 같은 "보기 취향"이라 함께 기억한다. */
+    val isLedgerAscendingFlow: Flow<Boolean> =
+        dataStore.data.map { preferences ->
+            preferences[Keys.LEDGER_ASCENDING] ?: true
+        }
+
+    suspend fun setLedgerAscending(ascending: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[Keys.LEDGER_ASCENDING] = ascending
+        }
     }
 
     /** 내역 화면 목록에 저축·고정비 줄을 보여줄지 (기본 true). 상단 합계엔 영향 없음 — 보기 취향. */

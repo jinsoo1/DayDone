@@ -42,6 +42,13 @@ class BudgetProfileRepositoryImpl @Inject constructor(
         budgetProfileDataSource.setLedgerDeductionsVisible(visible)
     }
 
+    override val isLedgerAscendingFlow: Flow<Boolean>
+        get() = budgetProfileDataSource.isLedgerAscendingFlow
+
+    override suspend fun setLedgerAscending(ascending: Boolean) {
+        budgetProfileDataSource.setLedgerAscending(ascending)
+    }
+
     override suspend fun clearAll() {
         budgetProfileDataSource.clearAll()
     }

@@ -27,5 +27,9 @@ interface BudgetProfileRepository {
 
     suspend fun setLedgerDeductionsVisible(visible: Boolean)
 
+    val isLedgerAscendingFlow: Flow<Boolean>
+
+    suspend fun setLedgerAscending(ascending: Boolean)
+
     suspend fun clearAll()
 }

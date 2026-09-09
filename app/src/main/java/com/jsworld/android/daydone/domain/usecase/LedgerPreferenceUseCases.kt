@@ -16,3 +16,16 @@ class SetLedgerDeductionsVisibleUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(visible: Boolean) = repository.setLedgerDeductionsVisible(visible)
 }
+
+/** 내역 화면 정렬(기간 첫날부터 / 최근 날부터) — 같은 카드의 눈 아이콘과 같은 이유로 기억한다. */
+class ObserveLedgerAscendingUseCase @Inject constructor(
+    private val repository: BudgetProfileRepository
+) {
+    operator fun invoke(): Flow<Boolean> = repository.isLedgerAscendingFlow
+}
+
+class SetLedgerAscendingUseCase @Inject constructor(
+    private val repository: BudgetProfileRepository
+) {
+    suspend operator fun invoke(ascending: Boolean) = repository.setLedgerAscending(ascending)
+}

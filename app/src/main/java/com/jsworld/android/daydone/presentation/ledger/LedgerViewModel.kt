@@ -17,7 +17,9 @@ import com.jsworld.android.daydone.domain.usecase.ObserveBudgetProfileUseCase
 import com.jsworld.android.daydone.domain.usecase.ObserveExpensesByPeriodUseCase
 import com.jsworld.android.daydone.domain.usecase.ObserveEffectiveMonthlyBudgetUseCase
 import com.jsworld.android.daydone.domain.usecase.ObserveExtraIncomesByPeriodUseCase
+import com.jsworld.android.daydone.domain.usecase.ObserveLedgerAscendingUseCase
 import com.jsworld.android.daydone.domain.usecase.ObserveLedgerDeductionsVisibleUseCase
+import com.jsworld.android.daydone.domain.usecase.SetLedgerAscendingUseCase
 import com.jsworld.android.daydone.domain.usecase.SetLedgerDeductionsVisibleUseCase
 import com.jsworld.android.daydone.domain.usecase.ObserveScheduledDeductionAmountsUseCase
 import com.jsworld.android.daydone.domain.usecase.ObserveScheduledDeductionsUseCase
@@ -63,7 +65,9 @@ class LedgerViewModel @Inject constructor(
     private val resolveScheduledDeductionAmountsUseCase: ResolveScheduledDeductionAmountsUseCase,
     private val buildPeriodLedgerUseCase: BuildPeriodLedgerUseCase,
     private val observeLedgerDeductionsVisibleUseCase: ObserveLedgerDeductionsVisibleUseCase,
-    private val setLedgerDeductionsVisibleUseCase: SetLedgerDeductionsVisibleUseCase
+    private val setLedgerDeductionsVisibleUseCase: SetLedgerDeductionsVisibleUseCase,
+    private val observeLedgerAscendingUseCase: ObserveLedgerAscendingUseCase,
+    private val setLedgerAscendingUseCase: SetLedgerAscendingUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(LedgerUiState())
@@ -74,15 +78,15 @@ class LedgerViewModel @Inject constructor(
         savedStateHandle.get<String>("month")
             ?.let { runCatching { YearMonth.parse(it) }.getOrNull() }
 
-    /** 정렬만 바꿀 때 DB 를 다시 읽지 않도록 조회 흐름 밖에 둔다. */
-    private val ascending = MutableStateFlow(true)
 
     init {
         observeLedger()
     }
 
+    /** 정렬 — 눈 아이콘과 같은 보기 취향이라 기기에 저장한다(화면을 나갔다 와도 유지). */
     fun onToggleSort() {
-        ascending.value = !ascending.value
+        val next = !_uiState.value.ascending
+        viewModelScope.launch { setLedgerAscendingUseCase(next) }
     }
 
     /** 목록에서 저축·고정비 줄 보이기/숨기기 — 기기에 저장돼 다음에 열어도 유지된다. */
@@ -139,7 +143,8 @@ class LedgerViewModel @Inject constructor(
                     )
                 }
             }
-            .combine(ascending) { data, asc -> data to asc }
+            // 정렬·숨김은 DataStore 흐름이라 값만 바뀌면 재계산되고 DB 는 다시 읽지 않는다
+            .combine(observeLedgerAscendingUseCase()) { data, asc -> data to asc }
             .combine(observeLedgerDeductionsVisibleUseCase()) { (data, asc), showDeductions ->
                 Triple(data, asc, showDeductions)
             }
