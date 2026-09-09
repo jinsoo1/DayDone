@@ -13,12 +13,18 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Visibility
+import androidx.compose.material.icons.outlined.VisibilityOff
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -228,31 +234,83 @@ private fun LedgerSummaryCard(
                 color = DayDoneAccent.spendText
             )
             if (uiState.deductedTotal > 0L) {
-                BreakdownLine(
-                    label = "저축·고정비",
+                DeductionBreakdownLine(
                     amountText = "−${uiState.deductedTotal.toMoneyText()}",
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-
-                // 합계는 그대로 두고 아래 목록에서만 저축·고정비 줄을 접는다.
-                // 이미 생활비에서 빠진 돈이라 "오늘 뭘 썼나" 훑을 땐 소음이 되기도 한다.
-                Text(
-                    text = if (uiState.showDeductions) {
-                        "목록에서 저축·고정비 숨기기"
-                    } else {
-                        "목록에 저축·고정비 보이기"
-                    },
-                    style = MaterialTheme.typography.labelMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier
-                        .align(Alignment.End)
-                        .clip(RoundedCornerShape(8.dp))
-                        .clickable(onClick = onToggleDeductions)
-                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                    showInList = uiState.showDeductions,
+                    onToggle = onToggleDeductions
                 )
             }
         }
+    }
+}
+
+/**
+ * 저축·고정비 줄 — 다른 줄과 같은 리듬(라벨 · 금액)을 지키면서 끝에 눈 아이콘 하나로
+ * 목록 표시를 켜고 끈다. 문장형 버튼은 숫자 블록의 정렬을 깨서 여기선 쓰지 않는다.
+ * 합계는 항상 그대로 — 아이콘은 아래 목록에만 영향을 준다.
+ */
+@Composable
+private fun DeductionBreakdownLine(
+    amountText: String,
+    showInList: Boolean,
+    onToggle: () -> Unit
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(6.dp)
+    ) {
+        Text(
+            text = "저축·고정비",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+
+        // 꺼져 있을 때만 상태를 글자로도 남긴다 — 아이콘만으론 "왜 목록에 없지"가 생긴다
+        if (!showInList) {
+            Text(
+                text = "목록에서 숨김",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier
+                    .clip(RoundedCornerShape(6.dp))
+                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.10f))
+                    .padding(horizontal = 6.dp, vertical = 1.dp)
+            )
+        }
+
+        Spacer(modifier = Modifier.weight(1f))
+
+        Text(
+            text = amountText,
+            style = MaterialTheme.typography.bodyMedium
+                .copy(fontFeatureSettings = TabularNum),
+            fontWeight = FontWeight.SemiBold,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+
+        Icon(
+            imageVector = if (showInList) {
+                Icons.Outlined.Visibility
+            } else {
+                Icons.Outlined.VisibilityOff
+            },
+            contentDescription = if (showInList) {
+                "목록에서 저축·고정비 숨기기"
+            } else {
+                "목록에 저축·고정비 보이기"
+            },
+            tint = if (showInList) {
+                MaterialTheme.colorScheme.onSurfaceVariant
+            } else {
+                MaterialTheme.colorScheme.primary
+            },
+            modifier = Modifier
+                .clip(CircleShape)
+                .clickable(onClick = onToggle)
+                .padding(4.dp)
+                .size(18.dp)
+        )
     }
 }
 
