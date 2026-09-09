@@ -258,12 +258,36 @@ private fun DeductionBreakdownLine(
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(6.dp)
+        horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         Text(
             text = "저축·고정비",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+
+        // 타이틀 바로 옆 — 이 줄에 대한 옵션이라는 게 위치로 읽힌다
+        Icon(
+            imageVector = if (showInList) {
+                Icons.Outlined.Visibility
+            } else {
+                Icons.Outlined.VisibilityOff
+            },
+            contentDescription = if (showInList) {
+                "목록에서 저축·고정비 숨기기"
+            } else {
+                "목록에 저축·고정비 보이기"
+            },
+            tint = if (showInList) {
+                MaterialTheme.colorScheme.onSurfaceVariant
+            } else {
+                MaterialTheme.colorScheme.primary
+            },
+            modifier = Modifier
+                .clip(CircleShape)
+                .clickable(onClick = onToggle)
+                .padding(4.dp)
+                .size(16.dp)
         )
 
         // 꺼져 있을 때만 상태를 글자로도 남긴다 — 아이콘만으론 "왜 목록에 없지"가 생긴다
@@ -287,29 +311,6 @@ private fun DeductionBreakdownLine(
                 .copy(fontFeatureSettings = TabularNum),
             fontWeight = FontWeight.SemiBold,
             color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-
-        Icon(
-            imageVector = if (showInList) {
-                Icons.Outlined.Visibility
-            } else {
-                Icons.Outlined.VisibilityOff
-            },
-            contentDescription = if (showInList) {
-                "목록에서 저축·고정비 숨기기"
-            } else {
-                "목록에 저축·고정비 보이기"
-            },
-            tint = if (showInList) {
-                MaterialTheme.colorScheme.onSurfaceVariant
-            } else {
-                MaterialTheme.colorScheme.primary
-            },
-            modifier = Modifier
-                .clip(CircleShape)
-                .clickable(onClick = onToggle)
-                .padding(4.dp)
-                .size(18.dp)
         )
     }
 }
