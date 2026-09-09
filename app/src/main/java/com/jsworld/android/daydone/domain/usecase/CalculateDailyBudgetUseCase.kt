@@ -3,6 +3,7 @@ package com.jsworld.android.daydone.domain.usecase
 import com.jsworld.android.daydone.domain.model.BudgetPeriod
 import com.jsworld.android.daydone.domain.model.DailyBudgetSnapshot
 import com.jsworld.android.daydone.domain.model.Expense
+import com.jsworld.android.daydone.domain.model.ExpenseType
 import jakarta.inject.Inject
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
@@ -33,14 +34,25 @@ class CalculateDailyBudgetUseCase @Inject constructor(
             .filter { it.date.isBefore(today) }
             .sumOf { it.amount }
 
-        val todaySpent = expenses
-            .filter { it.date == today }
+        val todayExpenses = expenses.filter { it.date == today }
+
+        // 오늘 "쓴 돈"은 일반 지출만. 준비금(FUTURE_PREPARE)은 금고로 옮겨둔 돈이라
+        // 생활비에서는 빠지지만 오늘 권장을 "넘긴" 게 아니다 — 권장 금액의 분자(budgetBeforeToday)
+        // 에서 미리 빼서 오늘 권장 자체를 낮춘다. 안 그러면 앱이 권한 "금고에 준비하기"를
+        // 누른 직후 카드가 "오늘 권장보다 더 썼어요"로 바뀐다. (무지출 판정·저녁 알림도 GENERAL만 본다)
+        val preparedToday = todayExpenses
+            .filter { it.type == ExpenseType.FUTURE_PREPARE }
+            .sumOf { it.amount }
+
+        val todaySpent = todayExpenses
+            .filter { it.type == ExpenseType.GENERAL }
             .sumOf { it.amount }
 
         val budgetBeforeToday = monthlyBudget +
                 extraIncomeTotal -
                 scheduledDeductionTotal -
-                pastSpent
+                pastSpent -
+                preparedToday
 
         val remainingDays = ChronoUnit.DAYS.between(today, period.endDate).toInt() + 1
 

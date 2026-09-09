@@ -32,6 +32,17 @@ class CalculateDailyBudgetUseCaseTest {
         isEssential = false
     )
 
+    /** 오늘 금고로 옮긴 준비금 — 지출 테이블의 FUTURE_PREPARE 한 줄 */
+    private fun prepare(day: Int, amount: Long) = Expense(
+        id = 1_000L + day,
+        title = "준비",
+        amount = amount,
+        date = LocalDate.of(2026, 8, day),
+        type = ExpenseType.FUTURE_PREPARE,
+        futureExpenseId = 1L,
+        isEssential = false
+    )
+
     private fun calc(
         today: LocalDate,
         monthlyBudget: Long = 1_000_000L,
@@ -140,5 +151,66 @@ class CalculateDailyBudgetUseCaseTest {
         )
 
         assertEquals(32_000L, r.todayRecommended)
+    }
+
+    // --- 준비금(FUTURE_PREPARE)은 오늘 "쓴 돈"이 아니다 (v1.4.3) ---
+
+    @Test
+    fun `오늘 금고에 옮긴 준비금은 오늘 초과로 잡히지 않는다`() {
+        // 8/28, 남은 4일, 생활비 400,000 → 권장 100,000. 오늘 300,000 을 금고로.
+        val today = LocalDate.of(2026, 8, 28)
+        val r = calc(
+            today = today,
+            monthlyBudget = 400_000L,
+            expenses = listOf(prepare(28, 300_000L))
+        )
+
+        assertEquals(0L, r.todaySpent)
+        assertTrue(!r.isTodayOver)
+        // 준비금은 분자에서 빠져 오늘 권장이 낮아진다: (400,000 − 300,000) ÷ 4
+        assertEquals(25_000L, r.todayRecommended)
+    }
+
+    @Test
+    fun `준비금은 남은 생활비에서는 그대로 빠진다 - 이중계산도 누락도 없다`() {
+        val today = LocalDate.of(2026, 8, 28)
+        val withPrepare = calc(
+            today = today,
+            monthlyBudget = 400_000L,
+            expenses = listOf(prepare(28, 300_000L), expense(28, 10_000L))
+        )
+        val without = calc(
+            today = today,
+            monthlyBudget = 400_000L,
+            expenses = listOf(expense(28, 10_000L))
+        )
+
+        assertEquals(without.remainingPureBudget - 300_000L, withPrepare.remainingPureBudget)
+        assertEquals(10_000L, withPrepare.todaySpent)
+    }
+
+    @Test
+    fun `준비금이 있어도 내일 권장은 준비금을 빼고 나눈 값이다`() {
+        // 남은 4일: 오늘 300,000 준비 + 10,000 지출 → 남은 90,000 ÷ 3
+        val r = calc(
+            today = LocalDate.of(2026, 8, 28),
+            monthlyBudget = 400_000L,
+            expenses = listOf(prepare(28, 300_000L), expense(28, 10_000L))
+        )
+
+        assertEquals(30_000L, r.tomorrowRecommended)
+    }
+
+    @Test
+    fun `지난 날의 준비금은 지금처럼 과거 지출로 빠진다 - 동작 변화 없음`() {
+        val r = calc(
+            today = LocalDate.of(2026, 8, 28),
+            monthlyBudget = 400_000L,
+            expenses = listOf(prepare(20, 100_000L))
+        )
+
+        // (400,000 − 100,000) ÷ 4
+        assertEquals(75_000L, r.todayRecommended)
+        assertEquals(0L, r.todaySpent)
     }
 }
