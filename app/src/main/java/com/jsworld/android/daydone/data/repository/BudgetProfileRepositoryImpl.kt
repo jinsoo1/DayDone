@@ -35,6 +35,13 @@ class BudgetProfileRepositoryImpl @Inject constructor(
         budgetProfileDataSource.setPreJoinSpendHandled()
     }
 
+    override val isLedgerDeductionsVisibleFlow: Flow<Boolean>
+        get() = budgetProfileDataSource.isLedgerDeductionsVisibleFlow
+
+    override suspend fun setLedgerDeductionsVisible(visible: Boolean) {
+        budgetProfileDataSource.setLedgerDeductionsVisible(visible)
+    }
+
     override suspend fun clearAll() {
         budgetProfileDataSource.clearAll()
     }

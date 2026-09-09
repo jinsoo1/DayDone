@@ -17,6 +17,8 @@ import com.jsworld.android.daydone.domain.usecase.ObserveBudgetProfileUseCase
 import com.jsworld.android.daydone.domain.usecase.ObserveExpensesByPeriodUseCase
 import com.jsworld.android.daydone.domain.usecase.ObserveEffectiveMonthlyBudgetUseCase
 import com.jsworld.android.daydone.domain.usecase.ObserveExtraIncomesByPeriodUseCase
+import com.jsworld.android.daydone.domain.usecase.ObserveLedgerDeductionsVisibleUseCase
+import com.jsworld.android.daydone.domain.usecase.SetLedgerDeductionsVisibleUseCase
 import com.jsworld.android.daydone.domain.usecase.ObserveScheduledDeductionAmountsUseCase
 import com.jsworld.android.daydone.domain.usecase.ObserveScheduledDeductionsUseCase
 import com.jsworld.android.daydone.domain.usecase.ResolveScheduledDeductionAmountsUseCase
@@ -34,6 +36,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.TextStyle
@@ -58,7 +61,9 @@ class LedgerViewModel @Inject constructor(
     private val observeEffectiveMonthlyBudgetUseCase: ObserveEffectiveMonthlyBudgetUseCase,
     private val getScheduledDeductionsInPeriodUseCase: GetScheduledDeductionsInPeriodUseCase,
     private val resolveScheduledDeductionAmountsUseCase: ResolveScheduledDeductionAmountsUseCase,
-    private val buildPeriodLedgerUseCase: BuildPeriodLedgerUseCase
+    private val buildPeriodLedgerUseCase: BuildPeriodLedgerUseCase,
+    private val observeLedgerDeductionsVisibleUseCase: ObserveLedgerDeductionsVisibleUseCase,
+    private val setLedgerDeductionsVisibleUseCase: SetLedgerDeductionsVisibleUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(LedgerUiState())
@@ -78,6 +83,12 @@ class LedgerViewModel @Inject constructor(
 
     fun onToggleSort() {
         ascending.value = !ascending.value
+    }
+
+    /** 목록에서 저축·고정비 줄 보이기/숨기기 — 기기에 저장돼 다음에 열어도 유지된다. */
+    fun onToggleDeductions() {
+        val next = !_uiState.value.showDeductions
+        viewModelScope.launch { setLedgerDeductionsVisibleUseCase(next) }
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -129,11 +140,14 @@ class LedgerViewModel @Inject constructor(
                 }
             }
             .combine(ascending) { data, asc -> data to asc }
-            .onEach { (data, asc) -> render(data, asc) }
+            .combine(observeLedgerDeductionsVisibleUseCase()) { (data, asc), showDeductions ->
+                Triple(data, asc, showDeductions)
+            }
+            .onEach { (data, asc, showDeductions) -> render(data, asc, showDeductions) }
             .launchIn(viewModelScope)
     }
 
-    private fun render(data: LedgerData, ascending: Boolean) {
+    private fun render(data: LedgerData, ascending: Boolean, showDeductions: Boolean) {
         val ledger = buildPeriodLedgerUseCase(
             period = data.period,
             expenses = data.expenses,
@@ -141,6 +155,19 @@ class LedgerViewModel @Inject constructor(
             deductions = data.deductions,
             ascending = ascending
         )
+
+        // 저축·고정비 숨김은 **목록만** 거른다. 합계(deductedTotal·remaining)는 ledger 그대로 —
+        // 안 보이게 했다고 남은 돈이 달라지면 안 된다. 그 줄만 있던 날은 카드 자체를 만들지 않는다.
+        val visibleDays = if (showDeductions) {
+            ledger.days
+        } else {
+            ledger.days.mapNotNull { day ->
+                val kept = day.entries.filter {
+                    it.kind != LedgerEntryKind.SAVING && it.kind != LedgerEntryKind.FIXED
+                }
+                if (kept.isEmpty()) null else day.copy(entries = kept, deducted = 0L)
+            }
+        }
 
         val today = LocalDate.now()
         val anchorMonth = YearMonth.from(data.period.startDate)
@@ -153,6 +180,7 @@ class LedgerViewModel @Inject constructor(
                     "${data.period.endDate.monthValue}월 " +
                     "${data.period.endDate.dayOfMonth}일",
             ascending = ascending,
+            showDeductions = showDeductions,
             monthlyBudget = data.monthlyBudget,
             incomeTotal = ledger.incomeTotal,
             spentTotal = ledger.spentTotal,
@@ -164,8 +192,8 @@ class LedgerViewModel @Inject constructor(
                     ledger.deductedTotal - ledger.spentTotal,
             isCurrentPeriod = !today.isBefore(data.period.startDate) &&
                     !today.isAfter(data.period.endDate),
-            days = ledger.days.mapIndexed { index, day ->
-                val previousMonth = ledger.days.getOrNull(index - 1)?.date?.monthValue
+            days = visibleDays.mapIndexed { index, day ->
+                val previousMonth = visibleDays.getOrNull(index - 1)?.date?.monthValue
 
                 LedgerDayUiModel(
                     date = day.date,

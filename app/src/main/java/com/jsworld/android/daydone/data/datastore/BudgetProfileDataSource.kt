@@ -23,6 +23,19 @@ class BudgetProfileDataSource @Inject constructor(
         val ONBOARDING_DONE = booleanPreferencesKey("onboarding_done")
         val FIRST_USE_EPOCH_DAY = longPreferencesKey("first_use_epoch_day")
         val PRE_JOIN_SPEND_HANDLED = booleanPreferencesKey("pre_join_spend_handled")
+        val LEDGER_SHOW_DEDUCTIONS = booleanPreferencesKey("ledger_show_deductions")
+    }
+
+    /** 내역 화면 목록에 저축·고정비 줄을 보여줄지 (기본 true). 상단 합계엔 영향 없음 — 보기 취향. */
+    val isLedgerDeductionsVisibleFlow: Flow<Boolean> =
+        dataStore.data.map { preferences ->
+            preferences[Keys.LEDGER_SHOW_DEDUCTIONS] ?: true
+        }
+
+    suspend fun setLedgerDeductionsVisible(visible: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[Keys.LEDGER_SHOW_DEDUCTIONS] = visible
+        }
     }
 
     /** "가입 전 지출" 배너를 처리(입력 또는 건너뛰기)했는지. */

@@ -263,6 +263,7 @@ Room 마이그레이션: 스키마 변경 시 정식 `Migration` 제공(데이�
 - **읽기 전용**: 새 저장 경로가 없다(`BuildPeriodLedgerUseCase`는 순수 함수, 저장 없음). 수정은 월 탭 캘린더의 그 날짜에서 — 화면 하단에 그 안내 한 줄. 여기에 수정 시트를 붙이려면 월 탭의 시트 3종 배선을 그대로 들고 와야 하므로, 붙일 때 `MonthlyRoute` 패턴을 재사용할 것.
 - 저축·고정비는 **레코드가 아니라 출금일 파생**이라 `GetDeductionsDueOnUseCase`(clamp 31→말일, 테스트 있음)로 날짜에 얹는다. `resolveWithdrawalDateInPeriod`를 또 복사하지 말 것(이미 Today·Monthly·GetScheduledDeductionsInPeriod에 사본이 3개다).
 - 지출 합계에 **준비금 포함**, 저축·고정비는 **따로 집계** — 월 탭 예산 요약 카드와 같은 구분이라 숫자가 어긋나지 않는다.
+- **저축·고정비 목록 숨기기 (v1.4.3)**: 상단 요약의 저축·고정비 줄 아래 "목록에서 저축·고정비 숨기기/보이기" 토글. **목록만** 거르고 합계(deductedTotal·remaining)는 그대로 — 안 보이게 했다고 남은 돈이 달라지면 안 된다. 그 줄만 있던 날은 카드를 만들지 않는다. 취향값이라 DataStore(`ledger_show_deductions`, 기본 true)에 남겨 다음에 열어도 유지 — VM 상태로만 두면 매번 다시 눌러야 해서. 걸러내기는 UseCase가 아니라 `LedgerViewModel.render`(표시 계층)에서 한다 — 계산이 아니라 보기 옵션이다. 백업엔 넣지 않는다(초기화 시 함께 사라지는 건 의도).
 
 ### 기간 막바지 여유분 안내 (구현됨, v1.4.2)
 

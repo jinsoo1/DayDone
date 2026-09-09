@@ -23,5 +23,9 @@ interface BudgetProfileRepository {
 
     suspend fun setPreJoinSpendHandled()
 
+    val isLedgerDeductionsVisibleFlow: Flow<Boolean>
+
+    suspend fun setLedgerDeductionsVisible(visible: Boolean)
+
     suspend fun clearAll()
 }

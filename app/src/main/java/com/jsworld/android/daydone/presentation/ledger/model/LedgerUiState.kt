@@ -29,6 +29,8 @@ data class LedgerUiState(
     val periodText: String = "",
     /** true = 오래된 날짜부터(기간 첫날 → 마지막 날) */
     val ascending: Boolean = true,
+    /** 목록에 저축·고정비 줄을 보여줄지. 상단 요약의 저축·고정비 합계는 이 값과 무관하게 항상 보인다 */
+    val showDeductions: Boolean = true,
     val monthlyBudget: Long = 0L,
     val incomeTotal: Long = 0L,
     val spentTotal: Long = 0L,

@@ -70,7 +70,8 @@ fun LedgerRoute(
             } else {
                 LedgerContent(
                     uiState = uiState,
-                    onToggleSort = viewModel::onToggleSort
+                    onToggleSort = viewModel::onToggleSort,
+                    onToggleDeductions = viewModel::onToggleDeductions
                 )
             }
         }
@@ -80,14 +81,19 @@ fun LedgerRoute(
 @Composable
 private fun LedgerContent(
     uiState: LedgerUiState,
-    onToggleSort: () -> Unit
+    onToggleSort: () -> Unit,
+    onToggleDeductions: () -> Unit
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(start = 20.dp, top = 8.dp, end = 20.dp, bottom = 40.dp)
     ) {
         item {
-            LedgerSummaryCard(uiState = uiState, onToggleSort = onToggleSort)
+            LedgerSummaryCard(
+                uiState = uiState,
+                onToggleSort = onToggleSort,
+                onToggleDeductions = onToggleDeductions
+            )
             Spacer(modifier = Modifier.height(8.dp))
         }
 
@@ -145,7 +151,8 @@ private fun LedgerContent(
 @Composable
 private fun LedgerSummaryCard(
     uiState: LedgerUiState,
-    onToggleSort: () -> Unit
+    onToggleSort: () -> Unit,
+    onToggleDeductions: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -225,6 +232,24 @@ private fun LedgerSummaryCard(
                     label = "저축·고정비",
                     amountText = "−${uiState.deductedTotal.toMoneyText()}",
                     color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+
+                // 합계는 그대로 두고 아래 목록에서만 저축·고정비 줄을 접는다.
+                // 이미 생활비에서 빠진 돈이라 "오늘 뭘 썼나" 훑을 땐 소음이 되기도 한다.
+                Text(
+                    text = if (uiState.showDeductions) {
+                        "목록에서 저축·고정비 숨기기"
+                    } else {
+                        "목록에 저축·고정비 보이기"
+                    },
+                    style = MaterialTheme.typography.labelMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier
+                        .align(Alignment.End)
+                        .clip(RoundedCornerShape(8.dp))
+                        .clickable(onClick = onToggleDeductions)
+                        .padding(horizontal = 8.dp, vertical = 4.dp)
                 )
             }
         }
