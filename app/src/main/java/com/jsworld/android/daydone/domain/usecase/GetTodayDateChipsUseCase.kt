@@ -1,6 +1,7 @@
 package com.jsworld.android.daydone.domain.usecase
 
 import com.jsworld.android.daydone.presentation.today.model.TodayDateChipUiModel
+import com.jsworld.android.daydone.presentation.util.toWeekText
 import java.time.LocalDate
 
 class GetTodayDateChipsUseCase {
@@ -27,7 +28,7 @@ class GetTodayDateChipsUseCase {
             TodayDateChipUiModel(
                 date = date,
                 dayText = date.dayOfMonth.toString(),
-                weekText = date.toKoreanWeekText(),
+                weekText = date.toWeekText(),
                 isToday = date == today,
                 isSelected = date == selectedDate,
                 hasExpense = expenseDates.contains(date),
@@ -36,15 +37,4 @@ class GetTodayDateChipsUseCase {
         }
     }
 
-    private fun LocalDate.toKoreanWeekText(): String {
-        return when (dayOfWeek.value) {
-            1 -> "월"
-            2 -> "화"
-            3 -> "수"
-            4 -> "목"
-            5 -> "금"
-            6 -> "토"
-            else -> "일"
-        }
-    }
 }

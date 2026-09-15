@@ -47,6 +47,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.jsworld.android.daydone.domain.model.ScheduledDeductionType
 import com.jsworld.android.daydone.presentation.monthly.model.MonthViewMode
@@ -55,6 +56,7 @@ import com.jsworld.android.daydone.presentation.monthly.model.MonthlyUiState
 import com.jsworld.android.daydone.presentation.today.model.ScheduledDeductionSummaryUiModel
 import com.jsworld.android.daydone.presentation.today.model.TodayExpenseUiModel
 import com.jsworld.android.daydone.presentation.today.model.TodayExtraIncomeUiModel
+import com.jsworld.android.daydone.presentation.util.text
 import com.jsworld.android.daydone.presentation.util.toMoneyText
 import com.jsworld.android.daydone.ui.component.DayDoneTopBar
 import com.jsworld.android.daydone.ui.theme.DayDoneAccent
@@ -142,7 +144,7 @@ fun MonthlyScreen(
             // 큰 지출 예상 달 안내 (설·추석·5월·12월, 진행 중/다가올 달에만)
             uiState.bigSpendNotice?.let { notice ->
                 item {
-                    BigSpendNoticeRow(text = notice)
+                    BigSpendNoticeRow(text = notice.text(LocalContext.current))
                 }
             }
 

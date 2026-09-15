@@ -42,8 +42,7 @@ class BuildMorningNotificationUseCase @Inject constructor(
         var hasBigSpend = false
         if (settings.bigSpendMonthEnabled && isPeriodFirstDay) {
             getBigSpendMonthNoticeUseCase(YearMonth.from(today))?.let {
-                // TODO(v1.5 3-6): 큰 지출 달 안내는 로케일별 지식 주입이라 따로 타입화한다.
-                lines += NotificationText.Raw(it)
+                lines += NotificationText.BigSpendMonth(it)
                 hasBigSpend = true
             }
         }

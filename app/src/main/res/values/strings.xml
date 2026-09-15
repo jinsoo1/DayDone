@@ -89,4 +89,16 @@
     <string name="category_living">생활·잡화</string>
     <string name="category_culture">문화·여가</string>
     <string name="category_etc">기타</string>
+
+    <!-- 큰 지출 예상 달 안내 (v1.5 국제화 3-6)
+         파생이 아니라 지식 주입 — 로케일마다 달력 자체가 다르다(§15). -->
+    <string name="big_spend_lunar">이번 달엔 <xliff:g id="holiday" example="설날">%1$s</xliff:g>이 있어요. 큰 지출이 예상되면 금고에 미리 나눠 담아두면 편해요.</string>
+    <string name="big_spend_family_month">5월엔 가정의 달 행사가 몰려요. 미리 나눠 담아두면 그 달이 편해져요.</string>
+    <string name="big_spend_year_end">12월엔 연말 모임이 늘어나요. 미리 조금씩 준비해두면 좋아요.</string>
+    <string name="holiday_seollal">설날</string>
+    <string name="holiday_chuseok">추석</string>
+
+    <!-- 금고: 준비금·납부 지출의 기록 이름 (DB 에 저장되는 값) -->
+    <string name="vault_prepare_expense_title"><xliff:g id="item" example="자동차세">%1$s</xliff:g> 준비</string>
+    <string name="vault_payment_expense_title"><xliff:g id="item" example="자동차세">%1$s</xliff:g> 납부</string>
 </resources>

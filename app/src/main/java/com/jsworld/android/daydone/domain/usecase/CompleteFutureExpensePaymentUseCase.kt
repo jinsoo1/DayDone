@@ -18,7 +18,8 @@ class CompleteFutureExpensePaymentUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(
         status: FutureExpenseStatus,
-        paymentDate: LocalDate
+        paymentDate: LocalDate,
+        shortfallTitle: String
     ) {
         val item = status.item
 
@@ -27,7 +28,7 @@ class CompleteFutureExpensePaymentUseCase @Inject constructor(
             // 부족분도 동일 경로(FUTURE_PREPARE, 같은 futureExpenseId)로 저장 → 총액 정확히 채움
             expenseRepository.addFuturePrepareExpense(
                 futureExpenseId = item.id,
-                title = "${item.title} 납부",
+                title = shortfallTitle,
                 amount = shortfall,
                 date = paymentDate
             )

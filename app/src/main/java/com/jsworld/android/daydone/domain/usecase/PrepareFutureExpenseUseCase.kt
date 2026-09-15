@@ -13,16 +13,18 @@ import java.time.LocalDate
 class PrepareFutureExpenseUseCase @Inject constructor(
     private val expenseRepository: ExpenseRepository
 ) {
+    /** [title] 은 기록에 남을 이름이라 로케일을 타므로 호출부(presentation)에서 만들어 넘긴다. */
     suspend operator fun invoke(
         item: FutureExpense,
         amount: Long,
-        date: LocalDate
+        date: LocalDate,
+        title: String
     ) {
         if (amount <= 0L) return
 
         expenseRepository.addFuturePrepareExpense(
             futureExpenseId = item.id,
-            title = "${item.title} 준비",
+            title = title,
             amount = amount,
             date = date
         )

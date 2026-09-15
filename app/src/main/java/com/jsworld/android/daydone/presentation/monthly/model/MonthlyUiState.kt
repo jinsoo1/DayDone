@@ -1,5 +1,6 @@
 package com.jsworld.android.daydone.presentation.monthly.model
 
+import com.jsworld.android.daydone.domain.model.BigSpendNotice
 import com.jsworld.android.daydone.domain.model.ScheduledDeductionType
 import com.jsworld.android.daydone.presentation.today.model.ScheduledDeductionSummaryUiModel
 import com.jsworld.android.daydone.presentation.today.model.TodayExpenseUiModel
@@ -20,7 +21,7 @@ data class MonthlyUiState(
     val mode: MonthViewMode = MonthViewMode.CURRENT,
 
     /** 큰 지출 예상 달 안내(설·추석·5월·12월). 해당 없거나 지난 달이면 null. */
-    val bigSpendNotice: String? = null,
+    val bigSpendNotice: BigSpendNotice? = null,
 
     val monthlyBudget: Long = 0L,
     val extraIncomeAmount: Long = 0L,

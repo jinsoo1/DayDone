@@ -63,13 +63,8 @@ sealed interface NotificationText {
     /** 제목을 본문 문장으로 이어 쓸 때 문장부호를 맞춘다(문장부호 규칙은 로케일을 탄다). */
     data class AsSentence(val text: NotificationText) : NotificationText
 
-    /**
-     * 아직 타입으로 못 옮긴 완성 문자열.
-     *
-     * ⚠️ `GetBigSpendMonthNoticeUseCase` 전용 임시 통로다. 그쪽은 **로케일별 지식 주입**
-     * (설·추석 음력 표)이라 v1.5 설계 3-6 에서 따로 다룬다. 다른 곳에서 쓰지 말 것.
-     */
-    data class Raw(val text: String) : NotificationText
+    /** 큰 지출이 예상되는 달 안내. 월 탭 한 줄과 **같은 안내**라 조립도 같은 곳에서 한다. */
+    data class BigSpendMonth(val notice: BigSpendNotice) : NotificationText
 
     companion object {
         /** 이 일수부터 "N일째"라고 말한다. */

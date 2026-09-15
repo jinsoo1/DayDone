@@ -1,5 +1,6 @@
 package com.jsworld.android.daydone.presentation.vault
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jsworld.android.daydone.domain.model.BudgetPeriod
@@ -23,7 +24,9 @@ import com.jsworld.android.daydone.domain.usecase.WithdrawFuturePreparedUseCase
 import com.jsworld.android.daydone.presentation.vault.model.VaultItemUiModel
 import com.jsworld.android.daydone.presentation.vault.model.VaultSuggestionUiModel
 import com.jsworld.android.daydone.presentation.vault.model.VaultUiState
+import com.jsworld.android.daydone.R
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -49,7 +52,10 @@ class VaultViewModel @Inject constructor(
     private val deleteFutureExpenseUseCase: DeleteFutureExpenseUseCase,
     private val undoFutureExpensePaymentUseCase: UndoFutureExpensePaymentUseCase,
     private val withdrawFuturePreparedUseCase: WithdrawFuturePreparedUseCase,
-    private val observeHeldPurchasesUseCase: ObserveHeldPurchasesUseCase
+    private val observeHeldPurchasesUseCase: ObserveHeldPurchasesUseCase,
+    // 준비금·납부 지출의 **기록 이름**을 만들기 위한 것. 그 이름은 DB 에 남으므로
+    // 로케일을 타는 조립은 domain 이 아니라 여기서 한다(v1.5 국제화 3-6).
+    @ApplicationContext private val context: Context
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(VaultUiState())
@@ -202,7 +208,15 @@ class VaultViewModel @Inject constructor(
 
         val status = currentStatuses.find { it.item.id == id } ?: return
         viewModelScope.launch {
-            prepareFutureExpenseUseCase(status.item, amount, LocalDate.now())
+            prepareFutureExpenseUseCase(
+                item = status.item,
+                amount = amount,
+                date = LocalDate.now(),
+                title = context.getString(
+                    R.string.vault_prepare_expense_title,
+                    status.item.title
+                )
+            )
             _uiState.value = _uiState.value.copy(
                 isPrepareDialogVisible = false,
                 prepareTargetId = null
@@ -215,7 +229,14 @@ class VaultViewModel @Inject constructor(
         val id = _uiState.value.editingId ?: return
         val status = currentStatuses.find { it.item.id == id } ?: return
         viewModelScope.launch {
-            completeFutureExpensePaymentUseCase(status, LocalDate.now())
+            completeFutureExpensePaymentUseCase(
+                status = status,
+                paymentDate = LocalDate.now(),
+                shortfallTitle = context.getString(
+                    R.string.vault_payment_expense_title,
+                    status.item.title
+                )
+            )
             _uiState.value = _uiState.value.copy(isInputSheetVisible = false, editingId = null)
         }
     }

@@ -3,6 +3,7 @@ package com.jsworld.android.daydone.notification
 import android.content.Context
 import com.jsworld.android.daydone.R
 import com.jsworld.android.daydone.domain.model.NotificationText
+import com.jsworld.android.daydone.presentation.util.text
 import com.jsworld.android.daydone.presentation.util.toMoneyText
 import com.jsworld.android.daydone.presentation.util.withEndingMark
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -85,7 +86,7 @@ class NotificationTextRenderer @Inject constructor(
 
             is NotificationText.AsSentence -> render(text.text).withEndingMark()
 
-            is NotificationText.Raw -> text.text
+            is NotificationText.BigSpendMonth -> text.notice.text(context)
         }
     }
 }
