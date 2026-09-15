@@ -54,11 +54,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import java.time.Instant
-import java.time.ZoneOffset
+import com.jsworld.android.daydone.R
 import com.jsworld.android.daydone.domain.model.NoSpendMode
 import com.jsworld.android.daydone.domain.model.ScheduledDeductionType
 import com.jsworld.android.daydone.presentation.today.model.QuickExpenseUiModel
@@ -70,7 +70,9 @@ import com.jsworld.android.daydone.presentation.today.model.TodayScheduledDeduct
 import com.jsworld.android.daydone.presentation.today.model.TodayUiState
 import com.jsworld.android.daydone.presentation.util.toMoneyText
 import com.jsworld.android.daydone.ui.component.NoticeBox
+import java.time.Instant
 import java.time.LocalDate
+import java.time.ZoneOffset
 
 @Composable
 fun TodayScreen(
@@ -153,7 +155,7 @@ fun TodayScreen(
         ) {
             item {
                 Text(
-                    text = "오늘 권장 금액",
+                    text = stringResource(R.string.today_oneul_gweonjang_geumaeg),
                     style = MaterialTheme.typography.titleMedium
                 )
             }
@@ -342,9 +344,9 @@ private fun TodayDefenseCard(
     onPrepareSurplusClick: () -> Unit
 ) {
     val titleText = if (uiState.isTodayOverDefenseLine) {
-        "오늘 권장보다 조금 더 썼어요"
+        stringResource(R.string.today_oneul_gweonjangboda_jogeum_deo)
     } else {
-        "오늘 이만큼 남았어요"
+        stringResource(R.string.today_oneul_imankeum_namasseoyo)
     }
 
     val amountText = if (uiState.isTodayOverDefenseLine) {
@@ -354,9 +356,9 @@ private fun TodayDefenseCard(
     }
 
     val subMessage = if (uiState.isTodayOverDefenseLine) {
-        "오늘 권장 금액 ${uiState.todayStartDefenseLine.toMoneyText()}보다 ${uiState.todayOverAmount.toMoneyText()} 더 썼어요."
+        stringResource(R.string.today_oneul_gweonjang_geumaeg_boda, uiState.todayStartDefenseLine.toMoneyText(), uiState.todayOverAmount.toMoneyText())
     } else {
-        "오늘 권장 금액 ${uiState.todayStartDefenseLine.toMoneyText()} 중 ${uiState.todayExpenseAmount.toMoneyText()}을 썼어요."
+        stringResource(R.string.today_oneul_gweonjang_geumaeg_jung, uiState.todayStartDefenseLine.toMoneyText(), uiState.todayExpenseAmount.toMoneyText())
     }
 
     val accentColor = if (uiState.isTodayOverDefenseLine) {
@@ -396,7 +398,7 @@ private fun TodayDefenseCard(
 
             if (uiState.remainingDays > 0) {
                 Text(
-                    text = "이번 기간 ${uiState.remainingDays}일 남음",
+                    text = stringResource(R.string.today_ibeon_gigan_il_nameum, uiState.remainingDays),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.75f)
                 )
@@ -427,7 +429,7 @@ private fun TodayDefenseCard(
                     contentPadding = PaddingValues(horizontal = 0.dp, vertical = 0.dp)
                 ) {
                     Text(
-                        text = "금고에 준비하기 ›",
+                        text = stringResource(R.string.today_geumgoe_junbihagi),
                         style = MaterialTheme.typography.labelLarge,
                         fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.colorScheme.onPrimaryContainer
@@ -447,7 +449,7 @@ private fun TodayDefenseCard(
             // 기간 마지막 날에는 나눌 내일이 없으니(null) 금액 대신 새 기간 안내를 띄운다.
             val tomorrowText = when {
                 uiState.tomorrowRecommended != null -> uiState.tomorrowRecommended.toMoneyText()
-                uiState.remainingDays == 1 -> "새 기간이 시작돼요"
+                uiState.remainingDays == 1 -> stringResource(R.string.today_sae_gigani_sijagdwaeyo)
                 else -> null
             }
 
@@ -462,7 +464,7 @@ private fun TodayDefenseCard(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "내일부터",
+                        text = stringResource(R.string.today_naeilbuteo),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.75f)
                     )
@@ -498,18 +500,18 @@ private fun PreJoinBanner(
             verticalArrangement = Arrangement.spacedBy(1.dp)
         ) {
             Text(
-                text = "${periodStartLabel}부터 오늘까지 쓴 돈이 있다면",
+                text = stringResource(R.string.today_buteo_oneulkkaji_sseun_doni, periodStartLabel),
                 style = MaterialTheme.typography.bodySmall,
                 fontWeight = FontWeight.SemiBold
             )
             Text(
-                text = "넣어야 오늘 쓸 수 있는 금액이 정확해져요",
+                text = stringResource(R.string.today_neoheoya_oneul_sseul_su),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
         Text(
-            text = "넣기",
+            text = stringResource(R.string.today_neohgi),
             style = MaterialTheme.typography.labelMedium,
             color = MaterialTheme.colorScheme.primary,
             fontWeight = FontWeight.SemiBold
@@ -528,18 +530,16 @@ private fun PreJoinAmountDialog(
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("이미 쓴 돈 넣기") },
+        title = { Text(stringResource(R.string.today_imi_sseun_don_neohgi)) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(
-                    text = "${periodStartLabel}부터 어제까지 쓴 금액을 대략 넣어주세요. " +
-                            "정확하지 않아도 괜찮아요 — 은행 앱을 슬쩍 보고 어림잡아도 충분해요.",
+                    text = stringResource(R.string.today_buteo_eojekkaji_sseun_geumaegeul, periodStartLabel),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Text(
-                    text = "저장하면 '이전 지출'로 기록되고, 월 탭 캘린더의 " +
-                            "$periodStartLabel 내역에서 언제든 고칠 수 있어요.",
+                    text = stringResource(R.string.today_jeojanghamyeon_ijeon_jichul_ro, periodStartLabel),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -547,9 +547,9 @@ private fun PreJoinAmountDialog(
                     value = amountInput,
                     onValueChange = onAmountChange,
                     modifier = Modifier.fillMaxWidth(),
-                    label = { Text("대략 쓴 금액") },
+                    label = { Text(stringResource(R.string.today_daeryag_sseun_geumaeg)) },
                     singleLine = true,
-                    suffix = { Text("원") },
+                    suffix = { Text(stringResource(R.string.today_weon)) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                 )
             }
@@ -559,12 +559,12 @@ private fun PreJoinAmountDialog(
                 onClick = onSave,
                 enabled = (amountInput.toLongOrNull() ?: 0L) > 0L
             ) {
-                Text("저장")
+                Text(stringResource(R.string.today_jeojang))
             }
         },
         dismissButton = {
             TextButton(onClick = onSkip) {
-                Text("건너뛰기")
+                Text(stringResource(R.string.today_geonneottwigi))
             }
         }
     )
@@ -584,13 +584,13 @@ private fun LastReportBanner(onClick: () -> Unit) {
     ) {
         Text(text = "📊", style = MaterialTheme.typography.bodyMedium)
         Text(
-            text = "지난 기간 결산 리포트가 나왔어요",
+            text = stringResource(R.string.today_jinan_gigan_gyeolsan_ripoteuga),
             style = MaterialTheme.typography.bodySmall,
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier.weight(1f)
         )
         Text(
-            text = "보기",
+            text = stringResource(R.string.today_bogi),
             style = MaterialTheme.typography.labelMedium,
             color = MaterialTheme.colorScheme.primary,
             fontWeight = FontWeight.SemiBold
@@ -605,20 +605,20 @@ private fun NoSpendChallengeCard(
     onDismissClick: () -> Unit
 ) {
     val modeText = when (uiState.challengeMode) {
-        NoSpendMode.FULL -> "완전 무지출"
-        NoSpendMode.ESSENTIAL_ALLOWED -> "필수 지출 허용"
-        NoSpendMode.CAP -> "하루 ${uiState.challengeCapAmount.toMoneyText()} 이하"
+        NoSpendMode.FULL -> stringResource(R.string.today_wanjeon_mujichul)
+        NoSpendMode.ESSENTIAL_ALLOWED -> stringResource(R.string.today_pilsu_jichul_heoyong)
+        NoSpendMode.CAP -> stringResource(R.string.today_haru_iha, uiState.challengeCapAmount.toMoneyText())
     }
 
     val statusText = when {
         uiState.challengeFinished ->
-            "무지출 챌린지가 끝났어요 · ${uiState.challengeTargetDays}일 중 ${uiState.challengeSuccessDays}일 성공 🎉"
+            stringResource(R.string.today_mujichul_chaelrinjiga_kkeutnasseoyo_il, uiState.challengeTargetDays, uiState.challengeSuccessDays)
         uiState.challengeTodayOnTrack && uiState.challengeStreak >= 2 ->
-            "오늘도 지갑이 쉬는 중이에요"
+            stringResource(R.string.today_oneuldo_jigabi_swineun_jungieyo)
         uiState.challengeTodayOnTrack ->
-            "오늘 지갑이 쉬는 중이에요"
+            stringResource(R.string.today_oneul_jigabi_swineun_jungieyo)
         else ->
-            "오늘은 지출이 있었어요. 내일 다시 이어가요"
+            stringResource(R.string.today_oneuleun_jichuli_isseosseoyo_naeil)
     }
 
     val progress = if (uiState.challengeTargetDays > 0) {
@@ -639,13 +639,13 @@ private fun NoSpendChallengeCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "무지출 챌린지 · $modeText",
+                    text = stringResource(R.string.today_mujichul_chaelrinji, modeText),
                     style = MaterialTheme.typography.titleMedium
                 )
 
                 if (uiState.challengeStreak > 0 && !uiState.challengeFinished) {
                     Text(
-                        text = "🔥 ${uiState.challengeStreak}일 연속",
+                        text = stringResource(R.string.today_il_yeonsog, uiState.challengeStreak),
                         style = MaterialTheme.typography.labelLarge,
                         color = MaterialTheme.colorScheme.primary
                     )
@@ -654,9 +654,9 @@ private fun NoSpendChallengeCard(
 
             Text(
                 text = if (uiState.challengeFinished) {
-                    "${uiState.challengeSuccessDays}일 성공 / ${uiState.challengeTargetDays}일 도전"
+                    stringResource(R.string.today_il_seonggong_il_dojeon, uiState.challengeSuccessDays, uiState.challengeTargetDays)
                 } else {
-                    "${uiState.challengeDayIndex}일째 · 성공 ${uiState.challengeSuccessDays}일 / ${uiState.challengeTargetDays}일 도전"
+                    stringResource(R.string.today_iljjae_seonggong_il_il, uiState.challengeDayIndex, uiState.challengeSuccessDays, uiState.challengeTargetDays)
                 },
                 style = MaterialTheme.typography.bodyMedium
             )
@@ -691,13 +691,13 @@ private fun NoSpendChallengeCard(
                         onClick = onDismissClick,
                         modifier = Modifier.weight(1f)
                     ) {
-                        Text("그만 보기")
+                        Text(stringResource(R.string.today_geuman_bogi))
                     }
                     Button(
                         onClick = onRestartClick,
                         modifier = Modifier.weight(1f)
                     ) {
-                        Text("새로 도전하기")
+                        Text(stringResource(R.string.today_saero_dojeonhagi))
                     }
                 }
             }
@@ -724,12 +724,12 @@ private fun BudgetSummaryCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "이번 기간 요약",
+                    text = stringResource(R.string.today_ibeon_gigan_yoyag),
                     style = MaterialTheme.typography.titleMedium
                 )
 
                 Text(
-                    text = if (expanded) "접기" else "자세히",
+                    text = if (expanded) stringResource(R.string.today_jeobgi) else stringResource(R.string.today_jasehi),
                     style = MaterialTheme.typography.labelLarge,
                     color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.clickable { expanded = !expanded }
@@ -737,12 +737,12 @@ private fun BudgetSummaryCard(
             }
 
             BudgetSummaryRow(
-                title = "남은 순수 생활비",
+                title = stringResource(R.string.today_nameun_sunsu_saenghwalbi),
                 amountText = uiState.remainingPureBudget.toMoneyText()
             )
 
             Text(
-                text = "저축과 고정비는 이미 생활비에서 제외해두었어요.",
+                text = stringResource(R.string.today_jeochuggwa_gojeongbineun_imi_saenghwalbieseo),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -751,39 +751,39 @@ private fun BudgetSummaryCard(
                 HorizontalDivider()
 
                 BudgetSummaryRow(
-                    title = "월 예산",
+                    title = stringResource(R.string.today_weol_yesan),
                     amountText = uiState.monthlyIncome.toMoneyText()
                 )
 
                 if (uiState.extraIncomeAmount > 0L) {
                     BudgetSummaryRow(
-                        title = "추가 수익",
+                        title = stringResource(R.string.today_chuga_suig),
                         amountText = "+${uiState.extraIncomeAmount.toMoneyText()}"
                     )
                 }
 
                 BudgetSummaryRow(
-                    title = "사용 가능 예산",
+                    title = stringResource(R.string.today_sayong_ganeung_yesan),
                     amountText = uiState.totalAvailableBudget.toMoneyText()
                 )
 
                 if (uiState.scheduledDeductionTotalAmount > 0L) {
                     BudgetSummaryRow(
-                        title = "차감 예정 금액",
+                        title = stringResource(R.string.today_chagam_yejeong_geumaeg),
                         amountText = "-${uiState.scheduledDeductionTotalAmount.toMoneyText()}"
                     )
                 }
 
                 if (uiState.pastExpenseAmount > 0L) {
                     BudgetSummaryRow(
-                        title = "오늘 이전 지출",
+                        title = stringResource(R.string.today_oneul_ijeon_jichul),
                         amountText = "-${uiState.pastExpenseAmount.toMoneyText()}"
                     )
                 }
 
                 if (uiState.todayExpenseAmount > 0L) {
                     BudgetSummaryRow(
-                        title = "오늘 지출",
+                        title = stringResource(R.string.today_oneul_jichul),
                         amountText = "-${uiState.todayExpenseAmount.toMoneyText()}"
                     )
                 }
@@ -840,12 +840,12 @@ private fun ScheduledDeductionSummaryCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "예정 차감",
+                    text = stringResource(R.string.today_yejeong_chagam),
                     style = MaterialTheme.typography.titleMedium
                 )
 
                 Text(
-                    text = if (expanded) "접기" else "자세히",
+                    text = if (expanded) stringResource(R.string.today_jeobgi) else stringResource(R.string.today_jasehi),
                     style = MaterialTheme.typography.labelLarge,
                     color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.clickable { expanded = !expanded }
@@ -857,7 +857,7 @@ private fun ScheduledDeductionSummaryCard(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = "저축",
+                    text = stringResource(R.string.today_jeochug),
                     style = MaterialTheme.typography.bodyMedium
                 )
 
@@ -872,7 +872,7 @@ private fun ScheduledDeductionSummaryCard(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = "고정비",
+                    text = stringResource(R.string.today_gojeongbi),
                     style = MaterialTheme.typography.bodyMedium
                 )
 
@@ -894,7 +894,7 @@ private fun ScheduledDeductionSummaryCard(
             }
 
             Text(
-                text = "이번 기간에 나갈 돈은 이미 생활비에서 제외해두었어요.",
+                text = stringResource(R.string.today_ibeon_gigane_nagal_doneun),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -908,8 +908,8 @@ private fun ScheduledDeductionSummaryRow(
     onClick: () -> Unit
 ) {
     val typeText = when (item.type) {
-        ScheduledDeductionType.SAVING -> "저축"
-        ScheduledDeductionType.FIXED -> "고정비"
+        ScheduledDeductionType.SAVING -> stringResource(R.string.today_jeochug)
+        ScheduledDeductionType.FIXED -> stringResource(R.string.today_gojeongbi)
     }
 
     Row(
@@ -928,7 +928,7 @@ private fun ScheduledDeductionSummaryRow(
             )
 
             Text(
-                text = "${item.withdrawalDate.monthValue}월 ${item.withdrawalDate.dayOfMonth}일 · $typeText",
+                text = stringResource(R.string.today_weol_il, item.withdrawalDate.monthValue, item.withdrawalDate.dayOfMonth, typeText),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -988,7 +988,7 @@ private fun DateChip(
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             Text(
-                text = if (item.isToday) "오늘" else item.weekText,
+                text = if (item.isToday) stringResource(R.string.today_oneul) else item.weekText,
                 style = MaterialTheme.typography.labelSmall
             )
 
@@ -1037,7 +1037,7 @@ private fun QuickExpenseRow(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Text(
-            text = "빠른 지출",
+            text = stringResource(R.string.today_ppareun_jichul),
             style = MaterialTheme.typography.titleMedium
         )
 
@@ -1045,7 +1045,7 @@ private fun QuickExpenseRow(
             OutlinedButton(
                 onClick = onQuickExpenseAddClick
             ) {
-                Text("자주 쓰는 지출 추가하기")
+                Text(stringResource(R.string.today_jaju_sseuneun_jichul_chugahagi))
             }
         } else {
             LazyRow(
@@ -1072,7 +1072,7 @@ private fun QuickExpenseRow(
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Close,
-                                    contentDescription = "빠른 지출 삭제",
+                                    contentDescription = stringResource(R.string.today_ppareun_jichul_sagje),
                                     modifier = Modifier.size(14.dp)
                                 )
                             }
@@ -1084,7 +1084,7 @@ private fun QuickExpenseRow(
                     AssistChip(
                         onClick = onQuickExpenseAddClick,
                         label = {
-                            Text("+ 추가")
+                            Text(stringResource(R.string.today_chuga))
                         }
                     )
                 }
@@ -1123,7 +1123,7 @@ private fun SelectedDateSection(
                 )
 
                 Text(
-                    text = "전체 보기 ›",
+                    text = stringResource(R.string.today_jeonche_bogi),
                     style = MaterialTheme.typography.labelMedium,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.primary,
@@ -1136,7 +1136,7 @@ private fun SelectedDateSection(
 
             if (expenses.isEmpty() && extraIncomes.isEmpty() && scheduledDeductions.isEmpty()) {
                 Text(
-                    text = "아직 기록된 내역이 없어요.",
+                    text = stringResource(R.string.today_ajig_girogdoen_naeyeogi_eobseoyo),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -1170,7 +1170,7 @@ private fun SelectedDateSection(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "총 지출",
+                        text = stringResource(R.string.today_chong_jichul),
                         style = MaterialTheme.typography.titleMedium
                     )
 
@@ -1189,8 +1189,8 @@ private fun SelectedDateScheduledDeductionRow(
     item: TodayScheduledDeductionUiModel
 ) {
     val typeText = when (item.type) {
-        ScheduledDeductionType.SAVING -> "저축"
-        ScheduledDeductionType.FIXED -> "고정비"
+        ScheduledDeductionType.SAVING -> stringResource(R.string.today_jeochug)
+        ScheduledDeductionType.FIXED -> stringResource(R.string.today_gojeongbi)
     }
 
     Row(
@@ -1203,12 +1203,12 @@ private fun SelectedDateScheduledDeductionRow(
             modifier = Modifier.weight(1f)
         ) {
             Text(
-                text = "${item.title} 예정",
+                text = stringResource(R.string.today_yejeong, item.title),
                 style = MaterialTheme.typography.bodyMedium
             )
 
             Text(
-                text = "이미 생활비에서 제외해두었어요.",
+                text = stringResource(R.string.today_imi_saenghwalbieseo_jeoehaedueosseoyo),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -1268,7 +1268,7 @@ private fun SelectedDateExtraIncomeRow(
             modifier = Modifier.weight(1f)
         ) {
             Text(
-                text = "${income.title} (수익)",
+                text = stringResource(R.string.today_suig, income.title),
                 style = MaterialTheme.typography.bodyMedium
             )
 
@@ -1302,7 +1302,7 @@ private fun DateSelectorField(
         onClick = { showDialog = true },
         modifier = Modifier.fillMaxWidth()
     ) {
-        Text("$label: ${date.year}년 ${date.monthValue}월 ${date.dayOfMonth}일")
+        Text(stringResource(R.string.today_nyeon_weol_il, label, date.year, date.monthValue, date.dayOfMonth))
     }
 
     if (showDialog) {
@@ -1327,14 +1327,14 @@ private fun DateSelectorField(
                         showDialog = false
                     }
                 ) {
-                    Text("확인")
+                    Text(stringResource(R.string.today_hwagin))
                 }
             },
             dismissButton = {
                 TextButton(
                     onClick = { showDialog = false }
                 ) {
-                    Text("취소")
+                    Text(stringResource(R.string.today_chwiso))
                 }
             }
         ) {
@@ -1378,7 +1378,7 @@ internal fun ExpenseInputBottomSheet(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Text(
-                text = if (isEditing) "지출 수정" else "지출 추가",
+                text = if (isEditing) stringResource(R.string.today_jichul_sujeong) else stringResource(R.string.today_jichul_chuga),
                 style = MaterialTheme.typography.titleLarge
             )
 
@@ -1387,7 +1387,7 @@ internal fun ExpenseInputBottomSheet(
                 onValueChange = onTitleChange,
                 modifier = Modifier.fillMaxWidth(),
                 label = {
-                    Text("지출명")
+                    Text(stringResource(R.string.today_jichulmyeong))
                 },
                 singleLine = true
             )
@@ -1397,11 +1397,11 @@ internal fun ExpenseInputBottomSheet(
                 onValueChange = onAmountChange,
                 modifier = Modifier.fillMaxWidth(),
                 label = {
-                    Text("금액")
+                    Text(stringResource(R.string.today_geumaeg))
                 },
                 singleLine = true,
                 suffix = {
-                    Text("원")
+                    Text(stringResource(R.string.today_weon))
                 },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number
@@ -1409,7 +1409,7 @@ internal fun ExpenseInputBottomSheet(
             )
 
             DateSelectorField(
-                label = "날짜",
+                label = stringResource(R.string.today_naljja),
                 date = dateInput,
                 onDateChange = onDateChange
             )
@@ -1427,11 +1427,11 @@ internal fun ExpenseInputBottomSheet(
                     )
                     Column {
                         Text(
-                            text = "필수 지출",
+                            text = stringResource(R.string.today_pilsu_jichul),
                             style = MaterialTheme.typography.bodyMedium
                         )
                         Text(
-                            text = "무지출 챌린지에서 이 지출은 허용돼요 (교통비, 약값 등)",
+                            text = stringResource(R.string.today_mujichul_chaelrinjieseo_i_jichuleun),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -1445,7 +1445,7 @@ internal fun ExpenseInputBottomSheet(
                 enabled = titleInput.isNotBlank() &&
                         (amountInput.toLongOrNull() ?: 0L) > 0L
             ) {
-                Text(if (isEditing) "수정하기" else "추가하기")
+                Text(if (isEditing) stringResource(R.string.today_sujeonghagi) else stringResource(R.string.today_chugahagi))
             }
 
             if (isEditing) {
@@ -1454,7 +1454,7 @@ internal fun ExpenseInputBottomSheet(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
-                        text = "삭제하기",
+                        text = stringResource(R.string.today_sagjehagi),
                         color = MaterialTheme.colorScheme.error
                     )
                 }
@@ -1491,7 +1491,7 @@ private fun BudgetSettingBottomSheet(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Text(
-                text = "예산 설정",
+                text = stringResource(R.string.today_yesan_seoljeong),
                 style = MaterialTheme.typography.titleLarge
             )
 
@@ -1500,11 +1500,11 @@ private fun BudgetSettingBottomSheet(
                 onValueChange = onMonthlyIncomeChange,
                 modifier = Modifier.fillMaxWidth(),
                 label = {
-                    Text("월 수입")
+                    Text(stringResource(R.string.today_weol_suib))
                 },
                 singleLine = true,
                 suffix = {
-                    Text("원")
+                    Text(stringResource(R.string.today_weon))
                 },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number
@@ -1516,25 +1516,25 @@ private fun BudgetSettingBottomSheet(
                 onValueChange = onBudgetStartDayChange,
                 modifier = Modifier.fillMaxWidth(),
                 label = {
-                    Text("예산 시작일")
+                    Text(stringResource(R.string.today_yesan_sijagil))
                 },
                 singleLine = true,
                 suffix = {
-                    Text("일")
+                    Text(stringResource(R.string.today_il))
                 },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number
                 ),
                 supportingText = {
-                    Text("1~31일 사이로 입력해 주세요. 31일은 매월 말일로 계산돼요.")
+                    Text(stringResource(R.string.today_1_31il_sairo_ibryeoghae))
                 }
             )
 
             NoticeBox(
-                title = "시작일을 바꾸면 모든 기간이 다시 나뉘어요",
+                title = stringResource(R.string.today_sijagileul_bakkumyeon_modeun_gigani),
                 lines = listOf(
-                    "지난 기록을 포함한 모든 달이 새 시작일 기준으로 다시 계산돼요.",
-                    "날짜에 따라 지출·저축/고정비가 옆 달 기간으로 이동해 보일 수 있어요."
+                    stringResource(R.string.today_jinan_girogeul_pohamhan_modeun),
+                    stringResource(R.string.today_naljjae_ttara_jichul_jeochug)
                 )
             )
 
@@ -1545,7 +1545,7 @@ private fun BudgetSettingBottomSheet(
                         monthlyIncomeInput.toLongOrNull()!! > 0L &&
                         budgetStartDayInput.toIntOrNull() in 1..31
             ) {
-                Text("저장하기")
+                Text(stringResource(R.string.today_jeojanghagi))
             }
         }
     }
@@ -1579,7 +1579,7 @@ internal fun ScheduledDeductionInputBottomSheet(
     val amountPreview = amountInput
         .toLongOrNull()
         ?.toMoneyText()
-        ?: "0원"
+        ?: stringResource(R.string.today_0weon)
 
     val withdrawalDay = withdrawalDayInput.toIntOrNull()
 
@@ -1596,7 +1596,7 @@ internal fun ScheduledDeductionInputBottomSheet(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Text(
-                text = if (isEditing) "저축 / 고정비 수정" else "저축 / 고정비 추가",
+                text = if (isEditing) stringResource(R.string.today_jeochug_gojeongbi_sujeong) else stringResource(R.string.today_jeochug_gojeongbi_chuga),
                 style = MaterialTheme.typography.titleLarge
             )
 
@@ -1609,7 +1609,7 @@ internal fun ScheduledDeductionInputBottomSheet(
                         onTypeChange(ScheduledDeductionType.SAVING)
                     },
                     label = {
-                        Text("저축")
+                        Text(stringResource(R.string.today_jeochug))
                     }
                 )
 
@@ -1619,7 +1619,7 @@ internal fun ScheduledDeductionInputBottomSheet(
                         onTypeChange(ScheduledDeductionType.FIXED)
                     },
                     label = {
-                        Text("고정비")
+                        Text(stringResource(R.string.today_gojeongbi))
                     }
                 )
             }
@@ -1629,14 +1629,14 @@ internal fun ScheduledDeductionInputBottomSheet(
                 onValueChange = onTitleChange,
                 modifier = Modifier.fillMaxWidth(),
                 label = {
-                    Text("항목명")
+                    Text(stringResource(R.string.today_hangmogmyeong))
                 },
                 placeholder = {
                     Text(
                         if (selectedType == ScheduledDeductionType.SAVING) {
-                            "예: 적금"
+                            stringResource(R.string.today_ye_jeoggeum)
                         } else {
-                            "예: 보험료"
+                            stringResource(R.string.today_ye_boheomryo)
                         }
                     )
                 },
@@ -1648,20 +1648,20 @@ internal fun ScheduledDeductionInputBottomSheet(
                 onValueChange = onAmountChange,
                 modifier = Modifier.fillMaxWidth(),
                 label = {
-                    Text("금액")
+                    Text(stringResource(R.string.today_geumaeg))
                 },
                 placeholder = {
-                    Text("예: 700000")
+                    Text(stringResource(R.string.today_ye_700000))
                 },
                 singleLine = true,
                 suffix = {
-                    Text("원")
+                    Text(stringResource(R.string.today_weon))
                 },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number
                 ),
                 supportingText = {
-                    Text("입력한 금액: $amountPreview")
+                    Text(stringResource(R.string.today_ibryeoghan_geumaeg, amountPreview))
                 }
             )
 
@@ -1670,20 +1670,20 @@ internal fun ScheduledDeductionInputBottomSheet(
                 onValueChange = onWithdrawalDayChange,
                 modifier = Modifier.fillMaxWidth(),
                 label = {
-                    Text("출금일")
+                    Text(stringResource(R.string.today_chulgeumil))
                 },
                 placeholder = {
-                    Text("예: 26")
+                    Text(stringResource(R.string.today_ye_26))
                 },
                 singleLine = true,
                 suffix = {
-                    Text("일")
+                    Text(stringResource(R.string.today_il))
                 },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number
                 ),
                 supportingText = {
-                    Text("매월 1~31일 사이로 입력해 주세요.")
+                    Text(stringResource(R.string.today_maeweol_1_31il_sairo))
                 }
             )
 
@@ -1697,7 +1697,7 @@ internal fun ScheduledDeductionInputBottomSheet(
                 modifier = Modifier.fillMaxWidth(),
                 enabled = canSave
             ) {
-                Text(if (isEditing) "수정하기" else "저장하기")
+                Text(if (isEditing) stringResource(R.string.today_sujeonghagi) else stringResource(R.string.today_jeojanghagi))
             }
 
             if (isEditing) {
@@ -1705,7 +1705,7 @@ internal fun ScheduledDeductionInputBottomSheet(
                     onClick = { showEndConfirm = true },
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("이번 달까지만 하고 종료")
+                    Text(stringResource(R.string.today_ibeon_dalkkajiman_hago_jongryo))
                 }
 
                 TextButton(
@@ -1713,7 +1713,7 @@ internal fun ScheduledDeductionInputBottomSheet(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
-                        text = "삭제하기",
+                        text = stringResource(R.string.today_sagjehagi),
                         color = MaterialTheme.colorScheme.error
                     )
                 }
@@ -1724,21 +1724,21 @@ internal fun ScheduledDeductionInputBottomSheet(
     if (showEndConfirm) {
         AlertDialog(
             onDismissRequest = { showEndConfirm = false },
-            title = { Text("이번 달까지만 하고 종료할까요?") },
+            title = { Text(stringResource(R.string.today_ibeon_dalkkajiman_hago_jongryohalkkayo)) },
             text = {
-                Text("적금 만기나 완납처럼 이제 안 나가는 항목에 사용해요. 이번 달까지는 그대로 반영되고, 다음 달부터 예정 차감에서 사라져요. 지난 기록은 남아요.")
+                Text(stringResource(R.string.today_jeoggeum_mangina_wannabcheoreom_ije))
             },
             confirmButton = {
                 TextButton(onClick = {
                     showEndConfirm = false
                     onEndClick()
                 }) {
-                    Text("종료")
+                    Text(stringResource(R.string.today_jongryo))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showEndConfirm = false }) {
-                    Text("취소")
+                    Text(stringResource(R.string.today_chwiso))
                 }
             }
         )
@@ -1747,21 +1747,21 @@ internal fun ScheduledDeductionInputBottomSheet(
     if (showDeleteConfirm) {
         AlertDialog(
             onDismissRequest = { showDeleteConfirm = false },
-            title = { Text("삭제할까요?") },
+            title = { Text(stringResource(R.string.today_sagjehalkkayo)) },
             text = {
-                Text("이 항목이 모든 기간(지난 달 포함)에서 사라지고 되돌릴 수 없어요. 이번 달까지만 쓰고 끝내려면 '종료'를 사용하세요.")
+                Text(stringResource(R.string.today_i_hangmogi_modeun_gigan))
             },
             confirmButton = {
                 TextButton(onClick = {
                     showDeleteConfirm = false
                     onDeleteClick()
                 }) {
-                    Text("삭제", color = MaterialTheme.colorScheme.error)
+                    Text(stringResource(R.string.today_sagje), color = MaterialTheme.colorScheme.error)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showDeleteConfirm = false }) {
-                    Text("취소")
+                    Text(stringResource(R.string.today_chwiso))
                 }
             }
         )
@@ -1795,12 +1795,12 @@ private fun QuickExpenseInputBottomSheet(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Text(
-                text = "빠른 지출 추가",
+                text = stringResource(R.string.today_ppareun_jichul_chuga),
                 style = MaterialTheme.typography.titleLarge
             )
 
             Text(
-                text = "자주 쓰는 지출을 빠르게 기록해볼까요?",
+                text = stringResource(R.string.today_jaju_sseuneun_jichuleul_ppareuge),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -1810,10 +1810,10 @@ private fun QuickExpenseInputBottomSheet(
                 onValueChange = onTitleChange,
                 modifier = Modifier.fillMaxWidth(),
                 label = {
-                    Text("항목명")
+                    Text(stringResource(R.string.today_hangmogmyeong))
                 },
                 placeholder = {
-                    Text("예: 식비, 카페, 교통")
+                    Text(stringResource(R.string.today_ye_sigbi_kape_gyotong))
                 },
                 singleLine = true
             )
@@ -1823,10 +1823,10 @@ private fun QuickExpenseInputBottomSheet(
                 onValueChange = onAmountChange,
                 modifier = Modifier.fillMaxWidth(),
                 label = {
-                    Text("금액")
+                    Text(stringResource(R.string.today_geumaeg))
                 },
                 placeholder = {
-                    Text("예: 8000")
+                    Text(stringResource(R.string.today_ye_8000))
                 },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(
@@ -1835,7 +1835,7 @@ private fun QuickExpenseInputBottomSheet(
                 supportingText = {
                     val amount = amountInput.toLongOrNull() ?: 0L
                     if (amount > 0L) {
-                        Text("기록될 금액: ${amount.toMoneyText()}")
+                        Text(stringResource(R.string.today_girogdoel_geumaeg, amount.toMoneyText()))
                     }
                 }
             )
@@ -1846,7 +1846,7 @@ private fun QuickExpenseInputBottomSheet(
                 enabled = titleInput.isNotBlank() &&
                         (amountInput.toLongOrNull() ?: 0L) > 0L
             ) {
-                Text("저장")
+                Text(stringResource(R.string.today_jeojang))
             }
         }
     }
@@ -1885,12 +1885,12 @@ internal fun ExtraIncomeInputBottomSheet(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Text(
-                text = if (isEditing) "추가 수익 수정" else "추가 수익 기록",
+                text = if (isEditing) stringResource(R.string.today_chuga_suig_sujeong) else stringResource(R.string.today_chuga_suig_girog),
                 style = MaterialTheme.typography.titleLarge
             )
 
             Text(
-                text = "이번 예산 기간에 추가로 들어온 돈을 더해둘게요.",
+                text = stringResource(R.string.today_ibeon_yesan_gigane_chugaro),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -1900,10 +1900,10 @@ internal fun ExtraIncomeInputBottomSheet(
                 onValueChange = onTitleChange,
                 modifier = Modifier.fillMaxWidth(),
                 label = {
-                    Text("항목명")
+                    Text(stringResource(R.string.today_hangmogmyeong))
                 },
                 placeholder = {
-                    Text("예: 환급금, 중고거래, 부수입")
+                    Text(stringResource(R.string.today_ye_hwangeubgeum_junggogeorae_busuib))
                 },
                 singleLine = true
             )
@@ -1913,10 +1913,10 @@ internal fun ExtraIncomeInputBottomSheet(
                 onValueChange = onAmountChange,
                 modifier = Modifier.fillMaxWidth(),
                 label = {
-                    Text("금액")
+                    Text(stringResource(R.string.today_geumaeg))
                 },
                 placeholder = {
-                    Text("예: 100000")
+                    Text(stringResource(R.string.today_ye_100000))
                 },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(
@@ -1925,7 +1925,7 @@ internal fun ExtraIncomeInputBottomSheet(
                 supportingText = {
                     val amount = amountInput.toLongOrNull() ?: 0L
                     if (amount > 0L) {
-                        Text("더해질 금액: ${amount.toMoneyText()}")
+                        Text(stringResource(R.string.today_deohaejil_geumaeg, amount.toMoneyText()))
                     }
                 }
             )
@@ -1935,17 +1935,17 @@ internal fun ExtraIncomeInputBottomSheet(
                 onValueChange = onMemoChange,
                 modifier = Modifier.fillMaxWidth(),
                 label = {
-                    Text("메모")
+                    Text(stringResource(R.string.today_memo))
                 },
                 placeholder = {
-                    Text("선택 입력")
+                    Text(stringResource(R.string.today_seontaeg_ibryeog))
                 },
                 minLines = 2,
                 maxLines = 3
             )
 
             DateSelectorField(
-                label = "날짜",
+                label = stringResource(R.string.today_naljja),
                 date = dateInput,
                 onDateChange = onDateChange
             )
@@ -1956,7 +1956,7 @@ internal fun ExtraIncomeInputBottomSheet(
                 enabled = titleInput.isNotBlank() &&
                         (amountInput.toLongOrNull() ?: 0L) > 0L
             ) {
-                Text(if (isEditing) "수정하기" else "저장")
+                Text(if (isEditing) stringResource(R.string.today_sujeonghagi) else stringResource(R.string.today_jeojang))
             }
 
             if (isEditing) {
@@ -1965,7 +1965,7 @@ internal fun ExtraIncomeInputBottomSheet(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
-                        text = "삭제하기",
+                        text = stringResource(R.string.today_sagjehagi),
                         color = MaterialTheme.colorScheme.error
                     )
                 }
