@@ -8,22 +8,22 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -45,10 +45,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import com.jsworld.android.daydone.R
 import com.jsworld.android.daydone.domain.model.ScheduledDeductionType
 import com.jsworld.android.daydone.presentation.monthly.model.MonthViewMode
 import com.jsworld.android.daydone.presentation.monthly.model.MonthlyDayCellUiModel
@@ -82,7 +84,7 @@ fun MonthlyScreen(
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         DayDoneTopBar(
-            title = "월별 예산",
+            title = stringResource(R.string.monthly_weolbyeol_yesan),
             actions = {
                 if (uiState.mode != MonthViewMode.CURRENT) {
                     Row(
@@ -101,7 +103,7 @@ fun MonthlyScreen(
                             modifier = Modifier.size(14.dp)
                         )
                         Text(
-                            text = "이번 달로",
+                            text = stringResource(R.string.monthly_ibeon_dalro),
                             style = MaterialTheme.typography.labelMedium,
                             fontWeight = FontWeight.SemiBold,
                             color = MaterialTheme.colorScheme.primary
@@ -152,16 +154,16 @@ fun MonthlyScreen(
             if (uiState.mode == MonthViewMode.CURRENT) {
                 item {
                     ReportEntryCard(
-                        title = "이번 기간 리포트",
-                        subtitle = "지금 페이스가 어떤지 확인해보세요",
+                        title = stringResource(R.string.monthly_ibeon_gigan_ripoteu),
+                        subtitle = stringResource(R.string.monthly_jigeum_peiseuga_eotteonji_hwaginhaeboseyo),
                         onClick = onReportClick
                     )
                 }
             } else if (uiState.mode == MonthViewMode.PAST) {
                 item {
                     ReportEntryCard(
-                        title = "기간 결산 리포트",
-                        subtitle = "이 기간을 어떻게 보냈는지 돌아봐요",
+                        title = stringResource(R.string.monthly_gigan_gyeolsan_ripoteu),
+                        subtitle = stringResource(R.string.monthly_i_giganeul_eotteohge_bonaessneunji),
                         onClick = onReportClick
                     )
                 }
@@ -171,8 +173,8 @@ fun MonthlyScreen(
             item {
                 ReportEntryCard(
                     emoji = "🧾",
-                    title = "내역 전체 보기",
-                    subtitle = "이 기간에 들어오고 나간 돈을 날짜별로 쭉",
+                    title = stringResource(R.string.monthly_naeyeog_jeonche_bogi),
+                    subtitle = stringResource(R.string.monthly_i_gigane_deuleoogo_nagan),
                     onClick = onLedgerClick
                 )
             }
@@ -226,9 +228,9 @@ private fun MonthNavigator(
     onNextMonth: () -> Unit
 ) {
     val modeText = when (mode) {
-        MonthViewMode.PAST -> "지난 달 결산"
-        MonthViewMode.CURRENT -> "이번 달 진행 중"
-        MonthViewMode.FUTURE -> "다가올 달 계획"
+        MonthViewMode.PAST -> stringResource(R.string.monthly_jinan_dal_gyeolsan)
+        MonthViewMode.CURRENT -> stringResource(R.string.monthly_ibeon_dal_jinhaeng_jung)
+        MonthViewMode.FUTURE -> stringResource(R.string.monthly_dagaol_dal_gyehoeg)
     }
 
     Column(
@@ -245,7 +247,7 @@ private fun MonthNavigator(
             ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
-                    contentDescription = "이전 달",
+                    contentDescription = stringResource(R.string.monthly_ijeon_dal),
                     tint = if (canGoPrevious) {
                         MaterialTheme.colorScheme.onSurface
                     } else {
@@ -273,7 +275,7 @@ private fun MonthNavigator(
             IconButton(onClick = onNextMonth) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                    contentDescription = "다음 달"
+                    contentDescription = stringResource(R.string.monthly_daeum_dal)
                 )
             }
         }
@@ -325,9 +327,9 @@ private fun MonthlySummaryCard(
     var expanded by remember { mutableStateOf(false) }
 
     val remainingTitle = when (uiState.mode) {
-        MonthViewMode.PAST -> "최종 남은 금액"
-        MonthViewMode.CURRENT -> "남은 금액"
-        MonthViewMode.FUTURE -> "예상 남은 금액"
+        MonthViewMode.PAST -> stringResource(R.string.monthly_choejong_nameun_geumaeg)
+        MonthViewMode.CURRENT -> stringResource(R.string.monthly_nameun_geumaeg)
+        MonthViewMode.FUTURE -> stringResource(R.string.monthly_yesang_nameun_geumaeg)
     }
 
     Card(
@@ -343,12 +345,12 @@ private fun MonthlySummaryCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "예산 요약",
+                    text = stringResource(R.string.monthly_yesan_yoyag),
                     style = MaterialTheme.typography.titleMedium
                 )
 
                 Text(
-                    text = if (expanded) "접기" else "자세히",
+                    text = if (expanded) stringResource(R.string.monthly_jeobgi) else stringResource(R.string.monthly_jasehi),
                     style = MaterialTheme.typography.labelLarge,
                     color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.clickable { expanded = !expanded }
@@ -371,39 +373,39 @@ private fun MonthlySummaryCard(
                 HorizontalDivider()
 
                 SummaryRow(
-                    title = "월 예산",
+                    title = stringResource(R.string.monthly_weol_yesan),
                     amountText = uiState.monthlyBudget.toMoneyText()
                 )
 
                 if (uiState.extraIncomeAmount > 0L) {
                     SummaryRow(
-                        title = "추가 수익",
+                        title = stringResource(R.string.monthly_chuga_suig),
                         amountText = "+${uiState.extraIncomeAmount.toMoneyText()}"
                     )
                 }
 
                 SummaryRow(
-                    title = "사용 가능 예산",
+                    title = stringResource(R.string.monthly_sayong_ganeung_yesan),
                     amountText = uiState.totalAvailableBudget.toMoneyText()
                 )
 
                 if (uiState.scheduledSavingAmount > 0L) {
                     SummaryRow(
-                        title = "저축",
+                        title = stringResource(R.string.onboarding_jeochug),
                         amountText = "-${uiState.scheduledSavingAmount.toMoneyText()}"
                     )
                 }
 
                 if (uiState.fixedExpenseAmount > 0L) {
                     SummaryRow(
-                        title = "고정비",
+                        title = stringResource(R.string.onboarding_gojeongbi),
                         amountText = "-${uiState.fixedExpenseAmount.toMoneyText()}"
                     )
                 }
 
                 if (uiState.totalExpense > 0L) {
                     SummaryRow(
-                        title = "총 지출",
+                        title = stringResource(R.string.monthly_chong_jichul),
                         amountText = "-${uiState.totalExpense.toMoneyText()}"
                     )
                 }
@@ -413,7 +415,7 @@ private fun MonthlySummaryCard(
                 onClick = onEditBudgetClick,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("이 달 예산 수정")
+                Text(stringResource(R.string.monthly_i_dal_yesan_sujeong))
             }
         }
     }
@@ -458,14 +460,14 @@ private fun MonthlyScheduledDeductionCard(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Text(
-                text = "저축 / 고정비",
+                text = stringResource(R.string.monthly_jeochug_gojeongbi),
                 style = MaterialTheme.typography.titleMedium
             )
 
             items.forEach { item ->
                 val typeText = when (item.type) {
-                    ScheduledDeductionType.SAVING -> "저축"
-                    ScheduledDeductionType.FIXED -> "고정비"
+                    ScheduledDeductionType.SAVING -> stringResource(R.string.onboarding_jeochug)
+                    ScheduledDeductionType.FIXED -> stringResource(R.string.onboarding_gojeongbi)
                 }
 
                 Row(
@@ -484,7 +486,7 @@ private fun MonthlyScheduledDeductionCard(
                         )
 
                         Text(
-                            text = "${item.withdrawalDate.monthValue}월 ${item.withdrawalDate.dayOfMonth}일 · $typeText",
+                            text = stringResource(R.string.monthly_weol_il, item.withdrawalDate.monthValue, item.withdrawalDate.dayOfMonth, typeText),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -515,7 +517,7 @@ private fun MonthCalendarCard(
             Row(
                 modifier = Modifier.fillMaxWidth()
             ) {
-                listOf("일", "월", "화", "수", "목", "금", "토").forEach { label ->
+                listOf(stringResource(R.string.onboarding_il), stringResource(R.string.monthly_weol), stringResource(R.string.monthly_hwa), stringResource(R.string.monthly_su), stringResource(R.string.monthly_mog), stringResource(R.string.monthly_geum), stringResource(R.string.monthly_to)).forEach { label ->
                     Text(
                         text = label,
                         style = MaterialTheme.typography.labelSmall,
@@ -550,11 +552,11 @@ private fun MonthCalendarCard(
             ) {
                 LegendDot(
                     color = MaterialTheme.colorScheme.primary,
-                    label = "지출"
+                    label = stringResource(R.string.monthly_jichul)
                 )
                 LegendDot(
                     color = MaterialTheme.colorScheme.tertiary,
-                    label = "예정 차감"
+                    label = stringResource(R.string.monthly_yejeong_chagam)
                 )
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -567,7 +569,7 @@ private fun MonthCalendarCard(
                         modifier = Modifier.size(11.dp)
                     )
                     Text(
-                        text = "무지출",
+                        text = stringResource(R.string.monthly_mujichul),
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -663,7 +665,7 @@ private fun DayCell(
             if (cell.isNoSpendSuccess) {
                 Icon(
                     imageVector = Icons.Filled.Check,
-                    contentDescription = "무지출 성공",
+                    contentDescription = stringResource(R.string.monthly_mujichul_seonggong),
                     tint = DayDoneAccent.noSpendCheck,
                     modifier = Modifier.size(11.dp)
                 )
@@ -729,7 +731,7 @@ private fun SelectedDateCard(
 
             if (expenses.isEmpty() && extraIncomes.isEmpty() && scheduledDeductions.isEmpty()) {
                 Text(
-                    text = "이 날은 기록된 내역이 없어요.",
+                    text = stringResource(R.string.monthly_i_naleun_girogdoen_naeyeogi),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -738,8 +740,8 @@ private fun SelectedDateCard(
 
             scheduledDeductions.forEach { item ->
                 val typeText = when (item.type) {
-                    ScheduledDeductionType.SAVING -> "저축"
-                    ScheduledDeductionType.FIXED -> "고정비"
+                    ScheduledDeductionType.SAVING -> stringResource(R.string.onboarding_jeochug)
+                    ScheduledDeductionType.FIXED -> stringResource(R.string.onboarding_gojeongbi)
                 }
 
                 Row(
@@ -750,7 +752,7 @@ private fun SelectedDateCard(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "${item.title} 예정 · $typeText",
+                        text = stringResource(R.string.monthly_yejeong, item.title, typeText),
                         style = MaterialTheme.typography.bodyMedium
                     )
                     Text(
@@ -769,7 +771,7 @@ private fun SelectedDateCard(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "${income.title} (수익)",
+                        text = stringResource(R.string.monthly_suig, income.title),
                         style = MaterialTheme.typography.bodyMedium
                     )
                     Text(
@@ -828,12 +830,12 @@ private fun BudgetInputBottomSheet(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Text(
-                text = "$monthTitle 예산 수정",
+                text = stringResource(R.string.monthly_yesan_sujeong, monthTitle),
                 style = MaterialTheme.typography.titleLarge
             )
 
             Text(
-                text = "이 달부터 적용될 예산이에요. 다음 달은 값을 바꾸기 전까지 이 금액을 이어갑니다.",
+                text = stringResource(R.string.monthly_i_dalbuteo_jeogyongdoel_yesanieyo),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -843,11 +845,11 @@ private fun BudgetInputBottomSheet(
                 onValueChange = onBudgetInputChange,
                 modifier = Modifier.fillMaxWidth(),
                 label = {
-                    Text("월 예산")
+                    Text(stringResource(R.string.monthly_weol_yesan))
                 },
                 singleLine = true,
                 suffix = {
-                    Text("원")
+                    Text(stringResource(R.string.onboarding_weon))
                 },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number
@@ -855,7 +857,7 @@ private fun BudgetInputBottomSheet(
                 supportingText = {
                     val amount = budgetInput.toLongOrNull() ?: 0L
                     if (amount > 0L) {
-                        Text("설정될 예산: ${amount.toMoneyText()}")
+                        Text(stringResource(R.string.monthly_seoljeongdoel_yesan, amount.toMoneyText()))
                     }
                 }
             )
@@ -865,7 +867,7 @@ private fun BudgetInputBottomSheet(
                 modifier = Modifier.fillMaxWidth(),
                 enabled = (budgetInput.toLongOrNull() ?: 0L) > 0L
             ) {
-                Text("저장")
+                Text(stringResource(R.string.monthly_jeojang))
             }
         }
     }

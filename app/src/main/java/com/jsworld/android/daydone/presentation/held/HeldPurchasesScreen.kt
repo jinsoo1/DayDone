@@ -1,6 +1,7 @@
 package com.jsworld.android.daydone.presentation.held
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,7 +14,6 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
@@ -35,10 +35,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.jsworld.android.daydone.R
 import com.jsworld.android.daydone.presentation.today.ExpenseInputBottomSheet
 import com.jsworld.android.daydone.presentation.today.PurchaseEvaluationSummary
 import com.jsworld.android.daydone.presentation.util.toMoneyText
@@ -120,7 +122,7 @@ fun HeldPurchasesScreen(
         color = MaterialTheme.colorScheme.background
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
-            DayDoneTopBar(title = "소비 보류함", onBack = onBack)
+            DayDoneTopBar(title = stringResource(R.string.held_sobi_boryuham), onBack = onBack)
 
             when {
                 uiState.isLoading -> {
@@ -140,9 +142,7 @@ fun HeldPurchasesScreen(
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "아직 보류한 물건이 없어요.\n" +
-                                    "살까 말까 고민되는 물건은 하단 '+' → '살까 말까?'에서 " +
-                                    "잠깐 보류해보세요. 30일 뒤에도 생각나면 그때 사요.",
+                            text = stringResource(R.string.held_ajig_boryuhan_mulgeoni_eobseoyo),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -175,7 +175,7 @@ fun HeldPurchasesScreen(
                         if (uiState.holdingItems.isNotEmpty()) {
                             item {
                                 Text(
-                                    text = "보류 중",
+                                    text = stringResource(R.string.held_boryu_jung),
                                     style = MaterialTheme.typography.titleMedium,
                                     modifier = Modifier.padding(top = 8.dp)
                                 )
@@ -193,7 +193,7 @@ fun HeldPurchasesScreen(
                         if (uiState.records.isNotEmpty()) {
                             item {
                                 Text(
-                                    text = "지난 기록",
+                                    text = stringResource(R.string.held_jinan_girog),
                                     style = MaterialTheme.typography.titleMedium,
                                     modifier = Modifier.padding(top = 8.dp)
                                 )
@@ -206,7 +206,7 @@ fun HeldPurchasesScreen(
                             }
                             item {
                                 Text(
-                                    text = "기록을 탭하면 삭제할 수 있어요.",
+                                    text = stringResource(R.string.held_girogeul_taebhamyeon_sagjehal_su),
                                     style = MaterialTheme.typography.labelSmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -233,7 +233,7 @@ private fun SavedTotalCard(savedTotal: Long) {
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             Text(
-                text = "보류함으로 아낀 돈",
+                text = stringResource(R.string.held_boryuhameuro_akkin_don),
                 style = MaterialTheme.typography.labelLarge
             )
             Text(
@@ -243,9 +243,9 @@ private fun SavedTotalCard(savedTotal: Long) {
             )
             Text(
                 text = if (savedTotal > 0L) {
-                    "안 사길 잘한 것들이 쌓이고 있어요."
+                    stringResource(R.string.held_an_sagil_jalhan_geosdeuli)
                 } else {
-                    "안 사기로 한 물건의 금액이 여기에 쌓여요."
+                    stringResource(R.string.held_an_sagiro_han_mulgeonui)
                 },
                 style = MaterialTheme.typography.bodySmall
             )
@@ -281,7 +281,7 @@ private fun DueItemCard(
             }
 
             Text(
-                text = "30일이 지났어요. 아직도 필요하면 그때 사요 — 일단 아낀 돈에 넣어뒀어요.",
+                text = stringResource(R.string.held_30ili_jinasseoyo_ajigdo_pilyohamyeon),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -294,13 +294,13 @@ private fun DueItemCard(
                     onClick = onBoughtAnywayClick,
                     modifier = Modifier.weight(1f)
                 ) {
-                    Text("그래도 샀어요")
+                    Text(stringResource(R.string.held_geuraedo_sasseoyo))
                 }
                 FilledTonalButton(
                     onClick = onKeepSavedClick,
                     modifier = Modifier.weight(1f)
                 ) {
-                    Text("아낀 돈으로")
+                    Text(stringResource(R.string.held_akkin_doneuro))
                 }
             }
         }
@@ -339,7 +339,7 @@ private fun HoldingItemCard(
             }
 
             Text(
-                text = "D+${item.daysHeld}일째 보류 중 · ${item.daysLeft}일 뒤 아낀 돈이 돼요",
+                text = stringResource(R.string.held_d_iljjae_boryu_jung, item.daysHeld, item.daysLeft),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -356,7 +356,7 @@ private fun HoldingItemCard(
             )
 
             Text(
-                text = "탭하면 오늘 기준으로 다시 계산해드려요",
+                text = stringResource(R.string.held_taebhamyeon_oneul_gijuneuro_dasi),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.primary
             )
@@ -369,13 +369,13 @@ private fun HoldingItemCard(
                     onClick = onBuyNowClick,
                     modifier = Modifier.weight(1f)
                 ) {
-                    Text("지금 살게요")
+                    Text(stringResource(R.string.held_jigeum_salgeyo))
                 }
                 FilledTonalButton(
                     onClick = onPassClick,
                     modifier = Modifier.weight(1f)
                 ) {
-                    Text("안 살래요")
+                    Text(stringResource(R.string.held_an_salraeyo))
                 }
             }
         }
@@ -467,13 +467,13 @@ private fun HeldEvaluationSheet(
                     onClick = { onBuyNowClick(id) },
                     modifier = Modifier.weight(1f)
                 ) {
-                    Text("지금 살게요")
+                    Text(stringResource(R.string.held_jigeum_salgeyo))
                 }
                 FilledTonalButton(
                     onClick = { onPassClick(id) },
                     modifier = Modifier.weight(1f)
                 ) {
-                    Text("안 살래요")
+                    Text(stringResource(R.string.held_an_salraeyo))
                 }
             }
 
@@ -482,7 +482,7 @@ private fun HeldEvaluationSheet(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    text = "보류함에서 삭제하기",
+                    text = stringResource(R.string.held_boryuhameseo_sagjehagi),
                     color = MaterialTheme.colorScheme.error
                 )
             }
@@ -491,7 +491,7 @@ private fun HeldEvaluationSheet(
                 onClick = onDismiss,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("닫기")
+                Text(stringResource(R.string.purchase_dadgi))
             }
         }
     }
@@ -506,24 +506,24 @@ private fun DeleteConfirmDialog(
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("'${title}'을(를) 삭제할까요?") },
+        title = { Text(stringResource(R.string.held_eul_reul_sagjehalkkayo, title)) },
         text = {
             Text(
                 if (isSaved) {
-                    "이 항목은 아낀 돈으로 집계돼 있어서, 삭제하면 아낀 돈 합계에서도 빠져요. 되돌릴 수 없어요."
+                    stringResource(R.string.held_i_hangmogeun_akkin_doneuro)
                 } else {
-                    "보류함에서 이 항목이 사라지고 되돌릴 수 없어요."
+                    stringResource(R.string.held_boryuhameseo_i_hangmogi_sarajigo)
                 }
             )
         },
         confirmButton = {
             TextButton(onClick = onConfirm) {
-                Text("삭제", color = MaterialTheme.colorScheme.error)
+                Text(stringResource(R.string.held_sagje), color = MaterialTheme.colorScheme.error)
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("취소")
+                Text(stringResource(R.string.held_chwiso))
             }
         }
     )
