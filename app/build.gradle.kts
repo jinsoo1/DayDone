@@ -107,9 +107,9 @@ android {
     }
 
     lint {
-        // 추출 누락을 사람 눈 대신 린트가 잡게 한다(docs/v1.5-design.md §3-1).
-        // ⚠️ 3-7 presentation 추출이 끝날 때까지는 경고가 수백 개 뜨는 게 정상이다.
-        // 다 끝나면 fatal 로 올려 다시 새는 것을 막는다.
+        // ⚠️ HardcodedText 는 **XML 레이아웃 전용**이라 Compose 코드에선 한 건도 잡지
+        // 못한다. 이 앱은 XML 화면이 없어서 실질 효과가 0이었다 — 추출 누락은
+        // checkHardcodedKorean 태스크(아래)가 잡는다.
         enable += setOf("HardcodedText")
         // 번역이 없는 1.5.0 에선 MissingTranslation 이 의미가 없다. 1.6.0 에서 켠다.
         disable += setOf("MissingTranslation")
@@ -156,4 +156,52 @@ dependencies {
 
     // 계산 로직 유닛 테스트 (순수 함수 UseCase)
     testImplementation(libs.junit)
+}
+/**
+ * 문자열 추출 누락 검사 (docs/v1.5-design.md §3-1).
+ *
+ * Compose 코드엔 린트의 HardcodedText 가 안 먹으므로 직접 본다.
+ * 주석을 뺀 Kotlin 소스에 한글 **문자열 리터럴**이 남아 있으면 실패한다.
+ *
+ * 허용 목록은 "번역하면 안 되는 것"과 "1.6.0 에서 재작성할 것"뿐이다.
+ */
+val hardcodedKoreanAllowList = listOf(
+    // 로케일화 금지 — 백업 폴더 경로. 바꾸면 기존 유저의 복원 목록이 빈다(§15).
+    "data/repository/BackupRepositoryImpl.kt",
+    "presentation/settings/SettingsScreen.kt",
+    // 번역이 아니라 재작성 대상 — 1.6.0
+    "domain/usecase/ClassifyExpenseCategoryUseCase.kt",
+    "domain/usecase/BuildMonthlyReportUseCase.kt",
+    // 통화 접미사("원") 자체
+    "presentation/util/MoneyFormat.kt"
+)
+
+tasks.register("checkHardcodedKorean") {
+    group = "verification"
+    description = "Kotlin 소스에 남은 한글 문자열 리터럴을 찾는다"
+    doLast {
+        val hangul = Regex("[\\uac00-\\ud7a3]")
+        val lineComment = Regex("""^\s*(//|\*|/\*)""")
+        val literal = Regex(""""[^"]*[\uac00-\ud7a3][^"]*"""")
+        val hits = mutableListOf<String>()
+        file("src/main/java").walkTopDown()
+            .filter { it.extension == "kt" }
+            .filter { f -> hardcodedKoreanAllowList.none { f.path.endsWith(it) } }
+            .forEach { f ->
+                f.readLines().forEachIndexed { i, line ->
+                    if (lineComment.containsMatchIn(line)) return@forEachIndexed
+                    if (line.contains("Log.")) return@forEachIndexed
+                    val code = line.substringBefore("//")
+                    if (literal.containsMatchIn(code) && hangul.containsMatchIn(code)) {
+                        hits += "${f.path}:${i + 1}: ${line.trim()}"
+                    }
+                }
+            }
+        if (hits.isNotEmpty()) {
+            throw GradleException(
+                "추출되지 않은 한글 문자열 ${hits.size}건:\n" + hits.joinToString("\n")
+            )
+        }
+        logger.lifecycle("[DayDone] 남은 한글 문자열 리터럴 없음")
+    }
 }

@@ -1,6 +1,7 @@
 package com.jsworld.android.daydone.notification
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -50,6 +51,9 @@ class DayDoneNotifier @Inject constructor(
         )
     }
 
+    // canPost() 가 POST_NOTIFICATIONS 를 먼저 확인하고, notify 도 runCatching 으로
+    // 감싸 SecurityException 을 삼킨다. 린트가 그 흐름을 따라가지 못할 뿐이다.
+    @SuppressLint("MissingPermission")
     private fun show(
         id: Int,
         title: String,

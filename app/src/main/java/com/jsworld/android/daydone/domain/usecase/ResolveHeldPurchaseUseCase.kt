@@ -14,7 +14,8 @@ class ResolveHeldPurchaseUseCase @Inject constructor(
         status: HeldPurchaseStatus,
         resolvedAt: LocalDate
     ) {
-        require(status != HeldPurchaseStatus.HELD) { "HELD 로는 확정할 수 없어요." }
+        // 개발자용 — 유저에게 보이는 문구가 아니라 호출 실수를 잡는 장치다
+        require(status != HeldPurchaseStatus.HELD) { "cannot resolve to HELD" }
         repository.resolve(
             id = id,
             status = status,

@@ -1,6 +1,7 @@
 package com.jsworld.android.daydone.data.repository
 
 import android.content.ContentUris
+import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Context
 import android.net.Uri
@@ -250,6 +251,9 @@ class BackupRepositoryImpl @Inject constructor(
         )
     }
 
+    // 아래 check(SDK_INT >= Q) 가 API 29 진입을 막는다. 린트는 if 만 가드로 인정해서
+    // check {} 를 못 알아본다(i18n 과 무관한 기존 지적 — 린트를 켜면서 드러났다).
+    @SuppressLint("NewApi")
     private fun saveToDownloads(
         subFolder: String,
         fileName: String,

@@ -613,16 +613,16 @@
     <string name="today_jigeum_peiseumyeon_ibeon_gigani">지금 페이스면 이번 기간이 끝날 때 %1$s이 남아요. 미리 금고에 넣어두면 다음 큰 지출이 편해져요.</string>
     <string name="today_i_geumaegeun_nameun_nalro">이 금액은 남은 날로 똑같이 나눈 값이에요. 아껴 쓴 만큼 뒤로 갈수록 커져요.</string>
     <string name="today_oneuleun_i_geumaeg_aneseo">오늘은 이 금액 안에서 쓰면 괜찮아요.</string>
-    <string name="today_weol_il_2">%1$s월 %2$s일</string>
+    <string name="today_weol_il_2">%1$d월 %2$d일</string>
     <string name="today_oneul_naeyeog">오늘 내역</string>
-    <string name="today_weol_il_naeyeog">%1$s월 %2$s일 내역</string>
-    <string name="today_weol_il_yejeong">%1$s월 %2$s일 예정</string>
+    <string name="today_weol_il_naeyeog">%1$d월 %2$d일 내역</string>
+    <string name="today_weol_il_yejeong">%1$d월 %2$d일 예정</string>
     <string name="today_deideon">데이던</string>
 
     <!-- ══ ledger ══ -->
-    <string name="ledger_nyeon_weol_naeyeog">%1$s년 %2$s월 내역</string>
-    <string name="ledger_weol_il_weol_il">%1$s월 %2$s일 ~ %3$s월 %4$s일</string>
-    <string name="ledger_weol">%1$s월</string>
+    <string name="ledger_nyeon_weol_naeyeog">%1$d년 %2$d월 내역</string>
+    <string name="ledger_weol_il_weol_il">%1$d월 %2$d일 ~ %3$d월 %4$d일</string>
+    <string name="ledger_weol">%1$d월</string>
     <string name="ledger_junbigeum">준비금</string>
     <string name="ledger_jeochug">저축</string>
     <string name="ledger_gojeongbi">고정비</string>
@@ -639,14 +639,14 @@
 
     <!-- ══ held ══ -->
     <string name="held_30il_dongan_an_sasseoyo">30일 동안 안 샀어요 — 아낀 돈이 됐어요</string>
-    <string name="held_il_mane_an_sagiro">%1$s일 만에 안 사기로 했어요</string>
-    <string name="held_il_gominhago_sasseoyo">%1$s일 고민하고 샀어요</string>
+    <string name="held_il_mane_an_sagiro">%1$d일 만에 안 사기로 했어요</string>
+    <string name="held_il_gominhago_sasseoyo">%1$d일 고민하고 샀어요</string>
 
     <!-- ══ monthly ══ -->
-    <string name="monthly_nyeon_weol">%1$s년 %2$s월</string>
+    <string name="monthly_nyeon_weol">%1$d년 %2$d월</string>
 
     <!-- ══ noti_settings ══ -->
-    <string name="noti_settings_geon_bonaesseoyo">%1$s건 보냈어요</string>
+    <string name="noti_settings_geon_bonaesseoyo">%1$d건 보냈어요</string>
     <string name="noti_settings_kyeojin_alrimi_eobseoyo">켜진 알림이 없어요</string>
     <string name="noti_settings_jigeumeun_bonael_alrimi_eobseoyo">지금은 보낼 알림이 없어요 (오늘 지출이 이미 있거나, 조건에 안 맞아요)</string>
 
@@ -681,7 +681,7 @@
     <string name="widget_oneuleun_jogeum_neomgyeosseoyo_naeilbuteo">오늘은 조금 넘겼어요 · 내일부터</string>
     <string name="widget_oneuleun_jogeum_neomgyeosseoyo">오늘은 조금 넘겼어요</string>
     <string name="widget_oneul_nameun_geumaeg">오늘 남은 금액</string>
-    <string name="widget_weol_il_weol_il">%1$s월 %2$s일 ~ %3$s월 %4$s일</string>
+    <string name="widget_weol_il_weol_il">%1$d월 %2$d일 ~ %3$d월 %4$d일</string>
     <string name="widget_oneul_gweonjang_jung_sseum">오늘 권장 %1$s 중 %2$s 씀</string>
 
     <!-- ══ common ══ -->
@@ -709,6 +709,6 @@
     <string name="widget_taebhamyeon_deideoni_yeolryeoyo">탭하면 데이던이 열려요</string>
     <string name="widget_jamsi_hu_dasi_boyeodeurilgeyo">잠시 후 다시 보여드릴게요</string>
     <string name="widget_taebhamyeon_oneul_geumaegeul_bol">탭하면 오늘 금액을 볼 수 있어요</string>
-    <string name="widget_il_nameum">%1$s일 남음</string>
+    <string name="widget_il_nameum">%1$d일 남음</string>
     <string name="widget_naeil">내일 %1$s</string>
 </resources>
