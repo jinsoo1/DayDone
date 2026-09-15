@@ -3,8 +3,6 @@ package com.jsworld.android.daydone.presentation.vault
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,9 +15,11 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
@@ -49,9 +49,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.jsworld.android.daydone.R
 import com.jsworld.android.daydone.domain.model.FutureExpenseCategory
 import com.jsworld.android.daydone.domain.model.FutureExpenseRepeat
 import com.jsworld.android.daydone.presentation.util.toMoneyText
@@ -126,7 +128,7 @@ fun VaultScreen(
     val isEmpty = uiState.items.isEmpty() && uiState.completedItems.isEmpty()
 
     Column(modifier = Modifier.fillMaxSize()) {
-        DayDoneTopBar(title = "금고")
+        DayDoneTopBar(title = stringResource(R.string.vault_geumgo))
 
         LazyColumn(
             modifier = Modifier
@@ -150,7 +152,7 @@ fun VaultScreen(
             if (uiState.items.isNotEmpty()) {
                 item {
                     Text(
-                        text = "준비 중인 항목",
+                        text = stringResource(R.string.vault_junbi_jungin_hangmog),
                         style = MaterialTheme.typography.titleMedium
                     )
                 }
@@ -166,7 +168,7 @@ fun VaultScreen(
             if (uiState.completedItems.isNotEmpty()) {
                 item {
                     Text(
-                        text = "납부 완료",
+                        text = stringResource(R.string.vault_nabbu_wanryo),
                         style = MaterialTheme.typography.titleMedium
                     )
                 }
@@ -181,7 +183,7 @@ fun VaultScreen(
                     onClick = onAddItemClick,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("+ 준비 항목 추가")
+                    Text(stringResource(R.string.vault_junbi_hangmog_chuga))
                 }
             }
 
@@ -237,7 +239,7 @@ private fun HeldPurchasesCard(
                     horizontalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
                     Text(
-                        text = "소비 보류함",
+                        text = stringResource(R.string.vault_sobi_boryuham),
                         style = MaterialTheme.typography.titleMedium
                     )
                     if (dueBadge) {
@@ -252,9 +254,9 @@ private fun HeldPurchasesCard(
 
                 Text(
                     text = if (savedTotal > 0L || holdingCount > 0) {
-                        "아낀 돈 ${savedTotal.toMoneyText()} · 보류 중 ${holdingCount}건"
+                        stringResource(R.string.vault_akkin_don_boryu_jung, savedTotal.toMoneyText(), holdingCount)
                     } else {
-                        "고민되는 물건은 '살까 말까'로 잠깐 보류해보세요"
+                        stringResource(R.string.vault_gomindoeneun_mulgeoneun_salkka_malkka)
                     },
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -281,11 +283,11 @@ private fun PrepareAmountDialog(
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("$title · 따로 옮겨두기") },
+        title = { Text(stringResource(R.string.vault_ttaro_olmgyeodugi, title)) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(
-                    text = "이번 달 추천 ${monthlyTarget.toMoneyText()}. 생활비 통장 말고 따로 모으는 통장에 옮긴 뒤, 옮긴 금액을 적어주세요. 그만큼 오늘 생활비에서 빠져요.",
+                    text = stringResource(R.string.vault_ibeon_dal_chucheon_saenghwalbi, monthlyTarget.toMoneyText()),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -293,9 +295,9 @@ private fun PrepareAmountDialog(
                     value = amountInput,
                     onValueChange = onAmountChange,
                     modifier = Modifier.fillMaxWidth(),
-                    label = { Text("옮긴 금액") },
+                    label = { Text(stringResource(R.string.vault_olmgin_geumaeg)) },
                     singleLine = true,
-                    suffix = { Text("원") },
+                    suffix = { Text(stringResource(R.string.settings_weon)) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                 )
             }
@@ -305,11 +307,11 @@ private fun PrepareAmountDialog(
                 onClick = onConfirm,
                 enabled = (amountInput.toLongOrNull() ?: 0L) > 0L
             ) {
-                Text("옮겨뒀어요")
+                Text(stringResource(R.string.vault_olmgyeodweosseoyo))
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("취소") }
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.settings_chwiso)) }
         }
     )
 }
@@ -322,13 +324,13 @@ private fun GuideCard(isEmpty: Boolean) {
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             Text(
-                text = "미리 준비하는 금고",
+                text = stringResource(R.string.vault_miri_junbihaneun_geumgo),
                 style = MaterialTheme.typography.titleMedium
             )
 
             if (isEmpty) {
                 Text(
-                    text = "앱이 돈을 보관하진 않아요. 큰 지출이 오기 전에, 언제부터 얼마씩 따로 옮겨두면 좋을지 알려드릴게요.",
+                    text = stringResource(R.string.vault_aebi_doneul_bogwanhajin_anhayo),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -343,29 +345,29 @@ private fun GuideCard(isEmpty: Boolean) {
                     verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     Text(
-                        text = "예를 들어, 6월에 낼 자동차세 40만 원",
+                        text = stringResource(R.string.vault_yereul_deuleo_6weole_nael),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurface
                     )
                     Text(
-                        text = "6월에 한 번에 내면 그 달이 휘청여요.\n3월부터 매달 10만 원씩 따로 통장에 옮겨두면, 6월엔 이미 준비 끝이에요.",
+                        text = stringResource(R.string.vault_6weole_han_beone_naemyeon),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
 
-                GuideStep("1", "준비 항목을 추가해요", "예: 자동차세 40만 원 · 6월 납부")
-                GuideStep("2", "매달 추천 금액만큼 따로 통장에 옮겨요", "옮긴 뒤 '옮겨뒀어요'를 누르면 그만큼 생활비에서 빠져요")
-                GuideStep("3", "목표한 달에 '납부 완료'", "미리 옮겨둔 돈으로 결제, 그 달엔 다시 안 빠져요")
+                GuideStep("1", stringResource(R.string.vault_junbi_hangmogeul_chugahaeyo), stringResource(R.string.vault_ye_jadongchase_40man_weon))
+                GuideStep("2", stringResource(R.string.vault_maedal_chucheon_geumaegmankeum_ttaro), stringResource(R.string.vault_olmgin_dwi_olmgyeodweosseoyo_reul))
+                GuideStep("3", stringResource(R.string.vault_mogpyohan_dale_nabbu_wanryo), stringResource(R.string.vault_miri_olmgyeodun_doneuro_gyeolje))
 
                 Text(
-                    text = "생활비 통장과 섞이지 않게 따로 모으는 통장에 두면 더 확실해요.",
+                    text = stringResource(R.string.vault_saenghwalbi_tongjanggwa_seokkiji_anhge),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.primary
                 )
             } else {
                 Text(
-                    text = "따로 옮겨둔 만큼은 이미 생활비에서 빠졌어요. 목표한 달엔 그 돈으로 결제하면 돼요. 매달 추천 금액만큼 계속 옮겨두세요.",
+                    text = stringResource(R.string.vault_ttaro_olmgyeodun_mankeumeun_imi),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -435,13 +437,13 @@ private fun SuggestionCard(
             // 헤더: 작은 라벨 + 큰 금액
             Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 Text(
-                    text = "이번 달 옮겨두기 제안",
+                    text = stringResource(R.string.vault_ibeon_dal_olmgyeodugi_jean),
                     style = MaterialTheme.typography.labelLarge,
                     color = onContainer.copy(alpha = 0.75f)
                 )
                 if (allDone) {
                     Text(
-                        text = "이번 달 옮길 만큼 다 옮겼어요 ✓",
+                        text = stringResource(R.string.vault_ibeon_dal_olmgil_mankeum),
                         style = MaterialTheme.typography.titleLarge
                     )
                 } else {
@@ -453,7 +455,7 @@ private fun SuggestionCard(
                         fontWeight = FontWeight.Bold
                     )
                     Text(
-                        text = "따로 통장에 옮겨두면 좋아요",
+                        text = stringResource(R.string.vault_ttaro_tongjange_olmgyeodumyeon_johayo),
                         style = MaterialTheme.typography.bodyMedium,
                         color = onContainer.copy(alpha = 0.75f)
                     )
@@ -496,13 +498,13 @@ private fun SuggestionRow(
 
             if (item.isDone) {
                 Text(
-                    text = "✓ 이번 달 ${item.thisMonthPrepared.toMoneyText()} 옮김",
+                    text = stringResource(R.string.vault_ibeon_dal_olmgim, item.thisMonthPrepared.toMoneyText()),
                     style = MaterialTheme.typography.bodySmall,
                     color = onContainer.copy(alpha = 0.7f)
                 )
             } else {
                 Text(
-                    text = "추천 ${item.monthlyTarget.toMoneyText()} · 옮김 ${item.thisMonthPrepared.toMoneyText()}",
+                    text = stringResource(R.string.vault_chucheon_olmgim, item.monthlyTarget.toMoneyText(), item.thisMonthPrepared.toMoneyText()),
                     style = MaterialTheme.typography.bodySmall,
                     color = onContainer.copy(alpha = 0.7f)
                 )
@@ -530,7 +532,7 @@ private fun SuggestionRow(
 
         if (item.isDone) {
             Text(
-                text = "더 옮기기",
+                text = stringResource(R.string.vault_deo_olmgigi),
                 style = MaterialTheme.typography.labelLarge,
                 color = onContainer.copy(alpha = 0.6f),
                 modifier = Modifier
@@ -546,7 +548,7 @@ private fun SuggestionRow(
                 contentColor = onContainer
             ) {
                 Text(
-                    text = "옮겨두기",
+                    text = stringResource(R.string.vault_olmgyeodugi),
                     style = MaterialTheme.typography.labelLarge,
                     fontWeight = FontWeight.SemiBold,
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 9.dp)
@@ -598,11 +600,11 @@ private fun VaultItemCard(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = "준비됨 ${item.preparedAmount.toMoneyText()}",
+                    text = stringResource(R.string.vault_junbidoem, item.preparedAmount.toMoneyText()),
                     style = MaterialTheme.typography.bodyMedium
                 )
                 Text(
-                    text = "남은 ${item.remainingAmount.toMoneyText()}",
+                    text = stringResource(R.string.vault_nameun, item.remainingAmount.toMoneyText()),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -613,12 +615,12 @@ private fun VaultItemCard(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = "목표 ${item.totalAmount.toMoneyText()}",
+                    text = stringResource(R.string.vault_mogpyo, item.totalAmount.toMoneyText()),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Text(
-                    text = "탭하여 관리 · 납부",
+                    text = stringResource(R.string.vault_taebhayeo_gwanri_nabbu),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.primary
                 )
@@ -644,7 +646,7 @@ private fun CompletedItemRow(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text("${item.title} · 납부 완료", style = MaterialTheme.typography.bodyMedium)
+            Text(stringResource(R.string.vault_nabbu_wanryo_2, item.title), style = MaterialTheme.typography.bodyMedium)
             Text(item.totalAmount.toMoneyText(), style = MaterialTheme.typography.bodyMedium)
         }
     }
@@ -682,7 +684,7 @@ private fun FutureExpenseInputSheet(
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
             DayDoneTopBar(
-                    title = if (isEditing) "준비 항목 수정" else "준비 항목 추가",
+                    title = if (isEditing) stringResource(R.string.vault_junbi_hangmog_sujeong) else stringResource(R.string.vault_junbi_hangmog_chuga_2),
                     onBack = onDismiss
                 )
 
@@ -699,8 +701,8 @@ private fun FutureExpenseInputSheet(
                         value = uiState.titleInput,
                         onValueChange = onTitleChange,
                         modifier = Modifier.fillMaxWidth(),
-                        label = { Text("항목명") },
-                        placeholder = { Text("예: 자동차세, 엄마 생신 선물") },
+                        label = { Text(stringResource(R.string.vault_hangmogmyeong)) },
+                        placeholder = { Text(stringResource(R.string.vault_ye_jadongchase_eomma_saengsin)) },
                         singleLine = true
                     )
 
@@ -718,20 +720,20 @@ private fun FutureExpenseInputSheet(
                         value = uiState.totalAmountInput,
                         onValueChange = onTotalAmountChange,
                         modifier = Modifier.fillMaxWidth(),
-                        label = { Text("목표 금액") },
+                        label = { Text(stringResource(R.string.vault_mogpyo_geumaeg)) },
                         singleLine = true,
-                        suffix = { Text("원") },
+                        suffix = { Text(stringResource(R.string.settings_weon)) },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                     )
 
                     MonthSelectorField(
-                        label = "목표월 (납부/이벤트)",
+                        label = stringResource(R.string.vault_mogpyoweol_nabbu_ibenteu),
                         yearMonth = uiState.targetMonthInput,
                         onChange = onTargetMonthChange
                     )
 
                     MonthSelectorField(
-                        label = "준비 시작월",
+                        label = stringResource(R.string.vault_junbi_sijagweol),
                         yearMonth = uiState.prepareStartMonthInput,
                         onChange = onPrepareStartMonthChange
                     )
@@ -740,12 +742,12 @@ private fun FutureExpenseInputSheet(
                         FilterChip(
                             selected = uiState.repeatInput == FutureExpenseRepeat.ONCE,
                             onClick = { onRepeatChange(FutureExpenseRepeat.ONCE) },
-                            label = { Text("1회") }
+                            label = { Text(stringResource(R.string.vault_1hoe)) }
                         )
                         FilterChip(
                             selected = uiState.repeatInput == FutureExpenseRepeat.YEARLY,
                             onClick = { onRepeatChange(FutureExpenseRepeat.YEARLY) },
-                            label = { Text("매년") }
+                            label = { Text(stringResource(R.string.vault_maenyeon)) }
                         )
                     }
 
@@ -753,8 +755,8 @@ private fun FutureExpenseInputSheet(
                         value = uiState.memoInput,
                         onValueChange = onMemoChange,
                         modifier = Modifier.fillMaxWidth(),
-                        label = { Text("메모") },
-                        placeholder = { Text("선택 입력") },
+                        label = { Text(stringResource(R.string.vault_memo)) },
+                        placeholder = { Text(stringResource(R.string.vault_seontaeg_ibryeog)) },
                         minLines = 2,
                         maxLines = 3
                     )
@@ -774,13 +776,13 @@ private fun FutureExpenseInputSheet(
                         enabled = uiState.titleInput.isNotBlank() &&
                                 (uiState.totalAmountInput.toLongOrNull() ?: 0L) > 0L
                     ) {
-                        Text(if (isEditing) "수정하기" else "추가하기")
+                        Text(if (isEditing) stringResource(R.string.vault_sujeonghagi) else stringResource(R.string.vault_chugahagi))
                     }
 
                     if (isEditing) {
                         if (uiState.editingPreparedAmount > 0L && !uiState.editingIsCompleted) {
                             Text(
-                                text = "이번 사이클 준비함 ${uiState.editingPreparedAmount.toMoneyText()}",
+                                text = stringResource(R.string.vault_ibeon_saikeul_junbiham, uiState.editingPreparedAmount.toMoneyText()),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -791,7 +793,7 @@ private fun FutureExpenseInputSheet(
                                 onClick = { showPaymentConfirm = true },
                                 modifier = Modifier.fillMaxWidth()
                             ) {
-                                Text("납부 완료")
+                                Text(stringResource(R.string.vault_nabbu_wanryo))
                             }
                         }
 
@@ -800,7 +802,7 @@ private fun FutureExpenseInputSheet(
                                 onClick = onWithdrawClick,
                                 modifier = Modifier.fillMaxWidth()
                             ) {
-                                Text("준비금 빼기")
+                                Text(stringResource(R.string.vault_junbigeum_ppaegi))
                             }
                         }
 
@@ -809,7 +811,7 @@ private fun FutureExpenseInputSheet(
                                 onClick = { showUndoConfirm = true },
                                 modifier = Modifier.fillMaxWidth()
                             ) {
-                                Text("납부 완료 취소")
+                                Text(stringResource(R.string.vault_nabbu_wanryo_chwiso))
                             }
                         }
 
@@ -817,7 +819,7 @@ private fun FutureExpenseInputSheet(
                             onClick = { showDeleteConfirm = true },
                             modifier = Modifier.fillMaxWidth()
                         ) {
-                            Text("삭제하기", color = MaterialTheme.colorScheme.error)
+                            Text(stringResource(R.string.vault_sagjehagi), color = MaterialTheme.colorScheme.error)
                         }
                     }
                 }
@@ -827,21 +829,21 @@ private fun FutureExpenseInputSheet(
     if (showPaymentConfirm) {
         AlertDialog(
             onDismissRequest = { showPaymentConfirm = false },
-            title = { Text("납부 완료로 처리할까요?") },
+            title = { Text(stringResource(R.string.vault_nabbu_wanryoro_cheorihalkkayo)) },
             text = {
-                Text("준비한 만큼은 이미 생활비에서 빠졌고, 부족분이 있으면 이번 달 지출로 추가돼요. 반복 항목이면 다음 사이클로 넘어갑니다.")
+                Text(stringResource(R.string.vault_junbihan_mankeumeun_imi_saenghwalbieseo))
             },
             confirmButton = {
                 TextButton(onClick = {
                     showPaymentConfirm = false
                     onCompletePaymentClick()
                 }) {
-                    Text("납부 완료")
+                    Text(stringResource(R.string.vault_nabbu_wanryo))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showPaymentConfirm = false }) {
-                    Text("취소")
+                    Text(stringResource(R.string.settings_chwiso))
                 }
             }
         )
@@ -850,21 +852,21 @@ private fun FutureExpenseInputSheet(
     if (showDeleteConfirm) {
         AlertDialog(
             onDismissRequest = { showDeleteConfirm = false },
-            title = { Text("삭제할까요?") },
+            title = { Text(stringResource(R.string.vault_sagjehalkkayo)) },
             text = {
-                Text("이 준비 항목과 그동안 준비한 내역이 함께 삭제되고, 준비금은 생활비로 되돌아와요.")
+                Text(stringResource(R.string.vault_i_junbi_hangmoggwa_geudongan))
             },
             confirmButton = {
                 TextButton(onClick = {
                     showDeleteConfirm = false
                     onDeleteClick()
                 }) {
-                    Text("삭제", color = MaterialTheme.colorScheme.error)
+                    Text(stringResource(R.string.vault_sagje), color = MaterialTheme.colorScheme.error)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showDeleteConfirm = false }) {
-                    Text("취소")
+                    Text(stringResource(R.string.settings_chwiso))
                 }
             }
         )
@@ -873,21 +875,21 @@ private fun FutureExpenseInputSheet(
     if (showUndoConfirm) {
         AlertDialog(
             onDismissRequest = { showUndoConfirm = false },
-            title = { Text("납부 완료를 취소할까요?") },
+            title = { Text(stringResource(R.string.vault_nabbu_wanryoreul_chwisohalkkayo)) },
             text = {
-                Text("이 항목을 다시 '준비 중' 상태로 되돌립니다. 이미 준비해둔 금액은 그대로 남아요.")
+                Text(stringResource(R.string.vault_i_hangmogeul_dasi_junbi))
             },
             confirmButton = {
                 TextButton(onClick = {
                     showUndoConfirm = false
                     onUndoPaymentClick()
                 }) {
-                    Text("납부 완료 취소")
+                    Text(stringResource(R.string.vault_nabbu_wanryo_chwiso))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showUndoConfirm = false }) {
-                    Text("닫기")
+                    Text(stringResource(R.string.vault_dadgi))
                 }
             }
         )
@@ -896,11 +898,11 @@ private fun FutureExpenseInputSheet(
     if (uiState.isWithdrawDialogVisible) {
         AlertDialog(
             onDismissRequest = onWithdrawDismiss,
-            title = { Text("준비금 빼기") },
+            title = { Text(stringResource(R.string.vault_junbigeum_ppaegi)) },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text(
-                        text = "최대 ${uiState.withdrawMax.toMoneyText()}까지 뺄 수 있어요. 뺀 만큼 생활비로 돌아옵니다.",
+                        text = stringResource(R.string.vault_choedae_kkaji_ppael_su, uiState.withdrawMax.toMoneyText()),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -908,9 +910,9 @@ private fun FutureExpenseInputSheet(
                         value = uiState.withdrawAmountInput,
                         onValueChange = onWithdrawAmountChange,
                         modifier = Modifier.fillMaxWidth(),
-                        label = { Text("빼는 금액") },
+                        label = { Text(stringResource(R.string.vault_ppaeneun_geumaeg)) },
                         singleLine = true,
-                        suffix = { Text("원") },
+                        suffix = { Text(stringResource(R.string.settings_weon)) },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                     )
                 }
@@ -920,12 +922,12 @@ private fun FutureExpenseInputSheet(
                     onClick = onWithdrawConfirm,
                     enabled = (uiState.withdrawAmountInput.toLongOrNull() ?: 0L) > 0L
                 ) {
-                    Text("빼기")
+                    Text(stringResource(R.string.vault_ppaegi))
                 }
             },
             dismissButton = {
                 TextButton(onClick = onWithdrawDismiss) {
-                    Text("취소")
+                    Text(stringResource(R.string.settings_chwiso))
                 }
             }
         )
@@ -950,25 +952,27 @@ private fun MonthSelectorField(
             verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(onClick = { onChange(yearMonth.minusMonths(1)) }) {
-                Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = "이전 달")
+                Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = stringResource(R.string.vault_ijeon_dal))
             }
             Text(
-                text = "${yearMonth.year}년 ${yearMonth.monthValue}월",
+                text = stringResource(R.string.vault_nyeon_weol, yearMonth.year, yearMonth.monthValue),
                 style = MaterialTheme.typography.bodyLarge
             )
             IconButton(onClick = { onChange(yearMonth.plusMonths(1)) }) {
-                Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = "다음 달")
+                Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = stringResource(R.string.vault_daeum_dal))
             }
         }
         HorizontalDivider()
     }
 }
 
+@Composable
 private fun FutureExpenseCategory.label(): String = when (this) {
-    FutureExpenseCategory.TAX -> "세금"
-    FutureExpenseCategory.INSURANCE -> "보험"
-    FutureExpenseCategory.ANNIVERSARY -> "기념일"
-    FutureExpenseCategory.ETC -> "기타"
+    FutureExpenseCategory.TAX -> stringResource(R.string.vault_segeum)
+    FutureExpenseCategory.INSURANCE -> stringResource(R.string.vault_boheom)
+    FutureExpenseCategory.ANNIVERSARY -> stringResource(R.string.vault_ginyeomil)
+    FutureExpenseCategory.ETC -> stringResource(R.string.vault_gita)
 }
 
+@Composable
 private fun VaultItemUiModel.categoryLabel(): String = category.label()

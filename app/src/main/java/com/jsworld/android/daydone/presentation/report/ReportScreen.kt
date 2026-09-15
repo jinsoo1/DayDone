@@ -6,9 +6,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -39,20 +39,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.jsworld.android.daydone.R
 import com.jsworld.android.daydone.domain.model.MonthlyReport
 import com.jsworld.android.daydone.domain.model.ReportCategory
 import com.jsworld.android.daydone.domain.model.ReportPace
 import com.jsworld.android.daydone.presentation.util.toMoneyText
-import com.jsworld.android.daydone.ui.theme.DayDoneAccent
 import com.jsworld.android.daydone.ui.component.DayDoneTopBar
+import com.jsworld.android.daydone.ui.theme.DayDoneAccent
 
 @Composable
 fun ReportRoute(
@@ -69,7 +70,7 @@ fun ReportRoute(
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
             DayDoneTopBar(
-                title = if (uiState.report?.isFinal == true) "기간 결산 리포트" else "이번 기간 리포트",
+                title = if (uiState.report?.isFinal == true) stringResource(R.string.report_gigan_gyeolsan_ripoteu) else stringResource(R.string.report_ibeon_gigan_ripoteu),
                 onBack = onBack
             )
 
@@ -103,9 +104,7 @@ private fun ReportContent(report: MonthlyReport) {
         report.trackingStartDate?.let { start ->
             item {
                 Text(
-                    text = "🌱 ${start.monthValue}월 ${start.dayOfMonth}일부터 기록을 시작했어요. " +
-                            "그 전 날들은 리포트에 담기지 않아 이번 기간은 실제와 조금 다를 수 있어요. " +
-                            "다음 기간부터는 온전하게 보여드릴게요.",
+                    text = stringResource(R.string.report_weol_ilbuteo_girogeul_sijaghaesseoyo, start.monthValue, start.dayOfMonth),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -127,26 +126,26 @@ private fun ReportContent(report: MonthlyReport) {
 private fun PaceCard(report: MonthlyReport) {
     val headline = if (report.isFinal) {
         when (report.pace) {
-            ReportPace.GOOD -> "예산 안에서 훌륭하게 보냈어요"
-            ReportPace.ON_TRACK -> "계획한 페이스대로 잘 마쳤어요"
-            ReportPace.FAST -> "이번엔 페이스가 좀 빨랐어요"
-            ReportPace.OVER -> "예산을 조금 넘겼어요. 다음 기간에 다시 잡아봐요"
-            ReportPace.WAY_OVER -> "예산을 많이 넘긴 기간이었어요. 원인을 알면 다음은 달라져요"
+            ReportPace.GOOD -> stringResource(R.string.report_yesan_aneseo_hulryunghage_bonaesseoyo)
+            ReportPace.ON_TRACK -> stringResource(R.string.report_gyehoeghan_peiseudaero_jal_machyeosseoyo)
+            ReportPace.FAST -> stringResource(R.string.report_ibeonen_peiseuga_jom_ppalrasseoyo)
+            ReportPace.OVER -> stringResource(R.string.report_yesaneul_jogeum_neomgyeosseoyo_daeum)
+            ReportPace.WAY_OVER -> stringResource(R.string.report_yesaneul_manhi_neomgin_giganieosseoyo)
         }
     } else {
         when (report.pace) {
-            ReportPace.GOOD -> "예산 대비 훌륭하게 쓰는 중이에요"
-            ReportPace.ON_TRACK -> "딱 좋은 페이스로 가고 있어요"
-            ReportPace.FAST -> "페이스가 조금 빨라요. 같이 조절해볼까요"
-            ReportPace.OVER -> "예산을 넘었어요. 지금부턴 꼭 필요한 것만 함께 지켜봐요"
-            ReportPace.WAY_OVER -> "예산을 많이 넘었어요. 아래 '자주 쓴 곳'에서 원인을 찾아봐요"
+            ReportPace.GOOD -> stringResource(R.string.report_yesan_daebi_hulryunghage_sseuneun)
+            ReportPace.ON_TRACK -> stringResource(R.string.report_ttag_joheun_peiseuro_gago)
+            ReportPace.FAST -> stringResource(R.string.report_peiseuga_jogeum_ppalrayo_gati)
+            ReportPace.OVER -> stringResource(R.string.report_yesaneul_neomeosseoyo_jigeumbuteon_kkog)
+            ReportPace.WAY_OVER -> stringResource(R.string.report_yesaneul_manhi_neomeosseoyo_arae)
         }
     }
 
     val subline = if (report.isFinal) {
-        "기간이 끝났어요 · 생활비의 ${report.spentPercent}%를 썼어요"
+        stringResource(R.string.report_gigani_kkeutnasseoyo_saenghwalbiui_reul, report.spentPercent)
     } else {
-        "기간은 ${report.elapsedPercent}% 지났고, 생활비는 ${report.spentPercent}% 썼어요"
+        stringResource(R.string.report_giganeun_jinassgo_saenghwalbineun_sseosseoyo, report.elapsedPercent, report.spentPercent)
     }
 
     Card(
@@ -162,9 +161,9 @@ private fun PaceCard(report: MonthlyReport) {
         ) {
             Text(
                 text = if (report.isFinal) {
-                    "기간 종료 · ${report.periodText}"
+                    stringResource(R.string.report_gigan_jongryo, report.periodText)
                 } else {
-                    "${report.dayIndex}일째 · ${report.periodText}"
+                    stringResource(R.string.report_iljjae, report.dayIndex, report.periodText)
                 },
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
@@ -221,12 +220,12 @@ private fun PaceCard(report: MonthlyReport) {
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = "쓴 돈 ${report.spentPercent}%",
+                    text = stringResource(R.string.report_sseun_don, report.spentPercent),
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
                 )
                 Text(
-                    text = "오늘 ${report.elapsedPercent}%",
+                    text = stringResource(R.string.report_oneul, report.elapsedPercent),
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
                 )
@@ -244,21 +243,21 @@ private fun PreviousComparisonLine(report: MonthlyReport) {
         diff < 0 -> {
             val saved = (-diff).toMoneyText()
             if (report.isFinal) {
-                "지난 기간보다 $saved 덜 썼어요" to DayDoneAccent.successText
+                stringResource(R.string.report_jinan_giganboda_deol_sseosseoyo, saved) to DayDoneAccent.successText
             } else {
-                "지난 기간 이맘때보다 $saved 덜 쓰고 있어요" to DayDoneAccent.successText
+                stringResource(R.string.report_jinan_gigan_imamttaeboda_deol, saved) to DayDoneAccent.successText
             }
         }
         diff > 0 -> {
             val more = diff.toMoneyText()
             if (report.isFinal) {
-                "지난 기간보다 $more 더 썼어요" to MaterialTheme.colorScheme.onSurfaceVariant
+                stringResource(R.string.report_jinan_giganboda_deo_sseosseoyo, more) to MaterialTheme.colorScheme.onSurfaceVariant
             } else {
-                "지난 기간 이맘때보다 $more 더 쓰고 있어요" to MaterialTheme.colorScheme.onSurfaceVariant
+                stringResource(R.string.report_jinan_gigan_imamttaeboda_deo, more) to MaterialTheme.colorScheme.onSurfaceVariant
             }
         }
         else ->
-            "지난 기간과 비슷하게 쓰고 있어요" to MaterialTheme.colorScheme.onSurfaceVariant
+            stringResource(R.string.report_jinan_gigangwa_biseushage_sseugo) to MaterialTheme.colorScheme.onSurfaceVariant
     }
 
     Text(
@@ -282,13 +281,13 @@ private fun MiniStatsSection(report: MonthlyReport) {
                 .height(IntrinsicSize.Min),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            val previousLabel = if (report.isFinal) "지난 기간" else "지난 기간 이맘때"
+            val previousLabel = if (report.isFinal) stringResource(R.string.report_jinan_gigan) else stringResource(R.string.report_jinan_gigan_imamttae)
 
             MiniStat(
                 Modifier
                     .weight(1f)
                     .fillMaxHeight(),
-                "하루 평균", report.dailyAverage.toMoneyText(),
+                stringResource(R.string.report_haru_pyeonggyun), report.dailyAverage.toMoneyText(),
                 sub = report.previous?.let {
                     "$previousLabel ${it.prevDailyAverage.toMoneyText()}"
                 }
@@ -297,14 +296,14 @@ private fun MiniStatsSection(report: MonthlyReport) {
                 Modifier
                     .weight(1f)
                     .fillMaxHeight(),
-                "무지출", "${report.noSpendDays}일",
-                sub = report.previous?.let { "$previousLabel ${it.prevNoSpendDays}일" }
+                stringResource(R.string.report_mujichul), stringResource(R.string.report_il, report.noSpendDays),
+                sub = report.previous?.let { stringResource(R.string.report_il_2, previousLabel, it.prevNoSpendDays) }
             )
             MiniStat(
                 Modifier
                     .weight(1f)
                     .fillMaxHeight(),
-                "필수 비중", "${report.essentialPercent}%"
+                stringResource(R.string.report_pilsu_bijung), "${report.essentialPercent}%"
             )
         }
 
@@ -312,10 +311,9 @@ private fun MiniStatsSection(report: MonthlyReport) {
         report.previous?.let {
             Text(
                 text = if (report.isFinal) {
-                    "카드 아래 '지난 기간'은 지난 기간 전체를 같은 방식으로 계산한 값이에요."
+                    stringResource(R.string.report_kadeu_arae_jinan_gigan)
                 } else {
-                    "카드 아래 '지난 기간 이맘때'는 지난 기간의 같은 ${report.dayIndex}일째까지만 " +
-                            "모아본 값이에요. 진행 중인 이번 기간과 공평하게 견주려고요."
+                    stringResource(R.string.report_kadeu_arae_jinan_gigan_2, report.dayIndex)
                 },
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -360,11 +358,11 @@ private fun CategoryCard(report: MonthlyReport) {
             modifier = Modifier.padding(20.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Text(text = "자주 쓴 곳", style = MaterialTheme.typography.titleMedium)
+            Text(text = stringResource(R.string.report_jaju_sseun_gos), style = MaterialTheme.typography.titleMedium)
 
             if (report.categories.isEmpty()) {
                 Text(
-                    text = "아직 이번 기간 지출이 없어요.",
+                    text = stringResource(R.string.report_ajig_ibeon_gigan_jichuli),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -375,7 +373,7 @@ private fun CategoryCard(report: MonthlyReport) {
                 }
 
                 Text(
-                    text = "지출명을 보고 자동으로 묶었어요. 못 알아본 항목은 기타로 모여요.",
+                    text = stringResource(R.string.report_jichulmyeongeul_bogo_jadongeuro_mukkeosseoyo),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -403,8 +401,7 @@ private fun CategoryRow(category: ReportCategory, maxTotal: Long) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "${category.category.emoji} ${stringResource(category.category.labelRes)} " +
-                        "· ${category.count}회",
+                text = stringResource(R.string.report_hoe, category.category.emoji, stringResource(category.category.labelRes), category.count),
                 style = MaterialTheme.typography.bodyMedium
             )
             Text(
@@ -434,7 +431,7 @@ private fun CategoryRow(category: ReportCategory, maxTotal: Long) {
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        text = "${item.title} · ${item.count}회",
+                        text = stringResource(R.string.report_hoe_2, item.title, item.count),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -457,7 +454,7 @@ private fun CategoryRow(category: ReportCategory, maxTotal: Long) {
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        text = "외 ${rest.size}개",
+                        text = stringResource(R.string.report_oe_gae, rest.size),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.75f)
                     )
@@ -484,20 +481,20 @@ private fun FinalSummaryCard(report: MonthlyReport) {
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             Text(
-                text = "이번 기간 결산",
+                text = stringResource(R.string.report_ibeon_gigan_gyeolsan),
                 style = MaterialTheme.typography.titleMedium
             )
 
             if (report.projectedLeftover >= 0L) {
                 Text(
                     text = buildAnnotatedString {
-                        append("생활비에서 ")
+                        append(stringResource(R.string.report_saenghwalbieseo))
                         withStyle(
                             SpanStyle(color = greenText, fontWeight = FontWeight.SemiBold)
                         ) {
                             append("+${report.projectedLeftover.toMoneyText()}")
                         }
-                        append("을 지켜냈어요. Day Done! 🎉")
+                        append(stringResource(R.string.report_eul_jikyeonaesseoyo_day_done))
                     },
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -512,7 +509,7 @@ private fun FinalSummaryCard(report: MonthlyReport) {
                             .padding(horizontal = 12.dp, vertical = 10.dp)
                     ) {
                         Text(
-                            text = "남긴 돈은 금고의 준비 항목이나 저축으로 옮겨, 다음 큰 지출을 준비해보세요",
+                            text = stringResource(R.string.report_namgin_doneun_geumgoui_junbi),
                             style = MaterialTheme.typography.bodySmall,
                             color = greenTintText
                         )
@@ -520,9 +517,7 @@ private fun FinalSummaryCard(report: MonthlyReport) {
                 }
             } else {
                 Text(
-                    text = "이번 기간엔 예산보다 " +
-                            "${(-report.projectedLeftover).toMoneyText()} 더 썼어요. " +
-                            "괜찮아요 — 새 기간은 새 예산으로 다시 시작해요.",
+                    text = stringResource(R.string.report_ibeon_giganen_yesanboda_deo, (-report.projectedLeftover).toMoneyText()),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -544,24 +539,24 @@ private fun RemainingGuideCard(report: MonthlyReport) {
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             Text(
-                text = "남은 ${report.remainingDays}일, 이렇게 가면",
+                text = stringResource(R.string.report_nameun_il_ireohge_gamyeon, report.remainingDays),
                 style = MaterialTheme.typography.titleMedium
             )
 
             if (report.projectedLeftover >= 0L) {
                 Text(
                     text = buildAnnotatedString {
-                        append("지금 페이스면 마지막 날 ")
+                        append(stringResource(R.string.report_jigeum_peiseumyeon_majimag_nal))
                         withStyle(
                             SpanStyle(color = greenText, fontWeight = FontWeight.SemiBold)
                         ) {
                             append("+${report.projectedLeftover.toMoneyText()}")
                         }
-                        append("이 남아요.\n하루 ")
+                        append(stringResource(R.string.report_i_namayo_haru))
                         withStyle(SpanStyle(fontWeight = FontWeight.SemiBold)) {
                             append(report.recommendedDaily.toMoneyText())
                         }
-                        append(" 안에서 쓰면 넉넉해요.")
+                        append(stringResource(R.string.report_aneseo_sseumyeon_neogneoghaeyo))
                     },
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -576,7 +571,7 @@ private fun RemainingGuideCard(report: MonthlyReport) {
                             .padding(horizontal = 12.dp, vertical = 10.dp)
                     ) {
                         Text(
-                            text = "남는 돈은 금고의 준비 항목에 미리 옮겨두는 것도 좋아요",
+                            text = stringResource(R.string.report_namneun_doneun_geumgoui_junbi),
                             style = MaterialTheme.typography.bodySmall,
                             color = greenTintText
                         )
@@ -585,11 +580,11 @@ private fun RemainingGuideCard(report: MonthlyReport) {
             } else {
                 Text(
                     text = buildAnnotatedString {
-                        append("지금 페이스가 이어지면 예산을 조금 넘을 수 있어요. 괜찮아요 — 하루 ")
+                        append(stringResource(R.string.report_jigeum_peiseuga_ieojimyeon_yesaneul))
                         withStyle(SpanStyle(fontWeight = FontWeight.SemiBold)) {
                             append(report.recommendedDaily.toMoneyText())
                         }
-                        append(" 안에서 쓰면 남은 날에 자연스럽게 맞춰져요.")
+                        append(stringResource(R.string.report_aneseo_sseumyeon_nameun_nale))
                     },
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -609,10 +604,10 @@ private fun DeductionCard(report: MonthlyReport) {
             modifier = Modifier.padding(20.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Text(text = "고정지출 들여다보기", style = MaterialTheme.typography.titleMedium)
+            Text(text = stringResource(R.string.report_gojeongjichul_deulyeodabogi), style = MaterialTheme.typography.titleMedium)
 
             Text(
-                text = "수입의 ${report.deductionPercent}%가 매달 저축·고정비로 먼저 빠져나가요.",
+                text = stringResource(R.string.report_suibui_ga_maedal_jeochug, report.deductionPercent),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -621,7 +616,7 @@ private fun DeductionCard(report: MonthlyReport) {
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(text = "저축", style = MaterialTheme.typography.bodyMedium)
+                Text(text = stringResource(R.string.report_jeochug), style = MaterialTheme.typography.bodyMedium)
                 Text(
                     text = report.savingTotal.toMoneyText(),
                     style = MaterialTheme.typography.bodyMedium,
@@ -632,7 +627,7 @@ private fun DeductionCard(report: MonthlyReport) {
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(text = "고정비", style = MaterialTheme.typography.bodyMedium)
+                Text(text = stringResource(R.string.report_gojeongbi), style = MaterialTheme.typography.bodyMedium)
                 Text(
                     text = report.fixedTotal.toMoneyText(),
                     style = MaterialTheme.typography.bodyMedium,
@@ -643,7 +638,7 @@ private fun DeductionCard(report: MonthlyReport) {
             HorizontalDivider()
 
             Text(
-                text = "상세 분석",
+                text = stringResource(R.string.report_sangse_bunseog),
                 style = MaterialTheme.typography.titleSmall,
                 fontWeight = FontWeight.SemiBold
             )
@@ -678,19 +673,19 @@ private fun DeductionCard(report: MonthlyReport) {
                         // TODO: 애드몹 리워드 연동 시 "광고 보고 상세 분석 열기"로 변경
                         //  (탭했더니 예고 없이 광고가 뜨지 않도록 문구를 먼저 바꿀 것)
                         Text(
-                            text = "탭해서 상세 분석 열기",
+                            text = stringResource(R.string.report_taebhaeseo_sangse_bunseog_yeolgi),
                             style = MaterialTheme.typography.bodyMedium,
                             fontWeight = FontWeight.SemiBold,
                             color = MaterialTheme.colorScheme.primary
                         )
                         Text(
-                            text = "항목별 비중 · 저축률 평가 · 맞춤 제안 ${report.suggestions.size}건",
+                            text = stringResource(R.string.report_hangmogbyeol_bijung_jeochugryul_pyeongga, report.suggestions.size),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Spacer(modifier = Modifier.height(6.dp))
                         Text(
-                            text = "출시 기념 무료 공개 중",
+                            text = stringResource(R.string.report_chulsi_ginyeom_muryo_gonggae),
                             style = MaterialTheme.typography.labelSmall,
                             fontWeight = FontWeight.SemiBold,
                             color = MaterialTheme.colorScheme.primary,
@@ -719,15 +714,15 @@ private fun DeductionDetail(report: MonthlyReport) {
                     Text(
                         text = share.title +
                                 if (share.type == com.jsworld.android.daydone.domain.model.ScheduledDeductionType.SAVING) {
-                                    " · 저축"
+                                    stringResource(R.string.report_jeochug_2)
                                 } else {
-                                    " · 고정비"
+                                    stringResource(R.string.report_gojeongbi_2)
                                 },
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Text(
-                        text = "${share.amount.toMoneyText()} · 수입의 ${share.percentOfIncome}%",
+                        text = stringResource(R.string.report_suibui, share.amount.toMoneyText(), share.percentOfIncome),
                         style = MaterialTheme.typography.bodySmall,
                         fontWeight = FontWeight.SemiBold
                     )
@@ -752,12 +747,12 @@ private fun DeductionDetail(report: MonthlyReport) {
                 modifier = Modifier.padding(top = 4.dp)
             ) {
                 Text(
-                    text = "맞춤 제안",
+                    text = stringResource(R.string.report_majchum_jean),
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.SemiBold
                 )
                 Text(
-                    text = "${report.suggestions.size}건",
+                    text = stringResource(R.string.report_geon, report.suggestions.size),
                     style = MaterialTheme.typography.labelSmall,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.primary,

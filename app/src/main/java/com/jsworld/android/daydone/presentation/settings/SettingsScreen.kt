@@ -35,10 +35,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.jsworld.android.daydone.R
 import com.jsworld.android.daydone.domain.model.BackupFileInfo
 import com.jsworld.android.daydone.presentation.challenge.ChallengeSettingsSheet
 import com.jsworld.android.daydone.presentation.util.toMoneyText
@@ -146,7 +148,7 @@ fun SettingsScreen(
     var showChallengeSheet by remember { mutableStateOf(false) }
 
     Column(modifier = Modifier.fillMaxSize()) {
-        DayDoneTopBar(title = "설정")
+        DayDoneTopBar(title = stringResource(R.string.settings_seoljeong))
 
         LazyColumn(
             modifier = Modifier
@@ -164,7 +166,7 @@ fun SettingsScreen(
                 Card(modifier = Modifier.fillMaxWidth()) {
                     Column(modifier = Modifier.padding(vertical = 4.dp)) {
                         SettingsRow(
-                            title = "공지사항",
+                            title = stringResource(R.string.settings_gongjisahang),
                             value = "",
                             onClick = onNavigateToNotices
                         )
@@ -176,17 +178,17 @@ fun SettingsScreen(
                 Card(modifier = Modifier.fillMaxWidth()) {
                     Column(modifier = Modifier.padding(vertical = 4.dp)) {
                         SettingsRow(
-                            title = "월 수입",
+                            title = stringResource(R.string.settings_weol_suib),
                             value = uiState.monthlyIncome.toMoneyText(),
                             onClick = onIncomeClick
                         )
                         HorizontalDivider(modifier = Modifier.padding(horizontal = 20.dp))
                         SettingsRow(
-                            title = "예산 시작일",
+                            title = stringResource(R.string.settings_yesan_sijagil),
                             value = if (uiState.budgetStartDay == 31) {
-                                "매월 말일"
+                                stringResource(R.string.settings_maeweol_malil)
                             } else {
-                                "매월 ${uiState.budgetStartDay}일"
+                                stringResource(R.string.settings_maeweol_il, uiState.budgetStartDay)
                             },
                             onClick = onStartDayClick
                         )
@@ -198,30 +200,30 @@ fun SettingsScreen(
                 Card(modifier = Modifier.fillMaxWidth()) {
                     Column(modifier = Modifier.padding(vertical = 4.dp)) {
                         SettingsRow(
-                            title = "무지출 챌린지",
+                            title = stringResource(R.string.settings_mujichul_chaelrinji),
                             value = when {
                                 uiState.challengeRunning ->
-                                    "${uiState.challengeDayIndex}/${uiState.challengeTargetDays}일째 진행 중"
+                                    stringResource(R.string.settings_iljjae_jinhaeng_jung, uiState.challengeDayIndex, uiState.challengeTargetDays)
                                 uiState.challengeFinished ->
-                                    "지난 챌린지 완료"
+                                    stringResource(R.string.settings_jinan_chaelrinji_wanryo)
                                 else ->
-                                    "시작하기"
+                                    stringResource(R.string.settings_sijaghagi)
                             },
                             onClick = { showChallengeSheet = true }
                         )
                         HorizontalDivider(modifier = Modifier.padding(horizontal = 20.dp))
                         SettingsRow(
-                            title = "도전 기록",
+                            title = stringResource(R.string.settings_dojeon_girog),
                             value = "",
                             onClick = onNavigateToChallengeHistory
                         )
                         HorizontalDivider(modifier = Modifier.padding(horizontal = 20.dp))
                         SettingsRow(
-                            title = "알림",
+                            title = stringResource(R.string.settings_alrim),
                             value = if (uiState.notificationOnCount > 0) {
-                                "${uiState.notificationOnCount}개 켜짐"
+                                stringResource(R.string.settings_gae_kyeojim, uiState.notificationOnCount)
                             } else {
-                                "꺼짐"
+                                stringResource(R.string.settings_kkeojim)
                             },
                             onClick = onNavigateToNotificationSettings
                         )
@@ -231,7 +233,7 @@ fun SettingsScreen(
 
             item {
                 Text(
-                    text = "저축·고정비는 오늘 탭 하단 + 버튼으로, 준비 항목은 금고 탭에서 관리할 수 있어요.",
+                    text = stringResource(R.string.settings_jeochug_gojeongbineun_oneul_taeb),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -241,21 +243,21 @@ fun SettingsScreen(
                 Card(modifier = Modifier.fillMaxWidth()) {
                     Column(modifier = Modifier.padding(vertical = 4.dp)) {
                         SettingsRow(
-                            title = "데이터 백업 (다운로드 폴더에 저장)",
+                            title = stringResource(R.string.settings_deiteo_baegeob_daunrodeu_poldeoe),
                             value = "",
                             enabled = !uiState.isBackupWorking,
                             onClick = onExportClick
                         )
                         HorizontalDivider(modifier = Modifier.padding(horizontal = 20.dp))
                         SettingsRow(
-                            title = "백업 파일에서 복원",
+                            title = stringResource(R.string.settings_baegeob_paileseo_bogweon),
                             value = "",
                             enabled = !uiState.isBackupWorking,
                             onClick = onRestoreClick
                         )
                         HorizontalDivider(modifier = Modifier.padding(horizontal = 20.dp))
                         SettingsRow(
-                            title = "지출 내역 내보내기 (엑셀)",
+                            title = stringResource(R.string.settings_jichul_naeyeog_naebonaegi_egsel),
                             value = "",
                             enabled = !uiState.isBackupWorking,
                             onClick = onExportExcelClick
@@ -266,11 +268,7 @@ fun SettingsScreen(
 
             item {
                 Text(
-                    text = "파일은 내 파일 → 다운로드 → DayDone 폴더에 저장돼요 " +
-                            "(백업은 백업 폴더, 엑셀 파일은 엑셀 폴더). " +
-                            "기기를 바꾸거나 앱을 다시 설치하면 데이터가 사라지니, " +
-                            "백업을 가끔 만들어 두면 그대로 되살릴 수 있어요. " +
-                            "엑셀 파일에는 월별 지출 내역과 고정 지출이 시트로 나뉘어 담겨요.",
+                    text = stringResource(R.string.settings_paileun_nae_pail_daunrodeu),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -278,8 +276,7 @@ fun SettingsScreen(
 
             item {
                 Text(
-                    text = "🔒 모든 기록은 이 휴대폰 안에만 저장돼요. " +
-                            "데이던은 서버가 없어서, 내 지출 내역이 밖으로 나가거나 유출될 곳 자체가 없어요.",
+                    text = stringResource(R.string.settings_modeun_girogeun_i_hyudaepon),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -289,7 +286,7 @@ fun SettingsScreen(
                 Card(modifier = Modifier.fillMaxWidth()) {
                     Column(modifier = Modifier.padding(vertical = 4.dp)) {
                         SettingsRow(
-                            title = "데이터 초기화",
+                            title = stringResource(R.string.settings_deiteo_chogihwa),
                             value = "",
                             titleColor = MaterialTheme.colorScheme.error,
                             onClick = { showResetConfirm = true }
@@ -302,11 +299,10 @@ fun SettingsScreen(
 
     if (uiState.isIncomeSheetVisible) {
         SettingInputSheet(
-            title = "월 수입 수정",
-            description = "이번 기간부터 적용돼요. 지난 기간 금액은 그대로 남고, " +
-                    "특정 달만 다르게 하려면 월 탭에서 그 달을 바꾸면 돼요.",
-            label = "월 수입",
-            suffix = "원",
+            title = stringResource(R.string.settings_weol_suib_sujeong),
+            description = stringResource(R.string.settings_ibeon_giganbuteo_jeogyongdwaeyo_jinan),
+            label = stringResource(R.string.settings_weol_suib),
+            suffix = stringResource(R.string.settings_weon),
             value = uiState.incomeInput,
             onValueChange = onIncomeChange,
             saveEnabled = (uiState.incomeInput.toLongOrNull() ?: 0L) > 0L,
@@ -317,10 +313,10 @@ fun SettingsScreen(
 
     if (uiState.isStartDaySheetVisible) {
         SettingInputSheet(
-            title = "예산 시작일 수정",
-            description = "한 달 예산을 계산하는 기준일이에요 (1~31일). 31일처럼 달에 없는 날짜는 그 달의 말일로 계산해요.",
-            label = "예산 시작일",
-            suffix = "일",
+            title = stringResource(R.string.settings_yesan_sijagil_sujeong),
+            description = stringResource(R.string.settings_han_dal_yesaneul_gyesanhaneun),
+            label = stringResource(R.string.settings_yesan_sijagil),
+            suffix = stringResource(R.string.settings_il),
             value = uiState.startDayInput,
             onValueChange = onStartDayChange,
             saveEnabled = (uiState.startDayInput.toIntOrNull() ?: 0) in 1..31,
@@ -328,11 +324,11 @@ fun SettingsScreen(
             onDismiss = onStartDayDismiss,
             notice = {
                 NoticeBox(
-                    title = "바꾸면 모든 기간이 다시 나뉘어요",
+                    title = stringResource(R.string.settings_bakkumyeon_modeun_gigani_dasi),
                     lines = listOf(
-                        "지난 기록을 포함한 모든 달이 새 시작일 기준으로 다시 계산돼요.",
-                        "날짜에 따라 지출·저축/고정비가 옆 달 기간으로 이동해 보일 수 있어요.",
-                        "예: 10일 → 25일로 바꾸면, 7월 15일 지출은 \"6월\" 기간(6/25~7/24)에 속하게 돼요."
+                        stringResource(R.string.settings_jinan_girogeul_pohamhan_modeun),
+                        stringResource(R.string.settings_naljjae_ttara_jichul_jeochug),
+                        stringResource(R.string.settings_ye_10il_25ilro_bakkumyeon)
                     )
                 )
             }
@@ -358,18 +354,17 @@ fun SettingsScreen(
     uiState.restoreCandidate?.let { file ->
         AlertDialog(
             onDismissRequest = onRestoreCandidateDismiss,
-            title = { Text("이 백업으로 복원할까요?") },
+            title = { Text(stringResource(R.string.settings_i_baegeobeuro_bogweonhalkkayo)) },
             text = {
                 Text(
-                    "${file.name}\n${file.subtitle()}\n\n" +
-                            "⚠️ 지금 앱에 있는 지출·저축/고정비·금고·예산이 모두 이 파일의 내용으로 바뀌고, 되돌릴 수 없어요."
+                    stringResource(R.string.settings_jigeum_aebe_issneun_jichul, file.name, file.subtitle())
                 )
             },
             confirmButton = {
-                TextButton(onClick = onRestoreCandidateConfirm) { Text("복원") }
+                TextButton(onClick = onRestoreCandidateConfirm) { Text(stringResource(R.string.settings_bogweon)) }
             },
             dismissButton = {
-                TextButton(onClick = onRestoreCandidateDismiss) { Text("취소") }
+                TextButton(onClick = onRestoreCandidateDismiss) { Text(stringResource(R.string.settings_chwiso)) }
             }
         )
     }
@@ -377,10 +372,10 @@ fun SettingsScreen(
     uiState.backupMessage?.let { message ->
         AlertDialog(
             onDismissRequest = onBackupMessageShown,
-            title = { Text("백업") },
+            title = { Text(stringResource(R.string.settings_baegeob)) },
             text = { Text(message) },
             confirmButton = {
-                TextButton(onClick = onBackupMessageShown) { Text("확인") }
+                TextButton(onClick = onBackupMessageShown) { Text(stringResource(R.string.settings_hwagin)) }
             }
         )
     }
@@ -388,21 +383,21 @@ fun SettingsScreen(
     if (showResetConfirm) {
         AlertDialog(
             onDismissRequest = { showResetConfirm = false },
-            title = { Text("모든 데이터를 지울까요?") },
+            title = { Text(stringResource(R.string.settings_modeun_deiteoreul_jiulkkayo)) },
             text = {
-                Text("지출·수익·저축/고정비·준비 항목·예산 설정이 모두 삭제되고 처음 상태로 돌아가요. 되돌릴 수 없어요.")
+                Text(stringResource(R.string.settings_jichul_suig_jeochug_gojeongbi))
             },
             confirmButton = {
                 TextButton(onClick = {
                     showResetConfirm = false
                     onResetConfirm()
                 }) {
-                    Text("초기화", color = MaterialTheme.colorScheme.error)
+                    Text(stringResource(R.string.settings_chogihwa), color = MaterialTheme.colorScheme.error)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showResetConfirm = false }) {
-                    Text("취소")
+                    Text(stringResource(R.string.settings_chwiso))
                 }
             }
         )
@@ -488,7 +483,7 @@ private fun SettingInputSheet(
                 modifier = Modifier.fillMaxWidth(),
                 enabled = saveEnabled
             ) {
-                Text("저장")
+                Text(stringResource(R.string.settings_jeojang))
             }
         }
     }
@@ -514,22 +509,19 @@ private fun RestoreSheet(
                 .padding(bottom = 24.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Text(text = "백업 파일에서 복원", style = MaterialTheme.typography.titleLarge)
+            Text(text = stringResource(R.string.settings_baegeob_paileseo_bogweon), style = MaterialTheme.typography.titleLarge)
 
             NoticeBox(
-                title = "⚠️ 복원하면 지금 데이터가 모두 바뀌어요",
+                title = stringResource(R.string.settings_bogweonhamyeon_jigeum_deiteoga_modu),
                 lines = listOf(
-                    "지출·저축/고정비·금고·예산이 선택한 백업 파일의 내용으로 전부 교체돼요.",
-                    "되돌릴 수 없으니, 지금 데이터가 필요하면 먼저 백업을 만들어 두세요."
+                    stringResource(R.string.settings_jichul_jeochug_gojeongbi_geumgo),
+                    stringResource(R.string.settings_doedolril_su_eobseuni_jigeum)
                 )
             )
 
             if (files.isEmpty()) {
                 Text(
-                    text = "표시할 백업 파일이 없어요.\n\n" +
-                            "앱을 다시 설치했거나 기기를 바꿨다면 여기 목록에는 안 보일 수 있어요. " +
-                            "그래도 파일은 내 파일 → 다운로드 → DayDone → 백업 폴더에 그대로 있으니, " +
-                            "아래 버튼으로 직접 골라주세요.",
+                    text = stringResource(R.string.settings_pyosihal_baegeob_paili_eobseoyo),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -558,7 +550,7 @@ private fun RestoreSheet(
                 }
 
                 Text(
-                    text = "이 앱에서 만든 백업만 보여요. 다른 기기나 재설치 전 파일은 아래 버튼으로 직접 골라주세요.",
+                    text = stringResource(R.string.settings_i_aebeseo_mandeun_baegeobman),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -568,19 +560,23 @@ private fun RestoreSheet(
                 onClick = onPickFromFolder,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("폴더에서 직접 선택")
+                Text(stringResource(R.string.settings_poldeoeseo_jigjeob_seontaeg))
             }
         }
     }
 }
 
 /** "2026년 7월 26일 · 12KB" 형태의 보조 설명. */
+@Composable
 private fun BackupFileInfo.subtitle(): String {
     val date = java.time.Instant.ofEpochMilli(modifiedAtMillis)
         .atZone(java.time.ZoneId.systemDefault())
         .toLocalDate()
     val kb = ((sizeBytes + 1023) / 1024).coerceAtLeast(1)
-    return "%d년 %d월 %d일 · %dKB".format(date.year, date.monthValue, date.dayOfMonth, kb)
+    return stringResource(
+        R.string.settings_backup_file_subtitle,
+        date.year, date.monthValue, date.dayOfMonth, kb
+    )
 }
 
 /** daydone-backup-20260726.json 형태의 기본 파일명. */
@@ -601,6 +597,8 @@ private class OpenBackupDocument : ActivityResultContracts.OpenDocument() {
                 android.provider.DocumentsContract.EXTRA_INITIAL_URI,
                 android.provider.DocumentsContract.buildDocumentUri(
                     "com.android.externalstorage.documents",
+                    // ⚠️ 로케일화 금지 — ListBackupFilesUseCase 가 이 경로로 조회한다.
+                    // 번역하면 기존 유저의 복원 목록이 빈다(§15).
                     "primary:Download/DayDone/백업"
                 )
             )
