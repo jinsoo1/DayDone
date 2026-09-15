@@ -28,6 +28,7 @@ import com.jsworld.android.daydone.presentation.ledger.model.LedgerDayUiModel
 import com.jsworld.android.daydone.presentation.ledger.model.LedgerEntryUiModel
 import com.jsworld.android.daydone.presentation.ledger.model.LedgerUiState
 import com.jsworld.android.daydone.presentation.util.toMoneyText
+import com.jsworld.android.daydone.presentation.util.toWeekText
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -41,8 +42,6 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.YearMonth
-import java.time.format.TextStyle
-import java.util.Locale
 
 /**
  * 기간 내역 화면 — 한 예산 기간의 수입·지출을 날짜별로 묶어 쭉 보여준다.
@@ -203,7 +202,7 @@ class LedgerViewModel @Inject constructor(
                 LedgerDayUiModel(
                     date = day.date,
                     dayText = day.date.dayOfMonth.toString(),
-                    weekText = day.date.toKoreanWeek(),
+                    weekText = day.date.toWeekText(),
                     // 기간이 두 달에 걸칠 때(시작일 ≠ 1일) 달이 바뀌는 지점만 표시
                     monthLabel = if (day.date.monthValue != previousMonth) {
                         "${day.date.monthValue}월"
@@ -237,8 +236,6 @@ class LedgerViewModel @Inject constructor(
         )
     }
 
-    private fun LocalDate.toKoreanWeek(): String =
-        dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.KOREA)
 }
 
 private data class LedgerData(
