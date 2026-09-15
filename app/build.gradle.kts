@@ -30,6 +30,13 @@ android {
         versionName = "1.4.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // 담을 언어를 못 박는다. 이게 없으면 의존성이 끌고 온 수십 개 로케일이
+        // 그대로 들어가고, 단말 언어가 일본어면 시스템 문구만 일본어로 섞인다.
+        // 1.6.0 에서 "ja" 를 더한다.
+        androidResources {
+            localeFilters += listOf("ko")
+        }
     }
 
     signingConfigs {
@@ -97,6 +104,15 @@ android {
     buildFeatures {
         compose = true
         buildConfig = true
+    }
+
+    lint {
+        // 추출 누락을 사람 눈 대신 린트가 잡게 한다(docs/v1.5-design.md §3-1).
+        // ⚠️ 3-7 presentation 추출이 끝날 때까지는 경고가 수백 개 뜨는 게 정상이다.
+        // 다 끝나면 fatal 로 올려 다시 새는 것을 막는다.
+        enable += setOf("HardcodedText")
+        // 번역이 없는 1.5.0 에선 MissingTranslation 이 의미가 없다. 1.6.0 에서 켠다.
+        disable += setOf("MissingTranslation")
     }
 }
 

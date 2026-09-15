@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    앱이 지원하는 언어. Android 13+ 는 이 목록을 보고 시스템 설정에
+    "앱 언어" 항목을 띄운다.
+
+    ⚠️ 1.5.0 은 한국어 하나뿐이라 고를 게 없다. 인앱 언어 선택기를 만들지 않는
+    이유도 같다(docs/v1.5-design.md §2). 1.6.0 에서 ja 를 추가하면 선택기 없이도
+    시스템이 알아서 고른다.
+-->
+<locale-config xmlns:android="http://schemas.android.com/apk/res/android">
+    <locale android:name="ko" />
+</locale-config>
