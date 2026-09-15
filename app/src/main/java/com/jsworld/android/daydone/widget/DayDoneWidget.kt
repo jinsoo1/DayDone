@@ -10,15 +10,17 @@ import androidx.compose.ui.unit.sp
 import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
 import androidx.glance.GlanceTheme
+import androidx.glance.LocalContext
 import androidx.glance.LocalSize
+import androidx.glance.action.actionStartActivity
 import androidx.glance.action.clickable
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.LinearProgressIndicator
 import androidx.glance.appwidget.SizeMode
-import androidx.glance.action.actionStartActivity
 import androidx.glance.appwidget.cornerRadius
 import androidx.glance.appwidget.provideContent
 import androidx.glance.background
+import androidx.glance.color.ColorProvider
 import androidx.glance.layout.Alignment
 import androidx.glance.layout.Column
 import androidx.glance.layout.Row
@@ -31,7 +33,7 @@ import androidx.glance.layout.width
 import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
 import androidx.glance.text.TextStyle
-import androidx.glance.color.ColorProvider
+import com.jsworld.android.daydone.R
 import com.jsworld.android.daydone.presentation.util.toMoneyText
 import com.jsworld.android.daydone.ui.view.MainActivity
 
@@ -81,18 +83,18 @@ private fun WidgetBody(state: DayDoneWidgetState) {
     ) {
         when (state) {
             DayDoneWidgetState.Loading -> MessageBody(
-                title = "불러오는 중이에요",
+                title = LocalContext.current.getString(R.string.widget_bulreooneun_jungieyo),
                 sub = ""
             )
 
             DayDoneWidgetState.NeedsSetup -> MessageBody(
-                title = "예산을 먼저 설정해 주세요",
-                sub = "탭하면 데이던이 열려요"
+                title = LocalContext.current.getString(R.string.widget_yesaneul_meonjeo_seoljeonghae_juseyo),
+                sub = LocalContext.current.getString(R.string.widget_taebhamyeon_deideoni_yeolryeoyo)
             )
 
             DayDoneWidgetState.Unavailable -> MessageBody(
-                title = "잠시 후 다시 보여드릴게요",
-                sub = "탭하면 오늘 금액을 볼 수 있어요"
+                title = LocalContext.current.getString(R.string.widget_jamsi_hu_dasi_boyeodeurilgeyo),
+                sub = LocalContext.current.getString(R.string.widget_taebhamyeon_oneul_geumaegeul_bol)
             )
             is DayDoneWidgetState.Ready -> if (isWide) WideBody(state) else CompactBody(state)
         }
@@ -127,7 +129,7 @@ private fun CompactBody(state: DayDoneWidgetState.Ready) {
     )
     Spacer(GlanceModifier.height(6.dp))
     Text(
-        text = "${state.remainingDays}일 남음",
+        text = LocalContext.current.getString(R.string.widget_il_nameum, state.remainingDays),
         style = TextStyle(fontSize = 11.sp, color = subText)
     )
 }
@@ -153,7 +155,7 @@ private fun WideBody(state: DayDoneWidgetState.Ready) {
         state.tomorrowAmount?.let { tomorrow ->
             Spacer(GlanceModifier.width(10.dp))
             Text(
-                text = "내일 ${tomorrow.toMoneyText()}",
+                text = LocalContext.current.getString(R.string.widget_naeil, tomorrow.toMoneyText()),
                 style = TextStyle(fontSize = 12.sp, color = subText)
             )
         }
@@ -175,7 +177,7 @@ private fun WideBody(state: DayDoneWidgetState.Ready) {
             modifier = GlanceModifier.defaultWeight()
         )
         Text(
-            text = "${state.remainingDays}일 남음",
+            text = LocalContext.current.getString(R.string.widget_il_nameum, state.remainingDays),
             style = TextStyle(fontSize = 11.sp, color = subText)
         )
     }

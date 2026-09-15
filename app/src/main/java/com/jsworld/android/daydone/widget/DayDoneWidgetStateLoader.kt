@@ -1,6 +1,7 @@
 package com.jsworld.android.daydone.widget
 
 import android.content.Context
+import com.jsworld.android.daydone.R
 import com.jsworld.android.daydone.domain.model.DailyBudgetSnapshot
 import com.jsworld.android.daydone.domain.usecase.ObserveDailyBudgetUseCase
 import com.jsworld.android.daydone.domain.usecase.ObserveOnboardingDoneUseCase
@@ -9,6 +10,7 @@ import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.components.SingletonComponent
+import java.time.LocalDate
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.emitAll
@@ -16,7 +18,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
-import java.time.LocalDate
 
 /**
  * 위젯은 Hilt 주입 지점이 아니라 [EntryPoint] 로 UseCase 를 꺼낸다.
@@ -48,13 +49,14 @@ internal fun widgetStateFlow(context: Context): Flow<DayDoneWidgetState> = flow 
     } else {
         // 세션이 새로 시작될 때마다 오늘 날짜를 다시 읽는다
         entryPoint.observeDailyBudgetUseCase()(LocalDate.now())
-            .map { it.toWidgetState() }
+            .map { it.toWidgetState(context) }
     }
 
     emitAll(source)
 }.catch { emit(DayDoneWidgetState.Unavailable) }
 
-private fun DailyBudgetSnapshot.toWidgetState(): DayDoneWidgetState {
+/** [context] 는 라벨 문구를 만들기 위한 것 — 위젯은 Composable 밖에서 상태를 만든다. */
+private fun DailyBudgetSnapshot.toWidgetState(context: Context): DayDoneWidgetState {
     val progress = when {
         todayRecommended > 0L ->
             (todaySpent.toFloat() / todayRecommended.toFloat()).coerceIn(0f, 1f)
@@ -73,16 +75,15 @@ private fun DailyBudgetSnapshot.toWidgetState(): DayDoneWidgetState {
             todayLeft.coerceAtLeast(0L)
         },
         label = when {
-            showTomorrowAsMain -> "오늘은 조금 넘겼어요 · 내일부터"
-            isTodayOver -> "오늘은 조금 넘겼어요"
-            else -> "오늘 남은 금액"
+            showTomorrowAsMain -> context.getString(R.string.widget_oneuleun_jogeum_neomgyeosseoyo_naeilbuteo)
+            isTodayOver -> context.getString(R.string.widget_oneuleun_jogeum_neomgyeosseoyo)
+            else -> context.getString(R.string.widget_oneul_nameun_geumaeg)
         },
         isOver = isTodayOver,
         progress = progress,
         remainingDays = remainingDays,
-        periodText = "${period.startDate.monthValue}월 ${period.startDate.dayOfMonth}일 ~ " +
-                "${period.endDate.monthValue}월 ${period.endDate.dayOfMonth}일",
+        periodText = context.getString(R.string.widget_weol_il_weol_il, period.startDate.monthValue, period.startDate.dayOfMonth, period.endDate.monthValue, period.endDate.dayOfMonth),
         tomorrowAmount = tomorrowRecommended.takeIf { !showTomorrowAsMain },
-        spentText = "오늘 권장 ${todayRecommended.toMoneyText()} 중 ${todaySpent.toMoneyText()} 씀"
+        spentText = context.getString(R.string.widget_oneul_gweonjang_jung_sseum, todayRecommended.toMoneyText(), todaySpent.toMoneyText())
     )
 }

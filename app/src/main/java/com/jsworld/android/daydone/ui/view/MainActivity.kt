@@ -3,8 +3,8 @@ package com.jsworld.android.daydone.ui.view
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
-import androidx.lifecycle.lifecycleScope
 import androidx.activity.compose.setContent
+import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.outlined.AccountBalanceWallet
@@ -46,22 +47,26 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -69,32 +74,30 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.jsworld.android.daydone.R
 import com.jsworld.android.daydone.domain.usecase.ObserveOnboardingDoneUseCase
+import com.jsworld.android.daydone.notification.DayDoneNotifier
+import com.jsworld.android.daydone.notification.NotificationTarget
 import com.jsworld.android.daydone.presentation.challenge.ChallengeHistoryRoute
 import com.jsworld.android.daydone.presentation.held.HeldPurchasesRoute
+import com.jsworld.android.daydone.presentation.ledger.LedgerRoute
 import com.jsworld.android.daydone.presentation.monthly.MonthlyRoute
 import com.jsworld.android.daydone.presentation.navigation.AddType
 import com.jsworld.android.daydone.presentation.navigation.VaultAddPrefill
 import com.jsworld.android.daydone.presentation.notices.NoticesRoute
 import com.jsworld.android.daydone.presentation.notification.NotificationSettingsRoute
 import com.jsworld.android.daydone.presentation.onboarding.OnboardingRoute
-import com.jsworld.android.daydone.presentation.ledger.LedgerRoute
 import com.jsworld.android.daydone.presentation.report.ReportRoute
 import com.jsworld.android.daydone.presentation.settings.SettingsRoute
 import com.jsworld.android.daydone.presentation.today.TodayRoute
 import com.jsworld.android.daydone.presentation.vault.VaultRoute
-import com.jsworld.android.daydone.notification.DayDoneNotifier
-import com.jsworld.android.daydone.notification.NotificationTarget
 import com.jsworld.android.daydone.ui.theme.DayDoneTheme
 import com.jsworld.android.daydone.widget.refreshDayDoneWidget
-import kotlinx.coroutines.launch
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -138,13 +141,13 @@ class MainActivity : ComponentActivity() {
 
 private sealed class HomeTab(
     val route: String,
-    val label: String,
+    @StringRes val labelRes: Int,
     val icon: ImageVector
 ) {
-    data object Today : HomeTab("today", "오늘", Icons.Outlined.Today)
-    data object Monthly : HomeTab("monthly", "월", Icons.Outlined.CalendarMonth)
-    data object Vault : HomeTab("vault", "금고", Icons.Outlined.Savings)
-    data object Settings : HomeTab("settings", "설정", Icons.Outlined.Settings)
+    data object Today : HomeTab("today", R.string.tab_today, Icons.Outlined.Today)
+    data object Monthly : HomeTab("monthly", R.string.tab_monthly, Icons.Outlined.CalendarMonth)
+    data object Vault : HomeTab("vault", R.string.tab_vault, Icons.Outlined.Savings)
+    data object Settings : HomeTab("settings", R.string.tab_settings, Icons.Outlined.Settings)
 }
 
 private val homeTabs = listOf(
@@ -450,7 +453,7 @@ private fun NotchedBottomBar(
         ) {
             Icon(
                 imageVector = Icons.Default.Add,
-                contentDescription = "추가",
+                contentDescription = stringResource(R.string.main_chuga),
                 tint = Color.White
             )
         }
@@ -481,12 +484,12 @@ private fun BarTab(
     ) {
         Icon(
             imageVector = tab.icon,
-            contentDescription = tab.label,
+            contentDescription = stringResource(tab.labelRes),
             tint = color,
             modifier = Modifier.size(24.dp)
         )
         Text(
-            text = tab.label,
+            text = stringResource(tab.labelRes),
             style = MaterialTheme.typography.labelSmall,
             color = color
         )
@@ -514,15 +517,15 @@ private fun AddChooserSheet(
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             Text(
-                text = "무엇을 추가할까요?",
+                text = stringResource(R.string.main_mueoseul_chugahalkkayo),
                 style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.padding(bottom = 12.dp)
             )
 
-            AddChooserRow(Icons.Outlined.Payments, "지출") { onSelect(AddType.EXPENSE) }
-            AddChooserRow(Icons.Outlined.TrendingUp, "수익") { onSelect(AddType.INCOME) }
-            AddChooserRow(Icons.Outlined.Autorenew, "저축 / 고정비") { onSelect(AddType.DEDUCTION) }
-            AddChooserRow(Icons.Outlined.AccountBalanceWallet, "이번 달 예산") { onSelect(AddType.BUDGET) }
+            AddChooserRow(Icons.Outlined.Payments, stringResource(R.string.main_jichul)) { onSelect(AddType.EXPENSE) }
+            AddChooserRow(Icons.Outlined.TrendingUp, stringResource(R.string.main_suig)) { onSelect(AddType.INCOME) }
+            AddChooserRow(Icons.Outlined.Autorenew, stringResource(R.string.main_jeochug_gojeongbi)) { onSelect(AddType.DEDUCTION) }
+            AddChooserRow(Icons.Outlined.AccountBalanceWallet, stringResource(R.string.main_ibeon_dal_yesan)) { onSelect(AddType.BUDGET) }
 
             // 살까 말까는 기록이 아니라 도구 — 구분선으로 나눠 보여준다
             HorizontalDivider(
@@ -531,12 +534,12 @@ private fun AddChooserSheet(
             )
 
             Text(
-                text = "사기 전에 — 지금 사면 하루 권장 금액이 얼마나 달라지는지 미리 봐요",
+                text = stringResource(R.string.main_sagi_jeone_jigeum_samyeon),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
-            AddChooserRow(Icons.Outlined.Balance, "살까 말까?") { onSelect(AddType.PURCHASE) }
+            AddChooserRow(Icons.Outlined.Balance, stringResource(R.string.main_salkka_malkka)) { onSelect(AddType.PURCHASE) }
         }
     }
 }

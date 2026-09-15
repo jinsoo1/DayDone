@@ -7,11 +7,12 @@ import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
+import com.jsworld.android.daydone.R
 import com.jsworld.android.daydone.data.datastore.BudgetProfileDataSource
+import com.jsworld.android.daydone.data.datastore.NoSpendChallengeDataSource
 import com.jsworld.android.daydone.data.excel.XlsxCell
 import com.jsworld.android.daydone.data.excel.XlsxSheet
 import com.jsworld.android.daydone.data.excel.XlsxWriter
-import com.jsworld.android.daydone.data.datastore.NoSpendChallengeDataSource
 import com.jsworld.android.daydone.data.local.dao.BackupDao
 import com.jsworld.android.daydone.data.local.db.DayDoneDatabase
 import com.jsworld.android.daydone.data.local.entity.ExpenseEntity
@@ -29,12 +30,12 @@ import com.jsworld.android.daydone.domain.model.NoSpendMode
 import com.jsworld.android.daydone.domain.repository.BackupRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
 import jakarta.inject.Inject
+import java.time.LocalDate
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import org.json.JSONObject
-import java.time.LocalDate
 
 /**
  * 전체 데이터를 JSON 한 파일로 주고받는다.
@@ -67,7 +68,7 @@ class BackupRepositoryImpl @Inject constructor(
         val workbook = XlsxWriter.build(listOf(buildHistorySheet(), buildDeductionSheet()))
         saveToDownloads(
             subFolder = FOLDER_EXCEL,
-            fileName = datedFileName("daydone-내역", "xlsx"),
+            fileName = datedFileName(context.getString(R.string.backup_daydone_naeyeog), "xlsx"),
             mimeType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             content = workbook
         )
@@ -79,15 +80,15 @@ class BackupRepositoryImpl @Inject constructor(
 
         val rows = buildList {
             backupDao.getExpenses().forEach { e ->
-                val kind = if (e.type == "FUTURE_PREPARE") "준비금" else "지출"
+                val kind = if (e.type == "FUTURE_PREPARE") context.getString(R.string.backup_junbigeum) else context.getString(R.string.backup_jichul)
                 add(HistoryRow(e.date, kind, e.title, -e.amount, e.isEssential, e.memo))
             }
             backupDao.getExtraIncomes().forEach { i ->
-                add(HistoryRow(i.date, "추가수익", i.title, i.amount, false, i.memo))
+                add(HistoryRow(i.date, context.getString(R.string.backup_chugasuig), i.title, i.amount, false, i.memo))
             }
         }.sortedBy { it.date }
 
-        val header = listOf("예산월", "날짜", "구분", "이름", "금액", "필수 지출", "메모")
+        val header = listOf(context.getString(R.string.backup_yesanweol), context.getString(R.string.backup_naljja), context.getString(R.string.backup_gubun), context.getString(R.string.backup_ireum), context.getString(R.string.backup_geumaeg), context.getString(R.string.backup_pilsu_jichul), context.getString(R.string.backup_memo))
         val sheetRows = buildList {
             if (rows.isEmpty()) {
                 add(header.map { XlsxCell(it, bold = true) })
@@ -103,7 +104,7 @@ class BackupRepositoryImpl @Inject constructor(
                             XlsxCell(row.kind),
                             XlsxCell(row.title),
                             XlsxCell(row.amount),
-                            XlsxCell(if (row.isEssential) "예" else null),
+                            XlsxCell(if (row.isEssential) context.getString(R.string.backup_ye) else null),
                             XlsxCell(row.memo)
                         )
                     )
@@ -113,7 +114,7 @@ class BackupRepositoryImpl @Inject constructor(
         }
 
         return XlsxSheet(
-            name = "지출",
+            name = context.getString(R.string.backup_jichul),
             columnWidths = listOf(10, 12, 9, 18, 12, 9, 24),
             rows = sheetRows
         )
@@ -128,13 +129,13 @@ class BackupRepositoryImpl @Inject constructor(
         val deductions = backupDao.getScheduledDeductions()
             .sortedWith(compareBy({ it.type != "SAVING" }, { it.withdrawalDay }))
 
-        val header = listOf("구분", "이름", "금액", "출금일", "시작월", "종료월", "메모")
+        val header = listOf(context.getString(R.string.backup_gubun), context.getString(R.string.backup_ireum), context.getString(R.string.backup_geumaeg), context.getString(R.string.backup_chulgeumil), context.getString(R.string.backup_sijagweol), context.getString(R.string.backup_jongryoweol), context.getString(R.string.backup_memo))
         val sheetRows = buildList {
             add(header.map { XlsxCell(it, bold = true) })
             deductions.forEach { d ->
                 add(
                     listOf(
-                        XlsxCell(if (d.type == "SAVING") "저축" else "고정비"),
+                        XlsxCell(if (d.type == "SAVING") context.getString(R.string.backup_jeochug) else context.getString(R.string.backup_gojeongbi)),
                         XlsxCell(d.title),
                         XlsxCell(latestOverrides[d.id] ?: d.amount),
                         XlsxCell(d.withdrawalDay),
@@ -147,7 +148,7 @@ class BackupRepositoryImpl @Inject constructor(
         }
 
         return XlsxSheet(
-            name = "고정지출",
+            name = context.getString(R.string.backup_gojeongjichul),
             columnWidths = listOf(8, 18, 12, 8, 10, 10, 24),
             rows = sheetRows
         )
@@ -157,7 +158,7 @@ class BackupRepositoryImpl @Inject constructor(
     private fun monthTitle(anchorMonth: String): String {
         val year = anchorMonth.take(4)
         val month = anchorMonth.drop(5).toIntOrNull()?.toString() ?: anchorMonth.drop(5)
-        return "${year}년 ${month}월 지출 내역"
+        return context.getString(R.string.backup_nyeon_weol_jichul_naeyeog, year, month)
     }
 
     /**
@@ -213,7 +214,7 @@ class BackupRepositoryImpl @Inject constructor(
         val json = context.contentResolver.openInputStream(Uri.parse(uri))
             ?.bufferedReader()
             ?.use { it.readText() }
-            ?: error("파일을 읽을 수 없어요. 폴더에서 직접 선택해 주세요.")
+            ?: error(context.getString(R.string.backup_paileul_ilgeul_su_eobseoyo))
         importFromJson(json)
     }
 
@@ -256,7 +257,7 @@ class BackupRepositoryImpl @Inject constructor(
         content: ByteArray
     ): String {
         check(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            "이 기기에서는 폴더를 직접 만들 수 없어요."
+            context.getString(R.string.backup_i_gigieseoneun_poldeoreul_jigjeob)
         }
 
         val relativePath = "${Environment.DIRECTORY_DOWNLOADS}/$BACKUP_FOLDER/$subFolder"
@@ -268,11 +269,11 @@ class BackupRepositoryImpl @Inject constructor(
 
         val resolver = context.contentResolver
         val uri = resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, values)
-            ?: error("저장할 위치를 만들 수 없어요.")
+            ?: error(context.getString(R.string.backup_jeojanghal_wichireul_mandeul_su))
 
         resolver.openOutputStream(uri)?.use { out ->
             out.write(content)
-        } ?: error("파일을 쓸 수 없어요.")
+        } ?: error(context.getString(R.string.backup_paileul_sseul_su_eobseoyo))
 
         // 같은 이름이 있으면 시스템이 (1) 을 붙이므로 실제 이름을 다시 읽는다
         val savedName = resolver.query(
@@ -425,10 +426,10 @@ class BackupRepositoryImpl @Inject constructor(
         val root = JSONObject(json)
 
         require(root.optString(KEY_APP) == "daydone") {
-            "데이던 백업 파일이 아니에요."
+            context.getString(R.string.backup_deideon_baegeob_paili_anieyo)
         }
         require(root.optInt(KEY_VERSION, 0) in 1..BACKUP_VERSION) {
-            "지원하지 않는 백업 버전이에요."
+            context.getString(R.string.backup_jiweonhaji_anhneun_baegeob_beojeonieyo)
         }
 
         // 형식을 먼저 다 읽어 검증한 뒤 지운다 (중간 실패로 데이터가 비는 것 방지)
@@ -594,6 +595,8 @@ class BackupRepositoryImpl @Inject constructor(
     companion object {
         private const val BACKUP_VERSION = 1
         private const val BACKUP_FOLDER = "DayDone"
+        // ⚠️ 로케일화 금지 — ListBackupFilesUseCase 가 이 경로로 조회한다(§15).
+        // 번역하면 기존 유저의 복원 목록이 빈다. 바뀌어도 되는 건 파일명뿐이다.
         private const val FOLDER_BACKUP = "백업"
         private const val FOLDER_EXCEL = "엑셀"
 

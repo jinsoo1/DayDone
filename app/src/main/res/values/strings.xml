@@ -649,4 +649,66 @@
     <string name="noti_settings_geon_bonaesseoyo">%1$s건 보냈어요</string>
     <string name="noti_settings_kyeojin_alrimi_eobseoyo">켜진 알림이 없어요</string>
     <string name="noti_settings_jigeumeun_bonael_alrimi_eobseoyo">지금은 보낼 알림이 없어요 (오늘 지출이 이미 있거나, 조건에 안 맞아요)</string>
+
+    <!-- ══ backup ══ -->
+    <string name="backup_daydone_naeyeog">daydone-내역</string>
+    <string name="backup_junbigeum">준비금</string>
+    <string name="backup_jichul">지출</string>
+    <string name="backup_chugasuig">추가수익</string>
+    <string name="backup_yesanweol">예산월</string>
+    <string name="backup_naljja">날짜</string>
+    <string name="backup_gubun">구분</string>
+    <string name="backup_ireum">이름</string>
+    <string name="backup_geumaeg">금액</string>
+    <string name="backup_pilsu_jichul">필수 지출</string>
+    <string name="backup_memo">메모</string>
+    <string name="backup_ye">예</string>
+    <string name="backup_chulgeumil">출금일</string>
+    <string name="backup_sijagweol">시작월</string>
+    <string name="backup_jongryoweol">종료월</string>
+    <string name="backup_jeochug">저축</string>
+    <string name="backup_gojeongbi">고정비</string>
+    <string name="backup_gojeongjichul">고정지출</string>
+    <string name="backup_nyeon_weol_jichul_naeyeog">%1$s년 %2$s월 지출 내역</string>
+    <string name="backup_paileul_ilgeul_su_eobseoyo">파일을 읽을 수 없어요. 폴더에서 직접 선택해 주세요.</string>
+    <string name="backup_i_gigieseoneun_poldeoreul_jigjeob">이 기기에서는 폴더를 직접 만들 수 없어요.</string>
+    <string name="backup_jeojanghal_wichireul_mandeul_su">저장할 위치를 만들 수 없어요.</string>
+    <string name="backup_paileul_sseul_su_eobseoyo">파일을 쓸 수 없어요.</string>
+    <string name="backup_deideon_baegeob_paili_anieyo">데이던 백업 파일이 아니에요.</string>
+    <string name="backup_jiweonhaji_anhneun_baegeob_beojeonieyo">지원하지 않는 백업 버전이에요.</string>
+
+    <!-- ══ widget ══ -->
+    <string name="widget_oneuleun_jogeum_neomgyeosseoyo_naeilbuteo">오늘은 조금 넘겼어요 · 내일부터</string>
+    <string name="widget_oneuleun_jogeum_neomgyeosseoyo">오늘은 조금 넘겼어요</string>
+    <string name="widget_oneul_nameun_geumaeg">오늘 남은 금액</string>
+    <string name="widget_weol_il_weol_il">%1$s월 %2$s일 ~ %3$s월 %4$s일</string>
+    <string name="widget_oneul_gweonjang_jung_sseum">오늘 권장 %1$s 중 %2$s 씀</string>
+
+    <!-- ══ common ══ -->
+    <string name="common_dwiro">뒤로</string>
+
+    <!-- 하단 탭바 -->
+    <string name="tab_today">오늘</string>
+    <string name="tab_monthly">월</string>
+    <string name="tab_vault">금고</string>
+    <string name="tab_settings">설정</string>
+
+    <!-- ══ main ══ -->
+    <string name="main_chuga">추가</string>
+    <string name="main_mueoseul_chugahalkkayo">무엇을 추가할까요?</string>
+    <string name="main_jichul">지출</string>
+    <string name="main_suig">수익</string>
+    <string name="main_jeochug_gojeongbi">저축 / 고정비</string>
+    <string name="main_ibeon_dal_yesan">이번 달 예산</string>
+    <string name="main_sagi_jeone_jigeum_samyeon">사기 전에 — 지금 사면 하루 권장 금액이 얼마나 달라지는지 미리 봐요</string>
+    <string name="main_salkka_malkka">살까 말까?</string>
+
+    <!-- ══ widget ══ -->
+    <string name="widget_bulreooneun_jungieyo">불러오는 중이에요</string>
+    <string name="widget_yesaneul_meonjeo_seoljeonghae_juseyo">예산을 먼저 설정해 주세요</string>
+    <string name="widget_taebhamyeon_deideoni_yeolryeoyo">탭하면 데이던이 열려요</string>
+    <string name="widget_jamsi_hu_dasi_boyeodeurilgeyo">잠시 후 다시 보여드릴게요</string>
+    <string name="widget_taebhamyeon_oneul_geumaegeul_bol">탭하면 오늘 금액을 볼 수 있어요</string>
+    <string name="widget_il_nameum">%1$s일 남음</string>
+    <string name="widget_naeil">내일 %1$s</string>
 </resources>
