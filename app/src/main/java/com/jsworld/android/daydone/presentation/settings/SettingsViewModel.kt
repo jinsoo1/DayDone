@@ -1,10 +1,12 @@
 package com.jsworld.android.daydone.presentation.settings
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.jsworld.android.daydone.R
+import com.jsworld.android.daydone.domain.model.BackupFileInfo
 import com.jsworld.android.daydone.domain.usecase.ExportBackupToDownloadsUseCase
 import com.jsworld.android.daydone.domain.usecase.ExportBackupUseCase
-import com.jsworld.android.daydone.domain.model.BackupFileInfo
 import com.jsworld.android.daydone.domain.usecase.ExportExcelUseCase
 import com.jsworld.android.daydone.domain.usecase.GetCurrentBudgetPeriodUseCase
 import com.jsworld.android.daydone.domain.usecase.ImportBackupFromFileUseCase
@@ -18,7 +20,11 @@ import com.jsworld.android.daydone.domain.usecase.ResetAllDataUseCase
 import com.jsworld.android.daydone.domain.usecase.SetMonthlyBudgetUseCase
 import com.jsworld.android.daydone.domain.usecase.UpdateBudgetProfileUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import jakarta.inject.Inject
+import java.time.LocalDate
+import java.time.YearMonth
+import java.time.temporal.ChronoUnit
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -27,9 +33,6 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import java.time.LocalDate
-import java.time.YearMonth
-import java.time.temporal.ChronoUnit
 
 data class SettingsUiState(
     /** 이번 기간에 실제로 적용 중인 월 예산 (월별 레코드 이월 반영) */
@@ -80,7 +83,11 @@ class SettingsViewModel @Inject constructor(
     observeNotificationSettingsUseCase: ObserveNotificationSettingsUseCase,
     private val getCurrentBudgetPeriodUseCase: GetCurrentBudgetPeriodUseCase,
     private val setMonthlyBudgetUseCase: SetMonthlyBudgetUseCase,
-    observeEffectiveMonthlyBudgetUseCase: ObserveEffectiveMonthlyBudgetUseCase
+    observeEffectiveMonthlyBudgetUseCase: ObserveEffectiveMonthlyBudgetUseCase,
+    // 화면에 그대로 나갈 문구를 만들기 위한 것. UseCase 엔 Context 가 없어
+    // 조립은 여기서 한다(v1.5 국제화 3-7).
+    @ApplicationContext private val context: Context
+
 ) : ViewModel() {
 
     /** 지금 보고 있는(=오늘이 속한) 예산 기간의 anchorMonth. 수입 저장 대상. */
@@ -236,7 +243,7 @@ class SettingsViewModel @Inject constructor(
                 .onSuccess { path ->
                     _uiState.value = _uiState.value.copy(
                         isBackupWorking = false,
-                        backupMessage = "백업을 저장했어요.\n$path"
+                        backupMessage = context.getString(R.string.settings_baegeobeul_jeojanghaesseoyo, path)
                     )
                 }
                 .onFailure {
@@ -249,7 +256,7 @@ class SettingsViewModel @Inject constructor(
                         .onFailure {
                             _uiState.value = _uiState.value.copy(
                                 isBackupWorking = false,
-                                backupMessage = "내보내기에 실패했어요. 다시 시도해 주세요."
+                                backupMessage = context.getString(R.string.settings_naebonaegie_silpaehaesseoyo_dasi_sidohae)
                             )
                         }
                 }
@@ -266,20 +273,20 @@ class SettingsViewModel @Inject constructor(
                 .onSuccess { path ->
                     _uiState.value = _uiState.value.copy(
                         isBackupWorking = false,
-                        backupMessage = "엑셀 파일을 저장했어요. 월별 지출 내역과 고정 지출 시트가 들어있어요.\n$path"
+                        backupMessage = context.getString(R.string.settings_egsel_paileul_jeojanghaesseoyo_weolbyeol, path)
                     )
                 }
                 .onFailure {
                     _uiState.value = _uiState.value.copy(
                         isBackupWorking = false,
-                        backupMessage = "내보내기에 실패했어요. 다시 시도해 주세요."
+                        backupMessage = context.getString(R.string.settings_naebonaegie_silpaehaesseoyo_dasi_sidohae)
                     )
                 }
         }
     }
 
     fun onExportSaved() {
-        _uiState.value = _uiState.value.copy(backupMessage = "백업 파일을 저장했어요.")
+        _uiState.value = _uiState.value.copy(backupMessage = context.getString(R.string.settings_baegeob_paileul_jeojanghaesseoyo))
     }
 
     // --- 복원 파일 목록 시트 ---
@@ -325,14 +332,14 @@ class SettingsViewModel @Inject constructor(
                 .onSuccess {
                     _uiState.value = _uiState.value.copy(
                         isBackupWorking = false,
-                        backupMessage = "복원했어요. 오늘 탭에서 확인해보세요."
+                        backupMessage = context.getString(R.string.settings_bogweonhaesseoyo_oneul_taebeseo_hwaginhaeboseyo)
                     )
                 }
                 .onFailure { e ->
                     _uiState.value = _uiState.value.copy(
                         isBackupWorking = false,
                         backupMessage = e.message?.takeIf { it.isNotBlank() }
-                            ?: "파일을 읽을 수 없어요. 폴더에서 직접 선택해 주세요."
+                            ?: context.getString(R.string.settings_paileul_ilgeul_su_eobseoyo)
                     )
                 }
         }
@@ -347,14 +354,14 @@ class SettingsViewModel @Inject constructor(
                 .onSuccess {
                     _uiState.value = _uiState.value.copy(
                         isBackupWorking = false,
-                        backupMessage = "복원했어요. 오늘 탭에서 확인해보세요."
+                        backupMessage = context.getString(R.string.settings_bogweonhaesseoyo_oneul_taebeseo_hwaginhaeboseyo)
                     )
                 }
                 .onFailure { e ->
                     _uiState.value = _uiState.value.copy(
                         isBackupWorking = false,
                         backupMessage = e.message?.takeIf { it.isNotBlank() }
-                            ?: "파일을 읽을 수 없어요. 데이던 백업 파일인지 확인해 주세요."
+                            ?: context.getString(R.string.settings_paileul_ilgeul_su_eobseoyo_2)
                     )
                 }
         }

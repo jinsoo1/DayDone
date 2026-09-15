@@ -1,19 +1,21 @@
 package com.jsworld.android.daydone.presentation.monthly
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.jsworld.android.daydone.R
 import com.jsworld.android.daydone.domain.model.BudgetPeriod
 import com.jsworld.android.daydone.domain.model.BudgetProfile
 import com.jsworld.android.daydone.domain.model.Expense
 import com.jsworld.android.daydone.domain.model.ExtraIncome
+import com.jsworld.android.daydone.domain.model.NoSpendChallengeSettings
+import com.jsworld.android.daydone.domain.model.NoSpendMode
 import com.jsworld.android.daydone.domain.model.ScheduledDeduction
 import com.jsworld.android.daydone.domain.model.ScheduledDeductionAmount
-import com.jsworld.android.daydone.domain.model.NoSpendMode
 import com.jsworld.android.daydone.domain.model.ScheduledDeductionType
 import com.jsworld.android.daydone.domain.usecase.DeleteExpenseUseCase
 import com.jsworld.android.daydone.domain.usecase.DeleteExtraIncomeUseCase
 import com.jsworld.android.daydone.domain.usecase.DeleteScheduledDeductionUseCase
-import com.jsworld.android.daydone.domain.model.NoSpendChallengeSettings
 import com.jsworld.android.daydone.domain.usecase.EndScheduledDeductionUseCase
 import com.jsworld.android.daydone.domain.usecase.EvaluateNoSpendProgressUseCase
 import com.jsworld.android.daydone.domain.usecase.GetBigSpendMonthNoticeUseCase
@@ -21,9 +23,9 @@ import com.jsworld.android.daydone.domain.usecase.GetBudgetPeriodForMonthUseCase
 import com.jsworld.android.daydone.domain.usecase.GetScheduledDeductionsInPeriodUseCase
 import com.jsworld.android.daydone.domain.usecase.ObserveBudgetProfileUseCase
 import com.jsworld.android.daydone.domain.usecase.ObserveEffectiveMonthlyBudgetUseCase
-import com.jsworld.android.daydone.domain.usecase.ObserveNoSpendChallengeUseCase
 import com.jsworld.android.daydone.domain.usecase.ObserveExpensesByPeriodUseCase
 import com.jsworld.android.daydone.domain.usecase.ObserveExtraIncomesByPeriodUseCase
+import com.jsworld.android.daydone.domain.usecase.ObserveNoSpendChallengeUseCase
 import com.jsworld.android.daydone.domain.usecase.ObserveScheduledDeductionAmountsUseCase
 import com.jsworld.android.daydone.domain.usecase.ObserveScheduledDeductionsUseCase
 import com.jsworld.android.daydone.domain.usecase.ResolveScheduledDeductionAmountsUseCase
@@ -39,7 +41,10 @@ import com.jsworld.android.daydone.presentation.today.model.ScheduledDeductionSu
 import com.jsworld.android.daydone.presentation.today.model.TodayExpenseUiModel
 import com.jsworld.android.daydone.presentation.today.model.TodayExtraIncomeUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import jakarta.inject.Inject
+import java.time.LocalDate
+import java.time.YearMonth
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -49,8 +54,6 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import java.time.LocalDate
-import java.time.YearMonth
 
 @HiltViewModel
 class MonthlyViewModel @Inject constructor(
@@ -75,7 +78,11 @@ class MonthlyViewModel @Inject constructor(
     private val setScheduledDeductionAmountUseCase: SetScheduledDeductionAmountUseCase,
     private val observeNoSpendChallengeUseCase: ObserveNoSpendChallengeUseCase,
     private val evaluateNoSpendProgressUseCase: EvaluateNoSpendProgressUseCase,
-    private val getBigSpendMonthNoticeUseCase: GetBigSpendMonthNoticeUseCase
+    private val getBigSpendMonthNoticeUseCase: GetBigSpendMonthNoticeUseCase,
+    // 화면에 그대로 나갈 문구를 만들기 위한 것. UseCase 엔 Context 가 없어
+    // 조립은 여기서 한다(v1.5 국제화 3-7).
+    @ApplicationContext private val context: Context
+
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(MonthlyUiState())
@@ -286,7 +293,7 @@ class MonthlyViewModel @Inject constructor(
             .filter { it.withdrawalDate == effectiveSelected }
 
         _uiState.value = _uiState.value.copy(
-            monthTitle = "${yearMonth.year}년 ${yearMonth.monthValue}월",
+            monthTitle = context.getString(R.string.monthly_nyeon_weol, yearMonth.year, yearMonth.monthValue),
             anchorMonthValue = yearMonth.toString(),
             canGoPrevious = minAnchorMonth?.let { yearMonth.isAfter(it) } ?: true,
             periodText = "${period.startDate} ~ ${period.endDate}",
@@ -638,11 +645,11 @@ class MonthlyViewModel @Inject constructor(
         today: LocalDate
     ): String {
         return when {
-            selectedDate == today -> "오늘 내역"
+            selectedDate == today -> context.getString(R.string.today_oneul_naeyeog)
             selectedDate.isBefore(today) ->
-                "${selectedDate.monthValue}월 ${selectedDate.dayOfMonth}일 내역"
+                context.getString(R.string.today_weol_il_naeyeog, selectedDate.monthValue, selectedDate.dayOfMonth)
             else ->
-                "${selectedDate.monthValue}월 ${selectedDate.dayOfMonth}일 예정"
+                context.getString(R.string.today_weol_il_yejeong, selectedDate.monthValue, selectedDate.dayOfMonth)
         }
     }
 

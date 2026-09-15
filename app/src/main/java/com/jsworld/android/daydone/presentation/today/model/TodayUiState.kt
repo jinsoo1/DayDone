@@ -19,7 +19,8 @@ data class TodayUiState(
     /** 기간 막바지 예상 잔액(금고 안내용). null이면 안내 없음 — message 만 바뀐다 */
     val periodEndSurplus: Long? = null,
     val dateChips: List<TodayDateChipUiModel> = emptyList(),
-    val selectedDateTitle: String = "오늘 내역",
+    /** 빈 값은 로딩 직후 한 프레임뿐 — ViewModel 이 곧바로 "오늘 내역"으로 채운다. */
+    val selectedDateTitle: String = "",
     val quickExpenses: List<QuickExpenseUiModel> = emptyList(),
     val selectedDateExpenses: List<TodayExpenseUiModel> = emptyList(),
     val selectedDateScheduledDeductions: List<TodayScheduledDeductionUiModel> = emptyList(),

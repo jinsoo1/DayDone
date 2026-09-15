@@ -1,19 +1,23 @@
 package com.jsworld.android.daydone.presentation.held
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.jsworld.android.daydone.R
+import com.jsworld.android.daydone.domain.model.DailyBudgetSnapshot
 import com.jsworld.android.daydone.domain.model.HeldPurchase
 import com.jsworld.android.daydone.domain.model.HeldPurchaseStatus
-import com.jsworld.android.daydone.domain.model.DailyBudgetSnapshot
 import com.jsworld.android.daydone.domain.usecase.AddExpenseUseCase
 import com.jsworld.android.daydone.domain.usecase.DeleteHeldPurchaseUseCase
 import com.jsworld.android.daydone.domain.usecase.EvaluatePurchaseUseCase
-import com.jsworld.android.daydone.domain.usecase.ObserveHeldPurchasesUseCase
 import com.jsworld.android.daydone.domain.usecase.ObserveDailyBudgetUseCase
+import com.jsworld.android.daydone.domain.usecase.ObserveHeldPurchasesUseCase
 import com.jsworld.android.daydone.domain.usecase.ResolveHeldPurchaseUseCase
 import com.jsworld.android.daydone.presentation.today.model.PurchaseEvaluationUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import jakarta.inject.Inject
+import java.time.LocalDate
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -21,7 +25,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import java.time.LocalDate
 
 /** 30일 창 안에서 보류 중인 항목. */
 data class HeldHoldingUiModel(
@@ -80,7 +83,11 @@ class HeldPurchasesViewModel @Inject constructor(
     private val evaluatePurchaseUseCase: EvaluatePurchaseUseCase,
     private val resolveHeldPurchaseUseCase: ResolveHeldPurchaseUseCase,
     private val deleteHeldPurchaseUseCase: DeleteHeldPurchaseUseCase,
-    private val addExpenseUseCase: AddExpenseUseCase
+    private val addExpenseUseCase: AddExpenseUseCase,
+    // 화면에 그대로 나갈 문구를 만들기 위한 것. UseCase 엔 Context 가 없어
+    // 조립은 여기서 한다(v1.5 국제화 3-7).
+    @ApplicationContext private val context: Context
+
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HeldPurchasesUiState())
@@ -134,12 +141,12 @@ class HeldPurchasesViewModel @Inject constructor(
                     statusLine = when {
                         item.status == HeldPurchaseStatus.PASSED &&
                                 days >= HeldPurchase.HOLD_DAYS ->
-                            "30일 동안 안 샀어요 — 아낀 돈이 됐어요"
+                            context.getString(R.string.held_30il_dongan_an_sasseoyo)
 
                         item.status == HeldPurchaseStatus.PASSED ->
-                            "${days}일 만에 안 사기로 했어요"
+                            context.getString(R.string.held_il_mane_an_sagiro, days)
 
-                        else -> "${days}일 고민하고 샀어요"
+                        else -> context.getString(R.string.held_il_gominhago_sasseoyo, days)
                     },
                     isSaved = item.status == HeldPurchaseStatus.PASSED
                 )

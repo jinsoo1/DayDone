@@ -420,5 +420,5 @@ class VaultViewModel @Inject constructor(
         )
     }
 
-    private fun YearMonth.toLabel(): String = "${year}년 ${monthValue}월"
+    private fun YearMonth.toLabel(): String = context.getString(R.string.monthly_nyeon_weol, year, monthValue)
 }

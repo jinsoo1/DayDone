@@ -606,4 +606,47 @@
     <string name="today_deohaejil_geumaeg">더해질 금액: %1$s</string>
     <string name="today_memo">메모</string>
     <string name="today_seontaeg_ibryeog">선택 입력</string>
+
+    <!-- ══ today ══ -->
+    <string name="today_ijeon_jichul">이전 지출</string>
+    <string name="today_gwaenchanhayo_nameun_nale_dasi">괜찮아요. 남은 날에 다시 나눠볼게요.</string>
+    <string name="today_jigeum_peiseumyeon_ibeon_gigani">지금 페이스면 이번 기간이 끝날 때 %1$s이 남아요. 미리 금고에 넣어두면 다음 큰 지출이 편해져요.</string>
+    <string name="today_i_geumaegeun_nameun_nalro">이 금액은 남은 날로 똑같이 나눈 값이에요. 아껴 쓴 만큼 뒤로 갈수록 커져요.</string>
+    <string name="today_oneuleun_i_geumaeg_aneseo">오늘은 이 금액 안에서 쓰면 괜찮아요.</string>
+    <string name="today_weol_il_2">%1$s월 %2$s일</string>
+    <string name="today_oneul_naeyeog">오늘 내역</string>
+    <string name="today_weol_il_naeyeog">%1$s월 %2$s일 내역</string>
+    <string name="today_weol_il_yejeong">%1$s월 %2$s일 예정</string>
+    <string name="today_deideon">데이던</string>
+
+    <!-- ══ ledger ══ -->
+    <string name="ledger_nyeon_weol_naeyeog">%1$s년 %2$s월 내역</string>
+    <string name="ledger_weol_il_weol_il">%1$s월 %2$s일 ~ %3$s월 %4$s일</string>
+    <string name="ledger_weol">%1$s월</string>
+    <string name="ledger_junbigeum">준비금</string>
+    <string name="ledger_jeochug">저축</string>
+    <string name="ledger_gojeongbi">고정비</string>
+    <string name="ledger_pilsu">필수</string>
+
+    <!-- ══ settings ══ -->
+    <string name="settings_baegeobeul_jeojanghaesseoyo">백업을 저장했어요.\n%1$s</string>
+    <string name="settings_naebonaegie_silpaehaesseoyo_dasi_sidohae">내보내기에 실패했어요. 다시 시도해 주세요.</string>
+    <string name="settings_egsel_paileul_jeojanghaesseoyo_weolbyeol">엑셀 파일을 저장했어요. 월별 지출 내역과 고정 지출 시트가 들어있어요.\n%1$s</string>
+    <string name="settings_baegeob_paileul_jeojanghaesseoyo">백업 파일을 저장했어요.</string>
+    <string name="settings_bogweonhaesseoyo_oneul_taebeseo_hwaginhaeboseyo">복원했어요. 오늘 탭에서 확인해보세요.</string>
+    <string name="settings_paileul_ilgeul_su_eobseoyo">파일을 읽을 수 없어요. 폴더에서 직접 선택해 주세요.</string>
+    <string name="settings_paileul_ilgeul_su_eobseoyo_2">파일을 읽을 수 없어요. 데이던 백업 파일인지 확인해 주세요.</string>
+
+    <!-- ══ held ══ -->
+    <string name="held_30il_dongan_an_sasseoyo">30일 동안 안 샀어요 — 아낀 돈이 됐어요</string>
+    <string name="held_il_mane_an_sagiro">%1$s일 만에 안 사기로 했어요</string>
+    <string name="held_il_gominhago_sasseoyo">%1$s일 고민하고 샀어요</string>
+
+    <!-- ══ monthly ══ -->
+    <string name="monthly_nyeon_weol">%1$s년 %2$s월</string>
+
+    <!-- ══ noti_settings ══ -->
+    <string name="noti_settings_geon_bonaesseoyo">%1$s건 보냈어요</string>
+    <string name="noti_settings_kyeojin_alrimi_eobseoyo">켜진 알림이 없어요</string>
+    <string name="noti_settings_jigeumeun_bonael_alrimi_eobseoyo">지금은 보낼 알림이 없어요 (오늘 지출이 이미 있거나, 조건에 안 맞아요)</string>
 </resources>

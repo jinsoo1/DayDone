@@ -9,10 +9,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.jsworld.android.daydone.R
 import com.jsworld.android.daydone.presentation.challenge.ChallengeSettingsSheet
 import com.jsworld.android.daydone.presentation.navigation.AddType
 import com.jsworld.android.daydone.ui.component.DayDoneTopBar
@@ -52,7 +54,7 @@ fun TodayRoute(
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
-        DayDoneTopBar(title = "데이던")
+        DayDoneTopBar(title = stringResource(R.string.today_deideon))
 
         TodayScreen(
             modifier = Modifier.weight(1f),

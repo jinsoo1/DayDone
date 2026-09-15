@@ -1,7 +1,9 @@
 package com.jsworld.android.daydone.presentation.notification
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.jsworld.android.daydone.R
 import com.jsworld.android.daydone.domain.model.NotificationSettings
 import com.jsworld.android.daydone.domain.usecase.BuildEveningNotificationUseCase
 import com.jsworld.android.daydone.domain.usecase.BuildHeldPurchaseNotificationUseCase
@@ -11,6 +13,7 @@ import com.jsworld.android.daydone.domain.usecase.UpdateNotificationSettingsUseC
 import com.jsworld.android.daydone.notification.DayDoneNotifier
 import com.jsworld.android.daydone.notification.NotificationScheduler
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -27,7 +30,11 @@ class NotificationSettingsViewModel @Inject constructor(
     private val buildMorningNotificationUseCase: BuildMorningNotificationUseCase,
     private val buildEveningNotificationUseCase: BuildEveningNotificationUseCase,
     private val buildHeldPurchaseNotificationUseCase: BuildHeldPurchaseNotificationUseCase,
-    private val notifier: DayDoneNotifier
+    private val notifier: DayDoneNotifier,
+    // 화면에 그대로 나갈 문구를 만들기 위한 것. UseCase 엔 Context 가 없어
+    // 조립은 여기서 한다(v1.5 국제화 3-7).
+    @ApplicationContext private val context: Context
+
 ) : ViewModel() {
 
     private val _settings = MutableStateFlow(NotificationSettings())
@@ -89,9 +96,9 @@ class NotificationSettingsViewModel @Inject constructor(
             }
 
             _testResult.value = when {
-                sent > 0 -> "${sent}건 보냈어요"
-                !settings.anyEnabled -> "켜진 알림이 없어요"
-                else -> "지금은 보낼 알림이 없어요 (오늘 지출이 이미 있거나, 조건에 안 맞아요)"
+                sent > 0 -> context.getString(R.string.noti_settings_geon_bonaesseoyo, sent)
+                !settings.anyEnabled -> context.getString(R.string.noti_settings_kyeojin_alrimi_eobseoyo)
+                else -> context.getString(R.string.noti_settings_jigeumeun_bonael_alrimi_eobseoyo)
             }
         }
     }

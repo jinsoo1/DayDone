@@ -1,12 +1,17 @@
 package com.jsworld.android.daydone.presentation.today
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.jsworld.android.daydone.R
 import com.jsworld.android.daydone.domain.model.BudgetPeriod
 import com.jsworld.android.daydone.domain.model.BudgetProfile
 import com.jsworld.android.daydone.domain.model.Expense
 import com.jsworld.android.daydone.domain.model.ExpenseType
 import com.jsworld.android.daydone.domain.model.ExtraIncome
+import com.jsworld.android.daydone.domain.model.NoSpendChallengeRecord
+import com.jsworld.android.daydone.domain.model.NoSpendChallengeSettings
+import com.jsworld.android.daydone.domain.model.NoSpendMode
 import com.jsworld.android.daydone.domain.model.QuickExpense
 import com.jsworld.android.daydone.domain.model.ScheduledDeduction
 import com.jsworld.android.daydone.domain.model.ScheduledDeductionAmount
@@ -20,46 +25,49 @@ import com.jsworld.android.daydone.domain.usecase.DeleteExpenseUseCase
 import com.jsworld.android.daydone.domain.usecase.DeleteExtraIncomeUseCase
 import com.jsworld.android.daydone.domain.usecase.DeleteQuickExpenseUseCase
 import com.jsworld.android.daydone.domain.usecase.DeleteScheduledDeductionUseCase
-import com.jsworld.android.daydone.domain.model.NoSpendChallengeRecord
-import com.jsworld.android.daydone.domain.model.NoSpendChallengeSettings
-import com.jsworld.android.daydone.domain.model.NoSpendMode
 import com.jsworld.android.daydone.domain.usecase.EndScheduledDeductionUseCase
 import com.jsworld.android.daydone.domain.usecase.EvaluateNoSpendProgressUseCase
 import com.jsworld.android.daydone.domain.usecase.EvaluatePurchaseUseCase
-import com.jsworld.android.daydone.domain.usecase.HoldPurchaseUseCase
-import com.jsworld.android.daydone.domain.usecase.SaveNoSpendChallengeRecordUseCase
-import com.jsworld.android.daydone.domain.usecase.UpdateNoSpendChallengeUseCase
 import com.jsworld.android.daydone.domain.usecase.GetCurrentBudgetPeriodUseCase
 import com.jsworld.android.daydone.domain.usecase.GetPeriodEndSurplusUseCase
 import com.jsworld.android.daydone.domain.usecase.GetScheduledDeductionsInPeriodUseCase
 import com.jsworld.android.daydone.domain.usecase.GetTodayDateChipsUseCase
+import com.jsworld.android.daydone.domain.usecase.HoldPurchaseUseCase
+import com.jsworld.android.daydone.domain.usecase.MarkPreJoinSpendHandledUseCase
 import com.jsworld.android.daydone.domain.usecase.ObserveBudgetProfileUseCase
 import com.jsworld.android.daydone.domain.usecase.ObserveEffectiveMonthlyBudgetUseCase
-import com.jsworld.android.daydone.domain.usecase.MarkPreJoinSpendHandledUseCase
-import com.jsworld.android.daydone.domain.usecase.ObserveNoSpendChallengeUseCase
-import com.jsworld.android.daydone.domain.usecase.ObservePreJoinSpendHandledUseCase
-import com.jsworld.android.daydone.domain.usecase.ObserveScheduledDeductionAmountsUseCase
-import com.jsworld.android.daydone.domain.usecase.ResolveScheduledDeductionAmountsUseCase
 import com.jsworld.android.daydone.domain.usecase.ObserveExpensesByPeriodUseCase
 import com.jsworld.android.daydone.domain.usecase.ObserveExtraIncomesByPeriodUseCase
+import com.jsworld.android.daydone.domain.usecase.ObserveNoSpendChallengeUseCase
+import com.jsworld.android.daydone.domain.usecase.ObservePreJoinSpendHandledUseCase
 import com.jsworld.android.daydone.domain.usecase.ObserveQuickExpensesUseCase
+import com.jsworld.android.daydone.domain.usecase.ObserveScheduledDeductionAmountsUseCase
 import com.jsworld.android.daydone.domain.usecase.ObserveScheduledDeductionsUseCase
+import com.jsworld.android.daydone.domain.usecase.ResolveScheduledDeductionAmountsUseCase
+import com.jsworld.android.daydone.domain.usecase.SaveNoSpendChallengeRecordUseCase
 import com.jsworld.android.daydone.domain.usecase.SetMonthlyBudgetUseCase
 import com.jsworld.android.daydone.domain.usecase.SetScheduledDeductionAmountUseCase
 import com.jsworld.android.daydone.domain.usecase.UpdateBudgetProfileUseCase
 import com.jsworld.android.daydone.domain.usecase.UpdateExpenseUseCase
 import com.jsworld.android.daydone.domain.usecase.UpdateExtraIncomeUseCase
+import com.jsworld.android.daydone.domain.usecase.UpdateNoSpendChallengeUseCase
 import com.jsworld.android.daydone.domain.usecase.UpdateScheduledDeductionUseCase
 import com.jsworld.android.daydone.presentation.today.model.PurchaseEvaluationUiModel
 import com.jsworld.android.daydone.presentation.today.model.QuickExpenseUiModel
-import com.jsworld.android.daydone.presentation.today.model.TodayExtraIncomeUiModel
 import com.jsworld.android.daydone.presentation.today.model.ScheduledDeductionSummaryUiModel
 import com.jsworld.android.daydone.presentation.today.model.TodayExpenseUiModel
+import com.jsworld.android.daydone.presentation.today.model.TodayExtraIncomeUiModel
 import com.jsworld.android.daydone.presentation.today.model.TodayScheduledDeductionUiModel
 import com.jsworld.android.daydone.presentation.today.model.TodayUiState
 import com.jsworld.android.daydone.presentation.util.toMoneyText
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import jakarta.inject.Inject
+import java.time.LocalDate
+import java.time.YearMonth
+import java.time.temporal.ChronoUnit
+import kotlin.collections.filter
+import kotlin.collections.map
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -70,11 +78,6 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import java.time.LocalDate
-import java.time.YearMonth
-import java.time.temporal.ChronoUnit
-import kotlin.collections.filter
-import kotlin.collections.map
 
 @HiltViewModel
 class TodayViewModel @Inject constructor(
@@ -113,7 +116,11 @@ class TodayViewModel @Inject constructor(
     private val markPreJoinSpendHandledUseCase: MarkPreJoinSpendHandledUseCase,
     private val evaluatePurchaseUseCase: EvaluatePurchaseUseCase,
     private val holdPurchaseUseCase: HoldPurchaseUseCase,
-    private val getPeriodEndSurplusUseCase: GetPeriodEndSurplusUseCase
+    private val getPeriodEndSurplusUseCase: GetPeriodEndSurplusUseCase,
+    // 화면에 그대로 나갈 문구를 만들기 위한 것. UseCase 엔 Context 가 없어
+    // 조립은 여기서 한다(v1.5 국제화 3-7).
+    @ApplicationContext private val context: Context
+
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(TodayUiState())
@@ -254,7 +261,7 @@ class TodayViewModel @Inject constructor(
 
         viewModelScope.launch {
             addExpenseUseCase(
-                title = "이전 지출",
+                title = context.getString(R.string.today_ijeon_jichul),
                 amount = amount,
                 date = period.startDate
             )
@@ -1259,13 +1266,12 @@ class TodayViewModel @Inject constructor(
         // 기간 초 설명은 "남은 날이 많아서 작다"가 아니다 — 권장대로 쓰면 금액은 내내 같고,
         // 아껴 쓴 만큼만 커진다. 그 사실을 알려줘야 후반 몰아쓰기를 유도하지 않는다.
         val message = when {
-            isTodayOverDefenseLine -> "괜찮아요. 남은 날에 다시 나눠볼게요."
+            isTodayOverDefenseLine -> context.getString(R.string.today_gwaenchanhayo_nameun_nale_dasi)
             periodEndSurplus != null ->
-                "지금 페이스면 이번 기간이 끝날 때 ${periodEndSurplus.toMoneyText()}이 남아요. " +
-                        "미리 금고에 넣어두면 다음 큰 지출이 편해져요."
+                context.getString(R.string.today_jigeum_peiseumyeon_ibeon_gigani, periodEndSurplus.toMoneyText())
             dayIndexInPeriod <= EARLY_DAYS ->
-                "이 금액은 남은 날로 똑같이 나눈 값이에요. 아껴 쓴 만큼 뒤로 갈수록 커져요."
-            else -> "오늘은 이 금액 안에서 쓰면 괜찮아요."
+                context.getString(R.string.today_i_geumaegeun_nameun_nalro)
+            else -> context.getString(R.string.today_oneuleun_i_geumaeg_aneseo)
         }
 
         val expenseDates = expenses
@@ -1311,7 +1317,7 @@ class TodayViewModel @Inject constructor(
             selectedDateTitle = selectedDate.toSelectedDateTitle(today),
             lastPeriodReportMonth = lastPeriodReportMonth,
             showPreJoinBanner = showPreJoinBanner,
-            periodStartLabel = "${budgetPeriod.startDate.monthValue}월 ${budgetPeriod.startDate.dayOfMonth}일",
+            periodStartLabel = context.getString(R.string.today_weol_il_2, budgetPeriod.startDate.monthValue, budgetPeriod.startDate.dayOfMonth),
 
             scheduledDeductionSummaries = scheduledDeductionSummaries,
             selectedDateScheduledDeductions = selectedDateScheduledDeductions,
@@ -1354,9 +1360,9 @@ class TodayViewModel @Inject constructor(
 
     private fun LocalDate.toSelectedDateTitle(today: LocalDate): String {
         return when {
-            this == today -> "오늘 내역"
-            this.isBefore(today) -> "${monthValue}월 ${dayOfMonth}일 내역"
-            else -> "${monthValue}월 ${dayOfMonth}일 예정"
+            this == today -> context.getString(R.string.today_oneul_naeyeog)
+            this.isBefore(today) -> context.getString(R.string.today_weol_il_naeyeog, monthValue, dayOfMonth)
+            else -> context.getString(R.string.today_weol_il_yejeong, monthValue, dayOfMonth)
         }
     }
 }

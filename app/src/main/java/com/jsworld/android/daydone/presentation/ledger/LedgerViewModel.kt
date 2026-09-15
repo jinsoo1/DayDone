@@ -1,8 +1,10 @@
 package com.jsworld.android.daydone.presentation.ledger
 
 import androidx.lifecycle.SavedStateHandle
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.jsworld.android.daydone.R
 import com.jsworld.android.daydone.domain.model.BudgetPeriod
 import com.jsworld.android.daydone.domain.model.Expense
 import com.jsworld.android.daydone.domain.model.ExtraIncome
@@ -14,23 +16,26 @@ import com.jsworld.android.daydone.domain.usecase.GetBudgetPeriodForMonthUseCase
 import com.jsworld.android.daydone.domain.usecase.GetCurrentBudgetPeriodUseCase
 import com.jsworld.android.daydone.domain.usecase.GetScheduledDeductionsInPeriodUseCase
 import com.jsworld.android.daydone.domain.usecase.ObserveBudgetProfileUseCase
-import com.jsworld.android.daydone.domain.usecase.ObserveExpensesByPeriodUseCase
 import com.jsworld.android.daydone.domain.usecase.ObserveEffectiveMonthlyBudgetUseCase
+import com.jsworld.android.daydone.domain.usecase.ObserveExpensesByPeriodUseCase
 import com.jsworld.android.daydone.domain.usecase.ObserveExtraIncomesByPeriodUseCase
 import com.jsworld.android.daydone.domain.usecase.ObserveLedgerAscendingUseCase
 import com.jsworld.android.daydone.domain.usecase.ObserveLedgerDeductionsVisibleUseCase
-import com.jsworld.android.daydone.domain.usecase.SetLedgerAscendingUseCase
-import com.jsworld.android.daydone.domain.usecase.SetLedgerDeductionsVisibleUseCase
 import com.jsworld.android.daydone.domain.usecase.ObserveScheduledDeductionAmountsUseCase
 import com.jsworld.android.daydone.domain.usecase.ObserveScheduledDeductionsUseCase
 import com.jsworld.android.daydone.domain.usecase.ResolveScheduledDeductionAmountsUseCase
+import com.jsworld.android.daydone.domain.usecase.SetLedgerAscendingUseCase
+import com.jsworld.android.daydone.domain.usecase.SetLedgerDeductionsVisibleUseCase
 import com.jsworld.android.daydone.presentation.ledger.model.LedgerDayUiModel
 import com.jsworld.android.daydone.presentation.ledger.model.LedgerEntryUiModel
 import com.jsworld.android.daydone.presentation.ledger.model.LedgerUiState
 import com.jsworld.android.daydone.presentation.util.toMoneyText
 import com.jsworld.android.daydone.presentation.util.toWeekText
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import jakarta.inject.Inject
+import java.time.LocalDate
+import java.time.YearMonth
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -40,8 +45,6 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import java.time.LocalDate
-import java.time.YearMonth
 
 /**
  * 기간 내역 화면 — 한 예산 기간의 수입·지출을 날짜별로 묶어 쭉 보여준다.
@@ -66,7 +69,11 @@ class LedgerViewModel @Inject constructor(
     private val observeLedgerDeductionsVisibleUseCase: ObserveLedgerDeductionsVisibleUseCase,
     private val setLedgerDeductionsVisibleUseCase: SetLedgerDeductionsVisibleUseCase,
     private val observeLedgerAscendingUseCase: ObserveLedgerAscendingUseCase,
-    private val setLedgerAscendingUseCase: SetLedgerAscendingUseCase
+    private val setLedgerAscendingUseCase: SetLedgerAscendingUseCase,
+    // 화면에 그대로 나갈 문구를 만들기 위한 것. UseCase 엔 Context 가 없어
+    // 조립은 여기서 한다(v1.5 국제화 3-7).
+    @ApplicationContext private val context: Context
+
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(LedgerUiState())
@@ -178,11 +185,8 @@ class LedgerViewModel @Inject constructor(
 
         _uiState.value = LedgerUiState(
             isLoading = false,
-            monthTitle = "${anchorMonth.year}년 ${anchorMonth.monthValue}월 내역",
-            periodText = "${data.period.startDate.monthValue}월 " +
-                    "${data.period.startDate.dayOfMonth}일 ~ " +
-                    "${data.period.endDate.monthValue}월 " +
-                    "${data.period.endDate.dayOfMonth}일",
+            monthTitle = context.getString(R.string.ledger_nyeon_weol_naeyeog, anchorMonth.year, anchorMonth.monthValue),
+            periodText = context.getString(R.string.ledger_weol_il_weol_il, data.period.startDate.monthValue, data.period.startDate.dayOfMonth, data.period.endDate.monthValue, data.period.endDate.dayOfMonth),
             ascending = ascending,
             showDeductions = showDeductions,
             monthlyBudget = data.monthlyBudget,
@@ -205,7 +209,7 @@ class LedgerViewModel @Inject constructor(
                     weekText = day.date.toWeekText(),
                     // 기간이 두 달에 걸칠 때(시작일 ≠ 1일) 달이 바뀌는 지점만 표시
                     monthLabel = if (day.date.monthValue != previousMonth) {
-                        "${day.date.monthValue}월"
+                        context.getString(R.string.ledger_weol, day.date.monthValue)
                     } else {
                         null
                     },
@@ -227,10 +231,10 @@ class LedgerViewModel @Inject constructor(
             title = title,
             amountText = (if (isIncome) "+" else "−") + amount.toMoneyText(),
             tag = when {
-                kind == LedgerEntryKind.FUTURE_PREPARE -> "준비금"
-                kind == LedgerEntryKind.SAVING -> "저축"
-                kind == LedgerEntryKind.FIXED -> "고정비"
-                kind == LedgerEntryKind.EXPENSE && isEssential -> "필수"
+                kind == LedgerEntryKind.FUTURE_PREPARE -> context.getString(R.string.ledger_junbigeum)
+                kind == LedgerEntryKind.SAVING -> context.getString(R.string.ledger_jeochug)
+                kind == LedgerEntryKind.FIXED -> context.getString(R.string.ledger_gojeongbi)
+                kind == LedgerEntryKind.EXPENSE && isEssential -> context.getString(R.string.ledger_pilsu)
                 else -> null
             }
         )
