@@ -1,6 +1,43 @@
-<resources>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="app_name">데이던</string>
     <string name="widget_description">오늘 써도 되는 금액을 홈 화면에서 바로 봐요</string>
     <string name="notification_channel_name">하루 알림</string>
     <string name="notification_channel_description">오늘 권장 금액, 기록 안내, 보류함 소식</string>
+
+    <!-- ══════════════════════════════════════════════════════════
+         알림 (v1.5 국제화 3-3)
+         문구는 UseCase 가 아니라 NotificationTextRenderer 가 조립한다.
+         ══════════════════════════════════════════════════════════ -->
+
+    <!-- 아침 알림 -->
+    <!-- 오늘 써도 되는 금액. 상한이 아니라 '권장'이라는 뉘앙스를 지킬 것. -->
+    <string name="noti_morning_title">오늘은 <xliff:g id="amount" example="32,000원">%1$s</xliff:g>까지 괜찮아요</string>
+    <string name="noti_morning_title_no_budget">오늘의 데이던 소식이 있어요</string>
+    <string name="noti_morning_report_line">지난 기간 결산이 나왔어요. 눌러서 확인해보세요.</string>
+    <string name="noti_morning_remaining_days">이번 기간 <xliff:g id="days" example="12">%1$d</xliff:g>일 남았어요.</string>
+
+    <!-- 저녁 알림: 무지출 축하 -->
+    <string name="noti_no_spend_title">오늘 지갑이 쉬었어요 🎉</string>
+    <string name="noti_no_spend_body_streak">무지출 <xliff:g id="days" example="3">%1$d</xliff:g>일째, 잘하고 있어요.</string>
+    <string name="noti_no_spend_body_first">무지출 하루 성공. 내일도 편하게 가요.</string>
+
+    <!-- 저녁 알림: 기록 안내 (오늘 지출이 0건일 때만 보낸다) -->
+    <string name="noti_record_title">오늘 기록이 아직 없어요</string>
+    <string name="noti_record_body">쓴 게 있다면 지금 넣어두면 내일 금액이 정확해져요. 안 썼다면 그대로 두셔도 좋아요.</string>
+
+    <!-- 저녁 알림: 내일 나갈 돈 (목적은 예산 경고가 아니라 출금 통장 잔액 확인) -->
+    <string name="noti_upcoming_title_single">내일 <xliff:g id="item" example="적금">%1$s</xliff:g> <xliff:g id="amount" example="300,000원">%2$s</xliff:g>이 나가요</string>
+    <string name="noti_upcoming_title_multi">내일 <xliff:g id="count" example="2">%1$d</xliff:g>건 <xliff:g id="amount" example="450,000원">%2$s</xliff:g>이 나가요</string>
+    <string name="noti_upcoming_body">이미 생활비에선 빼둔 돈이라 통장만 확인해두면 돼요.</string>
+    <string name="noti_upcoming_body_multi"><xliff:g id="items" example="적금 · 통신비">%1$s</xliff:g>. 이미 생활비에선 빼둔 돈이라 통장만 확인해두면 돼요.</string>
+    <!-- 항목명을 나열할 때 쓰는 구분자 -->
+    <string name="noti_upcoming_name_separator">" · "</string>
+
+    <!-- 보류함 30일 도래 -->
+    <string name="noti_held_title_single"><xliff:g id="item" example="러닝화">%1$s</xliff:g>, 30일이 지났어요</string>
+    <string name="noti_held_title_multi">보류한 <xliff:g id="count" example="3">%1$d</xliff:g>건이 30일을 넘겼어요</string>
+    <string name="noti_held_body">아직도 필요하면 그때 사요. 일단 <xliff:g id="amount" example="120,000원">%1$s</xliff:g>을 아낀 돈에 넣어뒀어요.</string>
+
+    <!-- 합쳐진 안내를 이을 때 쓰는 구분자 -->
+    <string name="noti_join_separator">" "</string>
 </resources>

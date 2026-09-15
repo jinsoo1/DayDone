@@ -76,15 +76,15 @@ class NotificationSettingsViewModel @Inject constructor(
             var sent = 0
 
             buildMorningNotificationUseCase(today, settings)?.let {
-                notifier.show(DayDoneNotifier.ID_MORNING, it.title, it.body, it.target)
+                notifier.show(DayDoneNotifier.ID_MORNING, it)
                 sent++
             }
             buildEveningNotificationUseCase(today, settings)?.let {
-                notifier.show(DayDoneNotifier.ID_EVENING, it.title, it.body, it.target)
+                notifier.show(DayDoneNotifier.ID_EVENING, it)
                 sent++
             }
             buildHeldPurchaseNotificationUseCase(today)?.let {
-                notifier.show(DayDoneNotifier.ID_HELD, it.title, it.body, it.target)
+                notifier.show(DayDoneNotifier.ID_HELD, it)
                 sent++
             }
 

@@ -13,6 +13,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import com.jsworld.android.daydone.R
+import com.jsworld.android.daydone.domain.model.NotificationContent
 import com.jsworld.android.daydone.ui.view.MainActivity
 import dagger.hilt.android.qualifiers.ApplicationContext
 import jakarta.inject.Inject
@@ -35,10 +36,21 @@ enum class NotificationTarget {
  */
 @Singleton
 class DayDoneNotifier @Inject constructor(
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
+    private val renderer: NotificationTextRenderer
 ) {
 
-    fun show(
+    /** UseCase 가 정한 내용을 문장으로 바꿔 띄운다. */
+    fun show(id: Int, content: NotificationContent) {
+        show(
+            id = id,
+            title = renderer.render(content.title),
+            body = renderer.render(content.body),
+            target = content.target
+        )
+    }
+
+    private fun show(
         id: Int,
         title: String,
         body: String,

@@ -30,12 +30,7 @@ class EveningNotificationWorker(
             if (content == null) {
                 Log.i(TAG, "보낼 저녁 내용이 없음")
             } else {
-                entryPoint.notifier().show(
-                    id = DayDoneNotifier.ID_EVENING,
-                    title = content.title,
-                    body = content.body,
-                    target = content.target
-                )
+                entryPoint.notifier().show(DayDoneNotifier.ID_EVENING, content)
             }
         }.onFailure { Log.w(TAG, "저녁 알림 생성 실패", it) }
 

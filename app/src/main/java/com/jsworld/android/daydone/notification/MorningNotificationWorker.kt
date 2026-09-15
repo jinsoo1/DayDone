@@ -31,22 +31,12 @@ class MorningNotificationWorker(
             if (content == null) {
                 Log.i(TAG, "보낼 아침 내용이 없음")
             } else {
-                entryPoint.notifier().show(
-                    id = DayDoneNotifier.ID_MORNING,
-                    title = content.title,
-                    body = content.body,
-                    target = content.target
-                )
+                entryPoint.notifier().show(DayDoneNotifier.ID_MORNING, content)
             }
 
             if (settings.heldPurchaseEnabled) {
                 entryPoint.buildHeldPurchaseNotificationUseCase()(today)?.let {
-                    entryPoint.notifier().show(
-                        id = DayDoneNotifier.ID_HELD,
-                        title = it.title,
-                        body = it.body,
-                        target = it.target
-                    )
+                    entryPoint.notifier().show(DayDoneNotifier.ID_HELD, it)
                 }
             }
         }.onFailure { Log.w(TAG, "아침 알림 생성 실패", it) }

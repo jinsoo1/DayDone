@@ -10,7 +10,7 @@ import com.jsworld.android.daydone.notification.NotificationTarget
  * 목적지도 내용과 함께 정한다.
  */
 data class NotificationContent(
-    val title: String,
-    val body: String,
+    val title: NotificationText,
+    val body: NotificationText,
     val target: NotificationTarget = NotificationTarget.TODAY
 )

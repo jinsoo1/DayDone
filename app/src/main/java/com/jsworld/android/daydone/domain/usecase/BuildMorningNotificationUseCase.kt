@@ -2,8 +2,8 @@ package com.jsworld.android.daydone.domain.usecase
 
 import com.jsworld.android.daydone.domain.model.NotificationContent
 import com.jsworld.android.daydone.domain.model.NotificationSettings
+import com.jsworld.android.daydone.domain.model.NotificationText
 import com.jsworld.android.daydone.notification.NotificationTarget
-import com.jsworld.android.daydone.presentation.util.toMoneyText
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.first
 import java.time.LocalDate
@@ -29,34 +29,35 @@ class BuildMorningNotificationUseCase @Inject constructor(
         val budget = observeDailyBudgetUseCase(today).first()
         val isPeriodFirstDay = budget.period.startDate == today
 
-        val lines = mutableListOf<String>()
+        val lines = mutableListOf<NotificationText>()
 
         // 기간 첫날: 지난 기간 결산
         val hasReport =
             settings.periodReportEnabled && isPeriodFirstDay && hasPreviousPeriod(today)
         if (hasReport) {
-            lines += "지난 기간 결산이 나왔어요. 눌러서 확인해보세요."
+            lines += NotificationText.MorningReportLine
         }
 
         // 기간 첫날: 큰 지출이 예상되는 달 안내
         var hasBigSpend = false
         if (settings.bigSpendMonthEnabled && isPeriodFirstDay) {
             getBigSpendMonthNoticeUseCase(YearMonth.from(today))?.let {
-                lines += it
+                // TODO(v1.5 3-6): 큰 지출 달 안내는 로케일별 지식 주입이라 따로 타입화한다.
+                lines += NotificationText.Raw(it)
                 hasBigSpend = true
             }
         }
 
         if (settings.morningEnabled) {
-            lines += "이번 기간 ${budget.remainingDays}일 남았어요."
+            lines += NotificationText.MorningRemainingDays(budget.remainingDays)
         }
 
         if (lines.isEmpty()) return null
 
         val title = if (settings.morningEnabled) {
-            "오늘은 ${budget.todayRecommended.toMoneyText()}까지 괜찮아요"
+            NotificationText.MorningTitle(budget.todayRecommended)
         } else {
-            "오늘의 데이던 소식이 있어요"
+            NotificationText.MorningTitleNoBudget
         }
 
         // 권장 금액이 없는 날엔 그날의 주인공 화면으로 보낸다.
@@ -69,7 +70,7 @@ class BuildMorningNotificationUseCase @Inject constructor(
 
         return NotificationContent(
             title = title,
-            body = lines.joinToString(" "),
+            body = NotificationText.Joined(lines),
             target = target
         )
     }

@@ -2,8 +2,8 @@ package com.jsworld.android.daydone.domain.usecase
 
 import com.jsworld.android.daydone.domain.model.HeldPurchase
 import com.jsworld.android.daydone.domain.model.NotificationContent
+import com.jsworld.android.daydone.domain.model.NotificationText
 import com.jsworld.android.daydone.notification.NotificationTarget
-import com.jsworld.android.daydone.presentation.util.toMoneyText
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.first
 import java.time.LocalDate
@@ -23,17 +23,12 @@ class BuildHeldPurchaseNotificationUseCase @Inject constructor(
 
         if (due.isEmpty()) return null
 
-        val title = if (due.size == 1) {
-            "${due.first().title}, 30일이 지났어요"
-        } else {
-            "보류한 ${due.size}건이 30일을 넘겼어요"
-        }
-
-        val amount = due.sumOf { it.amount }.toMoneyText()
-
         return NotificationContent(
-            title = title,
-            body = "아직도 필요하면 그때 사요. 일단 ${amount}을 아낀 돈에 넣어뒀어요.",
+            title = NotificationText.HeldPurchaseTitle(
+                count = due.size,
+                firstTitle = due.first().title
+            ),
+            body = NotificationText.HeldPurchaseBody(due.sumOf { it.amount }),
             target = NotificationTarget.HELD_PURCHASES
         )
     }

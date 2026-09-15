@@ -2,6 +2,7 @@ package com.jsworld.android.daydone.domain.usecase
 
 import com.jsworld.android.daydone.domain.model.ExpenseType
 import com.jsworld.android.daydone.domain.model.NotificationContent
+import com.jsworld.android.daydone.domain.model.NotificationText
 import com.jsworld.android.daydone.domain.model.NoSpendMode
 import com.jsworld.android.daydone.domain.model.NotificationSettings
 import com.jsworld.android.daydone.notification.NotificationTarget
@@ -65,11 +66,11 @@ class BuildEveningNotificationUseCase @Inject constructor(
                 if (progress.isTodayOnTrack) {
                     return RecordNotice(
                         content = NotificationContent(
-                            title = "오늘 지갑이 쉬었어요 🎉",
-                            body = if (progress.streak >= 2) {
-                                "무지출 ${progress.streak}일째, 잘하고 있어요."
+                            title = NotificationText.NoSpendCelebrationTitle,
+                            body = if (progress.streak >= NotificationText.STREAK_THRESHOLD) {
+                                NotificationText.NoSpendCelebrationStreakBody(progress.streak)
                             } else {
-                                "무지출 하루 성공. 내일도 편하게 가요."
+                                NotificationText.NoSpendCelebrationFirstBody
                             },
                             target = NotificationTarget.TODAY
                         ),
@@ -84,9 +85,8 @@ class BuildEveningNotificationUseCase @Inject constructor(
 
         return RecordNotice(
             content = NotificationContent(
-                title = "오늘 기록이 아직 없어요",
-                body = "쓴 게 있다면 지금 넣어두면 내일 금액이 정확해져요. " +
-                        "안 썼다면 그대로 두셔도 좋아요.",
+                title = NotificationText.RecordNoticeTitle,
+                body = NotificationText.RecordNoticeBody,
                 target = NotificationTarget.EXPENSE_INPUT
             ),
             isCelebration = false
@@ -116,19 +116,21 @@ class BuildEveningNotificationUseCase @Inject constructor(
 
             record.isCelebration -> NotificationContent(
                 title = record.content.title,
-                body = "${record.content.body} ${upcoming.title.withEndingPeriod()} ${upcoming.body}",
+                body = NotificationText.Joined(
+                    listOf(
+                        record.content.body,
+                        NotificationText.AsSentence(upcoming.title),
+                        upcoming.body
+                    )
+                ),
                 target = NotificationTarget.TODAY
             )
 
             else -> NotificationContent(
                 title = upcoming.title,
-                body = "${upcoming.body} ${record.content.body}",
+                body = NotificationText.Joined(listOf(upcoming.body, record.content.body)),
                 target = NotificationTarget.EXPENSE_INPUT
             )
         }
-
-        /** 제목을 본문 문장으로 이어 쓸 때 문장부호를 맞춘다. */
-        private fun String.withEndingPeriod(): String =
-            if (endsWith(".") || endsWith("!") || endsWith("?")) this else "$this."
     }
 }

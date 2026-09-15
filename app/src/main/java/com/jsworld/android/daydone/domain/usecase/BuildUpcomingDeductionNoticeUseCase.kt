@@ -1,7 +1,7 @@
 package com.jsworld.android.daydone.domain.usecase
 
 import com.jsworld.android.daydone.domain.model.NotificationContent
-import com.jsworld.android.daydone.presentation.util.toMoneyText
+import com.jsworld.android.daydone.domain.model.NotificationText
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.first
 import java.time.LocalDate
@@ -48,21 +48,13 @@ class BuildUpcomingDeductionNoticeUseCase @Inject constructor(
         val due = getDeductionsDueOnUseCase(deductions, tomorrow)
         if (due.isEmpty()) return null
 
-        val total = due.sumOf { it.amount }
-
-        val title = if (due.size == 1) {
-            "내일 ${due.first().title} ${due.first().amount.toMoneyText()}이 나가요"
-        } else {
-            "내일 ${due.size}건 ${total.toMoneyText()}이 나가요"
-        }
-
-        val names = due.joinToString(" · ") { it.title }
-        val body = if (due.size == 1) {
-            "이미 생활비에선 빼둔 돈이라 통장만 확인해두면 돼요."
-        } else {
-            "$names. 이미 생활비에선 빼둔 돈이라 통장만 확인해두면 돼요."
-        }
-
-        return NotificationContent(title = title, body = body)
+        return NotificationContent(
+            title = NotificationText.UpcomingDeductionTitle(
+                count = due.size,
+                firstTitle = due.first().title,
+                totalAmount = due.sumOf { it.amount }
+            ),
+            body = NotificationText.UpcomingDeductionBody(due.map { it.title })
+        )
     }
 }
