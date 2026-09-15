@@ -1,24 +1,31 @@
 package com.jsworld.android.daydone.domain.model
 
+import androidx.annotation.StringRes
+import com.jsworld.android.daydone.R
+
 /**
  * 리포트용 지출 카테고리. 지출 입력에는 노출하지 않고,
  * 지출명 키워드 매칭으로 리포트 계산 시점에 파생된다.
+ *
+ * 라벨은 `@StringRes` 로만 들고 있는다(v1.5 국제화 3-5) — Int 상수라 순수 JVM
+ * 테스트가 그대로 돌고, domain 에 Android 의존이 실질적으로 늘지 않는다.
+ * 이모지는 번역 대상이 아니라 표식이라 그대로 둔다.
  */
-enum class ExpenseCategory(val label: String, val emoji: String) {
-    PET("반려동물", "🐾"),
-    OCCASION("경조사·선물", "🎁"),
-    TRAVEL("여행·숙박", "✈️"),
-    EDUCATION("교육", "📚"),
-    SUBSCRIPTION("구독·통신", "📱"),
-    HEALTH("의료·건강", "💊"),
-    BEAUTY("뷰티·미용", "💇"),
-    TRANSPORT("교통·차량", "🚕"),
-    ALCOHOL("술·모임", "🍺"),
-    GROCERY("장보기·마트", "🛒"),
-    CAFE("카페·간식", "☕"),
-    FOOD("식비", "🍚"),
-    FASHION("쇼핑·패션", "👕"),
-    LIVING("생활·잡화", "🧺"),
-    CULTURE("문화·여가", "🎬"),
-    ETC("기타", "💸")
+enum class ExpenseCategory(@StringRes val labelRes: Int, val emoji: String) {
+    PET(R.string.category_pet, "🐾"),
+    OCCASION(R.string.category_occasion, "🎁"),
+    TRAVEL(R.string.category_travel, "✈️"),
+    EDUCATION(R.string.category_education, "📚"),
+    SUBSCRIPTION(R.string.category_subscription, "📱"),
+    HEALTH(R.string.category_health, "💊"),
+    BEAUTY(R.string.category_beauty, "💇"),
+    TRANSPORT(R.string.category_transport, "🚕"),
+    ALCOHOL(R.string.category_alcohol, "🍺"),
+    GROCERY(R.string.category_grocery, "🛒"),
+    CAFE(R.string.category_cafe, "☕"),
+    FOOD(R.string.category_food, "🍚"),
+    FASHION(R.string.category_fashion, "👕"),
+    LIVING(R.string.category_living, "🧺"),
+    CULTURE(R.string.category_culture, "🎬"),
+    ETC(R.string.category_etc, "💸")
 }

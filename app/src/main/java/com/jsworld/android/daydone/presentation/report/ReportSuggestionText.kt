@@ -20,7 +20,7 @@ fun ReportSuggestion.text(): String = when (this) {
             stringResource(
                 R.string.report_advice_over_budget_top,
                 overAmount.toMoneyText(),
-                topCategory.label,
+                stringResource(topCategory.labelRes),
                 topCategoryTotal.toMoneyText()
             )
         } else {

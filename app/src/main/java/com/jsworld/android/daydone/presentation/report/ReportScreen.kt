@@ -43,6 +43,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -402,7 +403,7 @@ private fun CategoryRow(category: ReportCategory, maxTotal: Long) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "${category.category.emoji} ${category.category.label} " +
+                text = "${category.category.emoji} ${stringResource(category.category.labelRes)} " +
                         "· ${category.count}회",
                 style = MaterialTheme.typography.bodyMedium
             )
