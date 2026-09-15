@@ -40,4 +40,53 @@
 
     <!-- 합쳐진 안내를 이을 때 쓰는 구분자 -->
     <string name="noti_join_separator">" "</string>
+
+    <!-- ══════════════════════════════════════════════════════════
+         리포트 맞춤 제안 (v1.5 국제화 3-4)
+         규칙 판정은 BuildMonthlyReportUseCase, 문장은 ReportSuggestionText.
+         §13 톤: 압박하지 않고 조정 중심. "과소비"·"실패" 같은 말은 쓰지 않는다.
+         ══════════════════════════════════════════════════════════ -->
+
+    <string name="report_advice_over_budget_top">예산보다 <xliff:g id="over" example="54,000원">%1$s</xliff:g> 더 썼어요. 가장 비중이 큰 \'<xliff:g id="category" example="식비">%2$s</xliff:g>\'(<xliff:g id="category_total" example="220,000원">%3$s</xliff:g>)부터 돌아보면 원인이 보여요.</string>
+    <string name="report_advice_over_budget">예산보다 <xliff:g id="over" example="54,000원">%1$s</xliff:g> 더 썼어요. 지출 내역을 한번 돌아봐요.</string>
+    <string name="report_advice_budget_too_small">매달 비슷하게 넘친다면 예산이 현실보다 작게 잡힌 걸 수도 있어요. 월 탭에서 이번 달 예산을 조정할 수 있어요.</string>
+
+    <string name="report_advice_no_saving_with_leftover">저축 항목이 아직 없어요. 이번 기간 남을 것 같은 <xliff:g id="leftover" example="120,000원">%1$s</xliff:g>으로 첫 저축을 시작해보면 어때요?</string>
+    <string name="report_advice_no_saving">저축 항목이 아직 없어요. 5만 원처럼 작게 시작해도 미래의 내가 고마워해요.</string>
+    <string name="report_advice_saving_excellent">수입의 <xliff:g id="percent" example="32">%1$d</xliff:g>%%를 저축하고 있어요. 아주 훌륭한 비율이에요.</string>
+    <!-- 20%% 는 1인 가구 권장 저축률. 로케일에 따라 기준이 다르면 함께 조정할 것 -->
+    <string name="report_advice_saving_good">저축률 <xliff:g id="percent" example="24">%1$d</xliff:g>%% — 1인 가구 권장(20%%)을 잘 지키고 있어요.</string>
+    <string name="report_advice_saving_low">저축률 <xliff:g id="percent" example="12">%1$d</xliff:g>%% — 다음 달엔 1~2%%만 더 올려 20%%에 도전해볼까요?</string>
+
+    <string name="report_advice_top_fixed">고정비의 <xliff:g id="percent" example="45">%1$d</xliff:g>%%가 \'<xliff:g id="item" example="월세">%2$s</xliff:g>\'이에요. 갱신이나 요금제 변경 시점에 한 번 비교해볼 만해요.</string>
+    <string name="report_advice_subscription">구독·통신성 지출 <xliff:g id="total" example="32,000원">%1$s</xliff:g>이 일반 지출에 섞여 있어요. 매달 나가는 거라면 저축/고정비로 등록하면 예산이 더 정확해져요.</string>
+    <string name="report_advice_deduction_heavy">수입의 절반 이상(<xliff:g id="percent" example="58">%1$d</xliff:g>%%)이 매달 저축·고정비로 먼저 빠져나가요. 당장 줄이라는 뜻은 아니에요 — 갱신 시기가 온 항목부터 가볍게 점검해봐요.</string>
+
+    <string name="report_advice_day_of_week">지출이 <xliff:g id="day" example="토">%1$s</xliff:g>요일에 가장 몰려요(<xliff:g id="amount" example="180,000원">%2$s</xliff:g> · 전체의 <xliff:g id="percent" example="38">%3$d</xliff:g>%%). 그날만 미리 계획해도 페이스가 안정돼요.</string>
+    <string name="report_advice_weekend">주말 하루 평균(<xliff:g id="weekend" example="42,000원">%1$s</xliff:g>)이 평일(<xliff:g id="weekday" example="21,000원">%2$s</xliff:g>)보다 확 커요. 주말 계획만 세워도 한 달이 편해져요.</string>
+    <string name="report_advice_small_spends">1만 원 아래 지출이 <xliff:g id="count" example="12">%1$d</xliff:g>번, 합치면 <xliff:g id="total" example="64,000원">%2$s</xliff:g>이에요. 잔잔한 지출도 모이면 하루 권장 금액을 훌쩍 넘죠.</string>
+    <string name="report_advice_cafe">카페·간식을 평균 이틀에 한 번 이상 들렀어요(<xliff:g id="count" example="9">%1$d</xliff:g>회 · <xliff:g id="total" example="45,000원">%2$s</xliff:g>). 횟수를 반만 줄여도 <xliff:g id="half" example="22,500원">%3$s</xliff:g>이 남아요.</string>
+    <string name="report_advice_delivery">배달 주문이 <xliff:g id="count" example="4">%1$d</xliff:g>회(<xliff:g id="total" example="82,000원">%2$s</xliff:g>)예요. 한 번만 포장으로 바꿔도 배달비만큼 여유가 생겨요.</string>
+    <string name="report_advice_biggest_day">가장 큰 하루는 <xliff:g id="month" example="9">%1$d</xliff:g>월 <xliff:g id="day" example="14">%2$d</xliff:g>일(<xliff:g id="amount" example="98,000원">%3$s</xliff:g>)이었어요. 큰 지출 다음 날을 무지출 데이로 삼으면 페이스가 금방 돌아와요.</string>
+
+    <string name="report_advice_no_spend_praise">벌써 무지출 <xliff:g id="days" example="5">%1$d</xliff:g>일! 지갑이 쉬는 날이 쌓이고 있어요.</string>
+    <string name="report_advice_essential_heavy">지출의 <xliff:g id="percent" example="72">%1$d</xliff:g>%%가 필수 지출이었어요. 줄이기 어려운 지출이 많았던 기간이니, 스스로를 탓하지 않아도 돼요.</string>
+
+    <!-- 리포트 카테고리 (지출명 키워드로 파생 — 입력엔 카테고리가 없다) -->
+    <string name="category_pet">반려동물</string>
+    <string name="category_occasion">경조사·선물</string>
+    <string name="category_travel">여행·숙박</string>
+    <string name="category_education">교육</string>
+    <string name="category_subscription">구독·통신</string>
+    <string name="category_health">의료·건강</string>
+    <string name="category_beauty">뷰티·미용</string>
+    <string name="category_transport">교통·차량</string>
+    <string name="category_alcohol">술·모임</string>
+    <string name="category_grocery">장보기·마트</string>
+    <string name="category_cafe">카페·간식</string>
+    <string name="category_food">식비</string>
+    <string name="category_fashion">쇼핑·패션</string>
+    <string name="category_living">생활·잡화</string>
+    <string name="category_culture">문화·여가</string>
+    <string name="category_etc">기타</string>
 </resources>

@@ -1,5 +1,6 @@
 package com.jsworld.android.daydone.domain.usecase
 
+import com.jsworld.android.daydone.domain.model.ReportSuggestion
 import com.jsworld.android.daydone.domain.model.BudgetPeriod
 import com.jsworld.android.daydone.domain.model.Expense
 import com.jsworld.android.daydone.domain.model.ExpenseCategory
@@ -356,11 +357,10 @@ class BuildMonthlyReportUseCaseTest {
     fun `초과하면 초과 제안이 가장 먼저 나온다`() {
         val result = report(LocalDate.of(2026, 7, 20), listOf(expense(3, 400_000L, title = "점심")))
 
-        assertTrue(result.suggestions.isNotEmpty())
-        assertTrue(
-            "초과 금액이 제안에 들어가야 한다",
-            result.suggestions.first().text.contains("100,000")
-        )
+        val first = result.suggestions.first()
+        // v1.5 국제화 3-4: 문구가 리소스로 나가서 문자열 대신 타입과 금액을 본다
+        assertTrue("초과 제안이 가장 먼저여야 한다", first is ReportSuggestion.OverBudget)
+        assertEquals(100_000L, (first as ReportSuggestion.OverBudget).overAmount)
     }
 
     @Test

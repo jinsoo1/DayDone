@@ -280,26 +280,14 @@ class BuildMonthlyReportUseCase @Inject constructor(
 
         if (overAmount > 0L) {
             val topCategory = categories.firstOrNull()
-            suggestions += if (topCategory != null) {
-                ReportSuggestion(
-                    "🧭",
-                    "예산보다 ${formatMoney(overAmount)} 더 썼어요. 가장 비중이 큰 " +
-                            "'${topCategory.category.label}'(${formatMoney(topCategory.total)})부터 " +
-                            "돌아보면 원인이 보여요."
-                )
-            } else {
-                ReportSuggestion(
-                    "🧭",
-                    "예산보다 ${formatMoney(overAmount)} 더 썼어요. 지출 내역을 한번 돌아봐요."
-                )
-            }
+            suggestions += ReportSuggestion.OverBudget(
+                overAmount = overAmount,
+                topCategory = topCategory?.category,
+                topCategoryTotal = topCategory?.total ?: 0L
+            )
 
             if (pace == ReportPace.WAY_OVER) {
-                suggestions += ReportSuggestion(
-                    "📐",
-                    "매달 비슷하게 넘친다면 예산이 현실보다 작게 잡힌 걸 수도 있어요. " +
-                            "월 탭에서 이번 달 예산을 조정할 수 있어요."
-                )
+                suggestions += ReportSuggestion.BudgetMayBeTooSmall
             }
         }
 
@@ -307,23 +295,14 @@ class BuildMonthlyReportUseCase @Inject constructor(
 
         // 저축률 평가 (1인 가구 권장 20% 기준)
         suggestions += when {
-            savingTotal <= 0L && projectedLeftover > 0L -> ReportSuggestion(
-                "💰",
-                "저축 항목이 아직 없어요. 이번 기간 남을 것 같은 " +
-                        "${formatMoney(projectedLeftover)}으로 첫 저축을 시작해보면 어때요?"
-            )
-            savingTotal <= 0L -> ReportSuggestion(
-                "💰", "저축 항목이 아직 없어요. 5만 원처럼 작게 시작해도 미래의 내가 고마워해요."
-            )
-            savingPercent >= 30 -> ReportSuggestion(
-                "💰", "수입의 ${savingPercent}%를 저축하고 있어요. 아주 훌륭한 비율이에요."
-            )
-            savingPercent >= 20 -> ReportSuggestion(
-                "💰", "저축률 ${savingPercent}% — 1인 가구 권장(20%)을 잘 지키고 있어요."
-            )
-            else -> ReportSuggestion(
-                "💰", "저축률 ${savingPercent}% — 다음 달엔 1~2%만 더 올려 20%에 도전해볼까요?"
-            )
+            savingTotal <= 0L && projectedLeftover > 0L ->
+                ReportSuggestion.NoSavingWithLeftover(projectedLeftover)
+            savingTotal <= 0L -> ReportSuggestion.NoSaving
+            savingPercent >= SAVING_EXCELLENT_PERCENT ->
+                ReportSuggestion.SavingRateExcellent(savingPercent)
+            savingPercent >= SAVING_GOOD_PERCENT ->
+                ReportSuggestion.SavingRateGood(savingPercent)
+            else -> ReportSuggestion.SavingRateLow(savingPercent)
         }
 
         // 고정비 중 가장 큰 항목
@@ -333,10 +312,9 @@ class BuildMonthlyReportUseCase @Inject constructor(
         if (topFixed != null && fixedTotal > 0L) {
             val share = (topFixed.amount * 100 / fixedTotal).toInt()
             if (share >= 40) {
-                suggestions += ReportSuggestion(
-                    "🧾",
-                    "고정비의 ${share}%가 '${topFixed.title}'이에요. " +
-                            "갱신이나 요금제 변경 시점에 한 번 비교해볼 만해요."
+                suggestions += ReportSuggestion.TopFixedShare(
+                    title = topFixed.title,
+                    percentOfFixed = share
                 )
             }
         }
@@ -344,21 +322,13 @@ class BuildMonthlyReportUseCase @Inject constructor(
         // 일반 지출에 섞여 있는 구독성 지출 → 고정비 등록 제안
         categories.find { it.category == ExpenseCategory.SUBSCRIPTION }?.let { sub ->
             if (sub.total > 0L) {
-                suggestions += ReportSuggestion(
-                    "🔁",
-                    "구독·통신성 지출 ${formatMoney(sub.total)}이 일반 지출에 섞여 있어요. " +
-                            "매달 나가는 거라면 저축/고정비로 등록하면 예산이 더 정확해져요."
-                )
+                suggestions += ReportSuggestion.SubscriptionInGeneral(sub.total)
             }
         }
 
         // 선차감 비중이 큰 경우
         if (deductionPercent >= 50) {
-            suggestions += ReportSuggestion(
-                "⚖️",
-                "수입의 절반 이상(${deductionPercent}%)이 매달 저축·고정비로 먼저 빠져나가요. " +
-                        "당장 줄이라는 뜻은 아니에요 — 갱신 시기가 온 항목부터 가볍게 점검해봐요."
-            )
+            suggestions += ReportSuggestion.DeductionHeavy(deductionPercent)
         }
 
         // ── 소비 패턴 (기간이 어느 정도 쌓였을 때만) ──
@@ -369,11 +339,10 @@ class BuildMonthlyReportUseCase @Inject constructor(
                 .mapValues { (_, list) -> list.sumOf { it.amount } }
             val top = byDayOfWeek.maxByOrNull { it.value }
             if (top != null && top.value * 100 / generalTotal >= 35) {
-                suggestions += ReportSuggestion(
-                    "📅",
-                    "지출이 ${top.key.toKorean()}요일에 가장 몰려요" +
-                            "(${formatMoney(top.value)} · 전체의 ${top.value * 100 / generalTotal}%). " +
-                            "그날만 미리 계획해도 페이스가 안정돼요."
+                suggestions += ReportSuggestion.DayOfWeekConcentration(
+                    dayOfWeek = top.key,
+                    amount = top.value,
+                    percent = (top.value * 100 / generalTotal).toInt()
                 )
             }
         }
@@ -389,10 +358,9 @@ class BuildMonthlyReportUseCase @Inject constructor(
             val weekendAvg = weekend / weekendDays
             val weekdayAvg = weekday / weekdayDays
             if (weekdayAvg > 0L && weekendAvg >= weekdayAvg * 3 / 2) {
-                suggestions += ReportSuggestion(
-                    "🌤️",
-                    "주말 하루 평균(${formatMoney(weekendAvg)})이 평일(${formatMoney(weekdayAvg)})보다 " +
-                            "확 커요. 주말 계획만 세워도 한 달이 편해져요."
+                suggestions += ReportSuggestion.WeekendSpending(
+                    weekendAverage = weekendAvg,
+                    weekdayAverage = weekdayAvg
                 )
             }
         }
@@ -400,37 +368,34 @@ class BuildMonthlyReportUseCase @Inject constructor(
         // 소액 다건 습관
         val smallOnes = general.filter { it.amount in 1..9_999 }
         if (smallOnes.size >= 8) {
-            suggestions += ReportSuggestion(
-                "🪙",
-                "1만 원 아래 지출이 ${smallOnes.size}번, 합치면 " +
-                        "${formatMoney(smallOnes.sumOf { it.amount })}이에요. " +
-                        "잔잔한 지출도 모이면 하루 권장 금액을 훌쩍 넘죠."
+            suggestions += ReportSuggestion.ManySmallSpends(
+                count = smallOnes.size,
+                total = smallOnes.sumOf { it.amount }
             )
         }
 
         // 카페 빈도: 평균 이틀에 한 번 이상
         categories.find { it.category == ExpenseCategory.CAFE }?.let { cafe ->
             if (dayIndex >= 6 && cafe.count * 2 >= dayIndex) {
-                suggestions += ReportSuggestion(
-                    "☕",
-                    "카페·간식을 평균 이틀에 한 번 이상 들렀어요(${cafe.count}회 · " +
-                            "${formatMoney(cafe.total)}). 횟수를 반만 줄여도 " +
-                            "${formatMoney(cafe.total / 2)}이 남아요."
+                suggestions += ReportSuggestion.CafeFrequent(
+                    count = cafe.count,
+                    total = cafe.total,
+                    halfTotal = cafe.total / 2
                 )
             }
         }
 
         // 배달 빈도
+        // TODO(v1.5 3-6): 카테고리 사전과 같은 로케일별 지식 주입. 일본은 Uber Eats·出前館.
         val deliveryKeywords = listOf("배달", "배민", "요기요", "쿠팡이츠")
         val delivery = general.filter { expense ->
             val t = expense.title.replace(" ", "")
             deliveryKeywords.any { t.contains(it) }
         }
         if (delivery.size >= 3) {
-            suggestions += ReportSuggestion(
-                "🛵",
-                "배달 주문이 ${delivery.size}회(${formatMoney(delivery.sumOf { it.amount })})예요. " +
-                        "한 번만 포장으로 바꿔도 배달비만큼 여유가 생겨요."
+            suggestions += ReportSuggestion.DeliveryFrequent(
+                count = delivery.size,
+                total = delivery.sumOf { it.amount }
             )
         }
 
@@ -440,11 +405,9 @@ class BuildMonthlyReportUseCase @Inject constructor(
                 .mapValues { (_, list) -> list.sumOf { it.amount } }
                 .maxByOrNull { it.value }
             if (biggestDay != null && biggestDay.value >= dailyAverage * 2) {
-                suggestions += ReportSuggestion(
-                    "📌",
-                    "가장 큰 하루는 ${biggestDay.key.monthValue}월 ${biggestDay.key.dayOfMonth}일" +
-                            "(${formatMoney(biggestDay.value)})이었어요. 큰 지출 다음 날을 " +
-                            "무지출 데이로 삼으면 페이스가 금방 돌아와요."
+                suggestions += ReportSuggestion.BiggestDay(
+                    date = biggestDay.key,
+                    amount = biggestDay.value
                 )
             }
         }
@@ -452,33 +415,19 @@ class BuildMonthlyReportUseCase @Inject constructor(
         // ── 칭찬 / 위로 ──
 
         if (noSpendDays >= 3) {
-            suggestions += ReportSuggestion(
-                "🎉",
-                "벌써 무지출 ${noSpendDays}일! 지갑이 쉬는 날이 쌓이고 있어요."
-            )
+            suggestions += ReportSuggestion.NoSpendPraise(noSpendDays)
         }
 
         if (essentialPercent >= 60 && generalTotal > 0L) {
-            suggestions += ReportSuggestion(
-                "🧷",
-                "지출의 ${essentialPercent}%가 필수 지출이었어요. 줄이기 어려운 지출이 많았던 " +
-                        "기간이니, 스스로를 탓하지 않아도 돼요."
-            )
+            suggestions += ReportSuggestion.EssentialHeavy(essentialPercent)
         }
 
         return suggestions.take(10)
     }
 
-    private fun formatMoney(amount: Long): String =
-        "%,d원".format(amount)
-
-    private fun java.time.DayOfWeek.toKorean(): String = when (this) {
-        java.time.DayOfWeek.MONDAY -> "월"
-        java.time.DayOfWeek.TUESDAY -> "화"
-        java.time.DayOfWeek.WEDNESDAY -> "수"
-        java.time.DayOfWeek.THURSDAY -> "목"
-        java.time.DayOfWeek.FRIDAY -> "금"
-        java.time.DayOfWeek.SATURDAY -> "토"
-        java.time.DayOfWeek.SUNDAY -> "일"
+    private companion object {
+        /** 1인 가구 저축률 권장선. 이 기준으로 제안 문구가 갈린다. */
+        const val SAVING_GOOD_PERCENT = 20
+        const val SAVING_EXCELLENT_PERCENT = 30
     }
 }

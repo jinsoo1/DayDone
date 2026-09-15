@@ -23,11 +23,116 @@ data class ReportCategory(
     val items: List<ReportItem>
 )
 
-/** 상세 분석의 맞춤 제안 한 건. */
-data class ReportSuggestion(
-    val emoji: String,
-    val text: String
-)
+/**
+ * 상세 분석의 맞춤 제안 한 건 — **무엇을 말할지**만 정한다.
+ *
+ * 문장은 presentation 에서 조립한다(v1.5 국제화 3-4). UseCase 엔 Context 가 없어
+ * `stringResource` 를 못 쓰고, `StringProvider` 를 주입하면 순수 JVM 테스트가 깨진다.
+ *
+ * 이모지는 번역 대상이 아니라 **규칙에 붙은 표식**이라 여기 둔다 — 규칙과 떨어뜨리면
+ * presentation 에 매핑표가 하나 더 생긴다.
+ */
+sealed interface ReportSuggestion {
+    val emoji: String
+
+    // ── 예산 초과 ────────────────────────────────────────
+    /** 가장 비중이 큰 카테고리를 함께 짚어준다. 카테고리가 없으면 [topCategory] 가 null. */
+    data class OverBudget(
+        val overAmount: Long,
+        val topCategory: ExpenseCategory?,
+        val topCategoryTotal: Long
+    ) : ReportSuggestion {
+        override val emoji = "🧭"
+    }
+
+    /** 크게 넘쳤을 때 — 예산 자체가 현실보다 작을 수 있다는 이야기. */
+    data object BudgetMayBeTooSmall : ReportSuggestion {
+        override val emoji = "📐"
+    }
+
+    // ── 돈 구조 ─────────────────────────────────────────
+    data class NoSavingWithLeftover(val projectedLeftover: Long) : ReportSuggestion {
+        override val emoji = "💰"
+    }
+
+    data object NoSaving : ReportSuggestion {
+        override val emoji = "💰"
+    }
+
+    /** 1인 가구 권장 20% 기준 — 30% 이상 / 20% 이상 / 그 아래. */
+    data class SavingRateExcellent(val percent: Int) : ReportSuggestion {
+        override val emoji = "💰"
+    }
+
+    data class SavingRateGood(val percent: Int) : ReportSuggestion {
+        override val emoji = "💰"
+    }
+
+    data class SavingRateLow(val percent: Int) : ReportSuggestion {
+        override val emoji = "💰"
+    }
+
+    data class TopFixedShare(val title: String, val percentOfFixed: Int) : ReportSuggestion {
+        override val emoji = "🧾"
+    }
+
+    data class SubscriptionInGeneral(val total: Long) : ReportSuggestion {
+        override val emoji = "🔁"
+    }
+
+    data class DeductionHeavy(val percentOfIncome: Int) : ReportSuggestion {
+        override val emoji = "⚖️"
+    }
+
+    // ── 소비 패턴 ────────────────────────────────────────
+    data class DayOfWeekConcentration(
+        val dayOfWeek: java.time.DayOfWeek,
+        val amount: Long,
+        val percent: Int
+    ) : ReportSuggestion {
+        override val emoji = "📅"
+    }
+
+    data class WeekendSpending(
+        val weekendAverage: Long,
+        val weekdayAverage: Long
+    ) : ReportSuggestion {
+        override val emoji = "🌤️"
+    }
+
+    data class ManySmallSpends(val count: Int, val total: Long) : ReportSuggestion {
+        override val emoji = "🪙"
+    }
+
+    /** 횟수를 반만 줄이면 [halfTotal] 이 남는다는 안내까지 포함. */
+    data class CafeFrequent(
+        val count: Int,
+        val total: Long,
+        val halfTotal: Long
+    ) : ReportSuggestion {
+        override val emoji = "☕"
+    }
+
+    data class DeliveryFrequent(val count: Int, val total: Long) : ReportSuggestion {
+        override val emoji = "🛵"
+    }
+
+    data class BiggestDay(
+        val date: java.time.LocalDate,
+        val amount: Long
+    ) : ReportSuggestion {
+        override val emoji = "📌"
+    }
+
+    // ── 칭찬 / 위로 (§13) ────────────────────────────────
+    data class NoSpendPraise(val days: Int) : ReportSuggestion {
+        override val emoji = "🎉"
+    }
+
+    data class EssentialHeavy(val percent: Int) : ReportSuggestion {
+        override val emoji = "🧷"
+    }
+}
 
 /** 고정지출 상세: 항목별 수입 대비 비중. */
 data class DeductionShare(

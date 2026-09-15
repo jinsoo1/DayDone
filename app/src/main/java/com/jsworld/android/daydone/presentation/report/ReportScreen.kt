@@ -791,7 +791,7 @@ private fun DeductionDetail(report: MonthlyReport) {
                     }
 
                     Text(
-                        text = suggestion.text,
+                        text = suggestion.text(),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.weight(1f)
