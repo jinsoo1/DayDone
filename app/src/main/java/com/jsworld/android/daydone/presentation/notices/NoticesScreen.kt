@@ -29,10 +29,12 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.jsworld.android.daydone.R
 import com.jsworld.android.daydone.domain.model.Notice
 import com.jsworld.android.daydone.ui.component.DayDoneTopBar
 
@@ -61,7 +63,7 @@ fun NoticesScreen(
         color = MaterialTheme.colorScheme.background
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
-            DayDoneTopBar(title = "공지사항", onBack = onBack)
+            DayDoneTopBar(title = stringResource(R.string.notices_gongjisahang), onBack = onBack)
 
             when {
                 uiState.isLoading -> {
@@ -79,7 +81,7 @@ fun NoticesScreen(
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "아직 공지사항이 없어요.",
+                            text = stringResource(R.string.notices_ajig_gongjisahangi_eobseoyo),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -159,7 +161,7 @@ private fun NoticeCard(
                     } else {
                         Icons.Filled.KeyboardArrowDown
                     },
-                    contentDescription = if (expanded) "접기" else "펼치기",
+                    contentDescription = if (expanded) stringResource(R.string.notices_jeobgi) else stringResource(R.string.notices_pyeolchigi),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
@@ -174,7 +176,7 @@ private fun NoticeCard(
                 if (notice.next.isNotEmpty()) {
                     HorizontalDivider()
                     Text(
-                        text = "다음 업데이트 예정",
+                        text = stringResource(R.string.notices_daeum_eobdeiteu_yejeong),
                         style = MaterialTheme.typography.labelLarge
                     )
                     notice.next.forEach { item ->

@@ -31,11 +31,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.jsworld.android.daydone.R
 import com.jsworld.android.daydone.domain.model.NoSpendMode
 
 /**
@@ -65,15 +67,15 @@ fun ChallengeSettingsSheet(
                 .padding(bottom = 24.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Text(text = "무지출 챌린지", style = MaterialTheme.typography.titleLarge)
+            Text(text = stringResource(R.string.challenge_settings_mujichul_chaelrinji), style = MaterialTheme.typography.titleLarge)
 
             if (uiState.running) {
                 Text(
-                    text = "지금 ${uiState.dayIndex}일째 진행 중이에요 (목표 ${uiState.targetDays}일).",
+                    text = stringResource(R.string.challenge_settings_jigeum_iljjae_jinhaeng_jungieyo, uiState.dayIndex, uiState.targetDays),
                     style = MaterialTheme.typography.bodyMedium
                 )
                 Text(
-                    text = "예산 기간과 상관없이 시작한 날부터 이어져요. 그만두면 언제든 새로 시작할 수 있어요.",
+                    text = stringResource(R.string.challenge_settings_yesan_gigangwa_sanggwaneobsi_sijaghan),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -82,35 +84,35 @@ fun ChallengeSettingsSheet(
                     onClick = { showStopConfirm = true },
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("챌린지 그만두기")
+                    Text(stringResource(R.string.challenge_settings_chaelrinji_geumandugi))
                 }
             } else {
                 if (uiState.finished) {
                     Text(
-                        text = "지난 챌린지가 끝났어요. 새로 시작해볼까요?",
+                        text = stringResource(R.string.challenge_settings_jinan_chaelrinjiga_kkeutnasseoyo_saero),
                         style = MaterialTheme.typography.bodyMedium
                     )
                 }
 
-                Text(text = "성공 기준", style = MaterialTheme.typography.titleMedium)
+                Text(text = stringResource(R.string.challenge_settings_seonggong_gijun), style = MaterialTheme.typography.titleMedium)
 
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     ChallengeModeOption(
                         selected = uiState.modeInput == NoSpendMode.FULL,
-                        title = "완전 무지출",
-                        desc = "그날 지출이 하나도 없어야 성공",
+                        title = stringResource(R.string.challenge_history_wanjeon_mujichul),
+                        desc = stringResource(R.string.challenge_settings_geunal_jichuli_hanado_eobseoya),
                         onClick = { viewModel.onModeChange(NoSpendMode.FULL) }
                     )
                     ChallengeModeOption(
                         selected = uiState.modeInput == NoSpendMode.ESSENTIAL_ALLOWED,
-                        title = "필수 지출 허용",
-                        desc = "'필수 지출'로 표시한 것(교통비 등)은 괜찮아요",
+                        title = stringResource(R.string.challenge_history_pilsu_jichul_heoyong),
+                        desc = stringResource(R.string.challenge_settings_pilsu_jichul_ro_pyosihan),
                         onClick = { viewModel.onModeChange(NoSpendMode.ESSENTIAL_ALLOWED) }
                     )
                     ChallengeModeOption(
                         selected = uiState.modeInput == NoSpendMode.CAP,
-                        title = "금액 상한",
-                        desc = "필수 제외 하루 지출이 정한 금액 이하면 성공",
+                        title = stringResource(R.string.challenge_settings_geumaeg_sanghan),
+                        desc = stringResource(R.string.challenge_settings_pilsu_jeoe_haru_jichuli),
                         onClick = { viewModel.onModeChange(NoSpendMode.CAP) }
                     )
                 }
@@ -120,9 +122,9 @@ fun ChallengeSettingsSheet(
                         value = uiState.capInput,
                         onValueChange = viewModel::onCapChange,
                         modifier = Modifier.fillMaxWidth(),
-                        label = { Text("하루 허용 금액") },
+                        label = { Text(stringResource(R.string.challenge_settings_haru_heoyong_geumaeg)) },
                         singleLine = true,
-                        suffix = { Text("원") },
+                        suffix = { Text(stringResource(R.string.challenge_settings_weon)) },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                     )
                 }
@@ -131,15 +133,15 @@ fun ChallengeSettingsSheet(
                     value = uiState.targetDaysInput,
                     onValueChange = viewModel::onTargetDaysChange,
                     modifier = Modifier.fillMaxWidth(),
-                    label = { Text("도전 일수") },
+                    label = { Text(stringResource(R.string.challenge_settings_dojeon_ilsu)) },
                     singleLine = true,
-                    suffix = { Text("일") },
+                    suffix = { Text(stringResource(R.string.challenge_settings_il)) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    supportingText = { Text("오늘부터 며칠 동안 도전할지 (1~31일)") }
+                    supportingText = { Text(stringResource(R.string.challenge_settings_oneulbuteo_myeochil_dongan_dojeonhalji)) }
                 )
 
                 Text(
-                    text = "예산 기간과 무관하게 오늘부터 시작해요. 준비금(금고)·저축·고정비는 무지출을 깨지 않아요.",
+                    text = stringResource(R.string.challenge_settings_yesan_gigangwa_mugwanhage_oneulbuteo),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -149,7 +151,7 @@ fun ChallengeSettingsSheet(
                     modifier = Modifier.fillMaxWidth(),
                     enabled = inputValid
                 ) {
-                    Text("오늘부터 시작하기")
+                    Text(stringResource(R.string.challenge_settings_oneulbuteo_sijaghagi))
                 }
             }
         }
@@ -158,21 +160,21 @@ fun ChallengeSettingsSheet(
     if (showStopConfirm) {
         AlertDialog(
             onDismissRequest = { showStopConfirm = false },
-            title = { Text("챌린지를 그만둘까요?") },
+            title = { Text(stringResource(R.string.challenge_settings_chaelrinjireul_geumandulkkayo)) },
             text = {
-                Text("지금까지 ${uiState.dayIndex}일째 진행 중이에요. 그만둬도 언제든 새로 시작할 수 있어요.")
+                Text(stringResource(R.string.challenge_settings_jigeumkkaji_iljjae_jinhaeng_jungieyo, uiState.dayIndex))
             },
             confirmButton = {
                 TextButton(onClick = {
                     showStopConfirm = false
                     viewModel.onStop(onDone = onDismiss)
                 }) {
-                    Text("그만두기", color = MaterialTheme.colorScheme.error)
+                    Text(stringResource(R.string.challenge_settings_geumandugi), color = MaterialTheme.colorScheme.error)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showStopConfirm = false }) {
-                    Text("계속하기")
+                    Text(stringResource(R.string.challenge_settings_gyesoghagi))
                 }
             }
         )

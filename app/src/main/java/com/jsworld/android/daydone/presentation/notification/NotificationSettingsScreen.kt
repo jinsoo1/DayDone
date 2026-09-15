@@ -27,12 +27,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
-import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jsworld.android.daydone.BuildConfig
+import com.jsworld.android.daydone.R
 import com.jsworld.android.daydone.domain.model.NotificationSettings
 import com.jsworld.android.daydone.ui.component.DayDoneTopBar
 
@@ -87,10 +89,10 @@ fun NotificationSettingsRoute(
     testResult?.let { message ->
         AlertDialog(
             onDismissRequest = viewModel::onTestResultShown,
-            title = { Text("테스트 알림") },
+            title = { Text(stringResource(R.string.noti_settings_teseuteu_alrim)) },
             text = { Text(message) },
             confirmButton = {
-                TextButton(onClick = viewModel::onTestResultShown) { Text("확인") }
+                TextButton(onClick = viewModel::onTestResultShown) { Text(stringResource(R.string.noti_settings_hwagin)) }
             }
         )
     }
@@ -115,7 +117,7 @@ fun NotificationSettingsScreen(
         color = MaterialTheme.colorScheme.background
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
-            DayDoneTopBar(title = "알림", onBack = onBack)
+            DayDoneTopBar(title = stringResource(R.string.noti_settings_alrim), onBack = onBack)
 
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
@@ -128,8 +130,8 @@ fun NotificationSettingsScreen(
                     Card(modifier = Modifier.fillMaxWidth()) {
                         Column(modifier = Modifier.padding(vertical = 4.dp)) {
                             SwitchRow(
-                                title = "아침 권장 금액",
-                                desc = "오늘 써도 괜찮은 금액을 알려드려요",
+                                title = stringResource(R.string.noti_settings_achim_gweonjang_geumaeg),
+                                desc = stringResource(R.string.noti_settings_oneul_sseodo_gwaenchanheun_geumaegeul),
                                 checked = settings.morningEnabled,
                                 onCheckedChange = onMorningChange
                             )
@@ -142,15 +144,15 @@ fun NotificationSettingsScreen(
                             }
                             HorizontalDivider(modifier = Modifier.padding(horizontal = 20.dp))
                             SwitchRow(
-                                title = "저녁 기록 안내",
-                                desc = "그날 기록이 없을 때만 한 번 알려드려요",
+                                title = stringResource(R.string.noti_settings_jeonyeog_girog_annae),
+                                desc = stringResource(R.string.noti_settings_geunal_girogi_eobseul_ttaeman),
                                 checked = settings.eveningEnabled,
                                 onCheckedChange = onEveningChange
                             )
                             HorizontalDivider(modifier = Modifier.padding(horizontal = 20.dp))
                             SwitchRow(
-                                title = "내일 나갈 돈",
-                                desc = "저축·고정비 출금 전날 저녁에 알려드려요",
+                                title = stringResource(R.string.noti_settings_naeil_nagal_don),
+                                desc = stringResource(R.string.noti_settings_jeochug_gojeongbi_chulgeum_jeonnal),
                                 checked = settings.upcomingDeductionEnabled,
                                 onCheckedChange = onUpcomingDeductionChange
                             )
@@ -169,22 +171,22 @@ fun NotificationSettingsScreen(
                     Card(modifier = Modifier.fillMaxWidth()) {
                         Column(modifier = Modifier.padding(vertical = 4.dp)) {
                             SwitchRow(
-                                title = "보류함 30일",
-                                desc = "보류한 물건마다 딱 한 번",
+                                title = stringResource(R.string.noti_settings_boryuham_30il),
+                                desc = stringResource(R.string.noti_settings_boryuhan_mulgeonmada_ttag_han),
                                 checked = settings.heldPurchaseEnabled,
                                 onCheckedChange = onHeldChange
                             )
                             HorizontalDivider(modifier = Modifier.padding(horizontal = 20.dp))
                             SwitchRow(
-                                title = "기간 결산 리포트",
-                                desc = "새 기간 첫날 아침",
+                                title = stringResource(R.string.noti_settings_gigan_gyeolsan_ripoteu),
+                                desc = stringResource(R.string.noti_settings_sae_gigan_cheosnal_achim),
                                 checked = settings.periodReportEnabled,
                                 onCheckedChange = onReportChange
                             )
                             HorizontalDivider(modifier = Modifier.padding(horizontal = 20.dp))
                             SwitchRow(
-                                title = "큰 지출이 있는 달 안내",
-                                desc = "명절·가정의 달처럼 지출이 몰리는 달",
+                                title = stringResource(R.string.noti_settings_keun_jichuli_issneun_dal),
+                                desc = stringResource(R.string.noti_settings_myeongjeol_gajeongui_dalcheoreom_jichuli),
                                 checked = settings.bigSpendMonthEnabled,
                                 onCheckedChange = onBigSpendChange
                             )
@@ -199,16 +201,14 @@ fun NotificationSettingsScreen(
                             onClick = onSendTestClick,
                             modifier = Modifier.fillMaxWidth()
                         ) {
-                            Text("지금 테스트 알림 보내기 (개발용)")
+                            Text(stringResource(R.string.noti_settings_jigeum_teseuteu_alrim_bonaegi))
                         }
                     }
                 }
 
                 item {
                     Text(
-                        text = "🔒 알림을 처음 켤 때만 권한을 물어봐요. 안 켜면 아무것도 묻지 않아요.\n" +
-                                "앱이 넘겼다고 다그치는 알림은 보내지 않아요.\n" +
-                                "같은 시각에 알릴 게 여러 개면 한 건으로 합쳐서 보내드려요.",
+                        text = stringResource(R.string.noti_settings_alrimeul_cheoeum_kyeol_ttaeman),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -263,7 +263,7 @@ private fun HourChips(
             FilterChip(
                 selected = hour == selected,
                 onClick = { onSelect(hour) },
-                label = { Text("${hour}시") }
+                label = { Text(stringResource(R.string.noti_settings_si, hour)) }
             )
         }
     }

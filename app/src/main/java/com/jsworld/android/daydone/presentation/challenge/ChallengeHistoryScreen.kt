@@ -25,10 +25,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.jsworld.android.daydone.R
 import com.jsworld.android.daydone.domain.model.NoSpendChallengeRecord
 import com.jsworld.android.daydone.domain.model.NoSpendMode
 import com.jsworld.android.daydone.presentation.util.toMoneyText
@@ -59,7 +61,7 @@ fun ChallengeHistoryScreen(
         color = MaterialTheme.colorScheme.background
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
-            DayDoneTopBar(title = "무지출 도전 기록", onBack = onBack)
+            DayDoneTopBar(title = stringResource(R.string.challenge_history_mujichul_dojeon_girog), onBack = onBack)
 
             when {
                 uiState.isLoading -> {
@@ -79,7 +81,7 @@ fun ChallengeHistoryScreen(
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "아직 끝난 도전이 없어요.\n챌린지를 끝까지 진행하면 여기에 기록이 쌓여요.",
+                            text = stringResource(R.string.challenge_history_ajig_kkeutnan_dojeoni_eobseoyo),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -110,9 +112,9 @@ fun ChallengeHistoryScreen(
 @Composable
 private fun ChallengeRecordCard(record: NoSpendChallengeRecord) {
     val modeText = when (record.mode) {
-        NoSpendMode.FULL -> "완전 무지출"
-        NoSpendMode.ESSENTIAL_ALLOWED -> "필수 지출 허용"
-        NoSpendMode.CAP -> "하루 ${record.capAmount.toMoneyText()} 이하"
+        NoSpendMode.FULL -> stringResource(R.string.challenge_history_wanjeon_mujichul)
+        NoSpendMode.ESSENTIAL_ALLOWED -> stringResource(R.string.challenge_history_pilsu_jichul_heoyong)
+        NoSpendMode.CAP -> stringResource(R.string.challenge_history_haru_iha, record.capAmount.toMoneyText())
     }
 
     val badge = when {
@@ -152,7 +154,7 @@ private fun ChallengeRecordCard(record: NoSpendChallengeRecord) {
             }
 
             Text(
-                text = "${record.targetDays}일 도전 · ${record.successDays}일 성공 · $modeText",
+                text = stringResource(R.string.challenge_history_il_dojeon_il_seonggong, record.targetDays, record.successDays, modeText),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

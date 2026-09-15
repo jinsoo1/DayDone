@@ -17,8 +17,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material.icons.outlined.VisibilityOff
@@ -35,10 +35,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.jsworld.android.daydone.R
 import com.jsworld.android.daydone.domain.model.LedgerEntryKind
 import com.jsworld.android.daydone.presentation.ledger.model.LedgerDayUiModel
 import com.jsworld.android.daydone.presentation.ledger.model.LedgerEntryUiModel
@@ -62,7 +64,7 @@ fun LedgerRoute(
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
             DayDoneTopBar(
-                title = uiState.monthTitle.ifBlank { "내역" },
+                title = uiState.monthTitle.ifBlank { stringResource(R.string.ledger_naeyeog) },
                 onBack = onBack
             )
 
@@ -106,7 +108,7 @@ private fun LedgerContent(
         if (uiState.days.isEmpty()) {
             item {
                 Text(
-                    text = "이 기간엔 아직 기록이 없어요.\n지출을 적으면 날짜별로 여기 모여요.",
+                    text = stringResource(R.string.ledger_i_giganen_ajig_girogi),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(vertical = 24.dp)
@@ -144,7 +146,7 @@ private fun LedgerContent(
 
             item {
                 Text(
-                    text = "여기선 보기만 해요. 고치려면 월 탭 캘린더에서 그 날짜를 눌러주세요.",
+                    text = stringResource(R.string.ledger_yeogiseon_bogiman_haeyo_gochiryeomyeon),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(top = 20.dp)
@@ -180,7 +182,7 @@ private fun LedgerSummaryCard(
             )
 
             Text(
-                text = if (uiState.ascending) "오래된 날부터 ↑" else "최근 날부터 ↓",
+                text = if (uiState.ascending) stringResource(R.string.ledger_oraedoen_nalbuteo) else stringResource(R.string.ledger_choegeun_nalbuteo),
                 style = MaterialTheme.typography.labelMedium,
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.primary,
@@ -196,7 +198,7 @@ private fun LedgerSummaryCard(
         // 이 화면에서 제일 먼저 보고 싶은 숫자 = 지금 남은 돈. 나머지는 그 아래 내림 계산.
         Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
             Text(
-                text = if (uiState.isCurrentPeriod) "남은 생활비" else "남은 금액",
+                text = if (uiState.isCurrentPeriod) stringResource(R.string.ledger_nameun_saenghwalbi) else stringResource(R.string.ledger_nameun_geumaeg),
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -217,19 +219,19 @@ private fun LedgerSummaryCard(
 
         Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
             BreakdownLine(
-                label = "월 예산",
+                label = stringResource(R.string.ledger_weol_yesan),
                 amountText = uiState.monthlyBudget.toMoneyText(),
                 color = MaterialTheme.colorScheme.onSurface
             )
             if (uiState.incomeTotal > 0L) {
                 BreakdownLine(
-                    label = "들어온 돈",
+                    label = stringResource(R.string.ledger_deuleoon_don),
                     amountText = "+${uiState.incomeTotal.toMoneyText()}",
                     color = DayDoneAccent.successText
                 )
             }
             BreakdownLine(
-                label = "쓴 돈",
+                label = stringResource(R.string.ledger_sseun_don),
                 amountText = "−${uiState.spentTotal.toMoneyText()}",
                 color = DayDoneAccent.spendText
             )
@@ -261,7 +263,7 @@ private fun DeductionBreakdownLine(
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         Text(
-            text = "저축·고정비",
+            text = stringResource(R.string.ledger_jeochug_gojeongbi),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -274,9 +276,9 @@ private fun DeductionBreakdownLine(
                 Icons.Outlined.VisibilityOff
             },
             contentDescription = if (showInList) {
-                "목록에서 저축·고정비 숨기기"
+                stringResource(R.string.ledger_mogrogeseo_jeochug_gojeongbi_sumgigi)
             } else {
-                "목록에 저축·고정비 보이기"
+                stringResource(R.string.ledger_mogroge_jeochug_gojeongbi_boigi)
             },
             tint = if (showInList) {
                 MaterialTheme.colorScheme.onSurfaceVariant
@@ -293,7 +295,7 @@ private fun DeductionBreakdownLine(
         // 꺼져 있을 때만 상태를 글자로도 남긴다 — 아이콘만으론 "왜 목록에 없지"가 생긴다
         if (!showInList) {
             Text(
-                text = "목록에서 숨김",
+                text = stringResource(R.string.ledger_mogrogeseo_sumgim),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier
@@ -383,7 +385,7 @@ private fun LedgerDayHeader(day: LedgerDayUiModel) {
                 )
                 if (day.isToday) {
                     Text(
-                        text = "오늘",
+                        text = stringResource(R.string.ledger_oneul),
                         style = MaterialTheme.typography.labelSmall,
                         fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.colorScheme.primary
@@ -417,7 +419,7 @@ private fun LedgerDayHeader(day: LedgerDayUiModel) {
                 }
                 if (day.deducted > 0L) {
                     Text(
-                        text = "저축·고정비 ${day.deducted.toMoneyText()}",
+                        text = stringResource(R.string.ledger_jeochug_gojeongbi_2, day.deducted.toMoneyText()),
                         style = MaterialTheme.typography.labelSmall
                             .copy(fontFeatureSettings = TabularNum),
                         color = MaterialTheme.colorScheme.onSurfaceVariant

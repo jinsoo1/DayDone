@@ -101,4 +101,80 @@
     <!-- 금고: 준비금·납부 지출의 기록 이름 (DB 에 저장되는 값) -->
     <string name="vault_prepare_expense_title"><xliff:g id="item" example="자동차세">%1$s</xliff:g> 준비</string>
     <string name="vault_payment_expense_title"><xliff:g id="item" example="자동차세">%1$s</xliff:g> 납부</string>
+
+    <!-- ══ notices ══ -->
+    <string name="notices_gongjisahang">공지사항</string>
+    <string name="notices_ajig_gongjisahangi_eobseoyo">아직 공지사항이 없어요.</string>
+    <string name="notices_jeobgi">접기</string>
+    <string name="notices_pyeolchigi">펼치기</string>
+    <string name="notices_daeum_eobdeiteu_yejeong">다음 업데이트 예정</string>
+
+    <!-- ══ challenge_history ══ -->
+    <string name="challenge_history_mujichul_dojeon_girog">무지출 도전 기록</string>
+    <string name="challenge_history_ajig_kkeutnan_dojeoni_eobseoyo">아직 끝난 도전이 없어요.\n챌린지를 끝까지 진행하면 여기에 기록이 쌓여요.</string>
+    <string name="challenge_history_wanjeon_mujichul">완전 무지출</string>
+    <string name="challenge_history_pilsu_jichul_heoyong">필수 지출 허용</string>
+    <string name="challenge_history_haru_iha">하루 %1$s 이하</string>
+    <string name="challenge_history_il_dojeon_il_seonggong">%1$s일 도전 · %2$s일 성공 · %3$s</string>
+
+    <!-- ══ ledger ══ -->
+    <string name="ledger_naeyeog">내역</string>
+    <string name="ledger_i_giganen_ajig_girogi">이 기간엔 아직 기록이 없어요.\n지출을 적으면 날짜별로 여기 모여요.</string>
+    <string name="ledger_yeogiseon_bogiman_haeyo_gochiryeomyeon">여기선 보기만 해요. 고치려면 월 탭 캘린더에서 그 날짜를 눌러주세요.</string>
+    <string name="ledger_oraedoen_nalbuteo">오래된 날부터 ↑</string>
+    <string name="ledger_choegeun_nalbuteo">최근 날부터 ↓</string>
+    <string name="ledger_nameun_saenghwalbi">남은 생활비</string>
+    <string name="ledger_nameun_geumaeg">남은 금액</string>
+    <string name="ledger_weol_yesan">월 예산</string>
+    <string name="ledger_deuleoon_don">들어온 돈</string>
+    <string name="ledger_sseun_don">쓴 돈</string>
+    <string name="ledger_jeochug_gojeongbi">저축·고정비</string>
+    <string name="ledger_mogrogeseo_jeochug_gojeongbi_sumgigi">목록에서 저축·고정비 숨기기</string>
+    <string name="ledger_mogroge_jeochug_gojeongbi_boigi">목록에 저축·고정비 보이기</string>
+    <string name="ledger_mogrogeseo_sumgim">목록에서 숨김</string>
+    <string name="ledger_oneul">오늘</string>
+    <string name="ledger_jeochug_gojeongbi_2">저축·고정비 %1$s</string>
+
+    <!-- ══ noti_settings ══ -->
+    <string name="noti_settings_teseuteu_alrim">테스트 알림</string>
+    <string name="noti_settings_hwagin">확인</string>
+    <string name="noti_settings_alrim">알림</string>
+    <string name="noti_settings_achim_gweonjang_geumaeg">아침 권장 금액</string>
+    <string name="noti_settings_oneul_sseodo_gwaenchanheun_geumaegeul">오늘 써도 괜찮은 금액을 알려드려요</string>
+    <string name="noti_settings_jeonyeog_girog_annae">저녁 기록 안내</string>
+    <string name="noti_settings_geunal_girogi_eobseul_ttaeman">그날 기록이 없을 때만 한 번 알려드려요</string>
+    <string name="noti_settings_naeil_nagal_don">내일 나갈 돈</string>
+    <string name="noti_settings_jeochug_gojeongbi_chulgeum_jeonnal">저축·고정비 출금 전날 저녁에 알려드려요</string>
+    <string name="noti_settings_boryuham_30il">보류함 30일</string>
+    <string name="noti_settings_boryuhan_mulgeonmada_ttag_han">보류한 물건마다 딱 한 번</string>
+    <string name="noti_settings_gigan_gyeolsan_ripoteu">기간 결산 리포트</string>
+    <string name="noti_settings_sae_gigan_cheosnal_achim">새 기간 첫날 아침</string>
+    <string name="noti_settings_keun_jichuli_issneun_dal">큰 지출이 있는 달 안내</string>
+    <string name="noti_settings_myeongjeol_gajeongui_dalcheoreom_jichuli">명절·가정의 달처럼 지출이 몰리는 달</string>
+    <string name="noti_settings_jigeum_teseuteu_alrim_bonaegi">지금 테스트 알림 보내기 (개발용)</string>
+    <string name="noti_settings_alrimeul_cheoeum_kyeol_ttaeman">🔒 알림을 처음 켤 때만 권한을 물어봐요. 안 켜면 아무것도 묻지 않아요.\n앱이 넘겼다고 다그치는 알림은 보내지 않아요.\n같은 시각에 알릴 게 여러 개면 한 건으로 합쳐서 보내드려요.</string>
+    <string name="noti_settings_si">%1$s시</string>
+
+    <!-- ══ challenge_settings ══ -->
+    <string name="challenge_settings_mujichul_chaelrinji">무지출 챌린지</string>
+    <string name="challenge_settings_jigeum_iljjae_jinhaeng_jungieyo">지금 %1$s일째 진행 중이에요 (목표 %2$s일).</string>
+    <string name="challenge_settings_yesan_gigangwa_sanggwaneobsi_sijaghan">예산 기간과 상관없이 시작한 날부터 이어져요. 그만두면 언제든 새로 시작할 수 있어요.</string>
+    <string name="challenge_settings_chaelrinji_geumandugi">챌린지 그만두기</string>
+    <string name="challenge_settings_jinan_chaelrinjiga_kkeutnasseoyo_saero">지난 챌린지가 끝났어요. 새로 시작해볼까요?</string>
+    <string name="challenge_settings_seonggong_gijun">성공 기준</string>
+    <string name="challenge_settings_geunal_jichuli_hanado_eobseoya">그날 지출이 하나도 없어야 성공</string>
+    <string name="challenge_settings_pilsu_jichul_ro_pyosihan">\'필수 지출\'로 표시한 것(교통비 등)은 괜찮아요</string>
+    <string name="challenge_settings_geumaeg_sanghan">금액 상한</string>
+    <string name="challenge_settings_pilsu_jeoe_haru_jichuli">필수 제외 하루 지출이 정한 금액 이하면 성공</string>
+    <string name="challenge_settings_haru_heoyong_geumaeg">하루 허용 금액</string>
+    <string name="challenge_settings_weon">원</string>
+    <string name="challenge_settings_dojeon_ilsu">도전 일수</string>
+    <string name="challenge_settings_il">일</string>
+    <string name="challenge_settings_oneulbuteo_myeochil_dongan_dojeonhalji">오늘부터 며칠 동안 도전할지 (1~31일)</string>
+    <string name="challenge_settings_yesan_gigangwa_mugwanhage_oneulbuteo">예산 기간과 무관하게 오늘부터 시작해요. 준비금(금고)·저축·고정비는 무지출을 깨지 않아요.</string>
+    <string name="challenge_settings_oneulbuteo_sijaghagi">오늘부터 시작하기</string>
+    <string name="challenge_settings_chaelrinjireul_geumandulkkayo">챌린지를 그만둘까요?</string>
+    <string name="challenge_settings_jigeumkkaji_iljjae_jinhaeng_jungieyo">지금까지 %1$s일째 진행 중이에요. 그만둬도 언제든 새로 시작할 수 있어요.</string>
+    <string name="challenge_settings_geumandugi">그만두기</string>
+    <string name="challenge_settings_gyesoghagi">계속하기</string>
 </resources>
