@@ -284,12 +284,6 @@
     <string name="monthly_i_dal_yesan_sujeong">이 달 예산 수정</string>
     <string name="monthly_jeochug_gojeongbi">저축 / 고정비</string>
     <string name="monthly_weol_il">%1$s월 %2$s일 · %3$s</string>
-    <string name="monthly_weol">월</string>
-    <string name="monthly_hwa">화</string>
-    <string name="monthly_su">수</string>
-    <string name="monthly_mog">목</string>
-    <string name="monthly_geum">금</string>
-    <string name="monthly_to">토</string>
     <string name="monthly_jichul">지출</string>
     <string name="monthly_yejeong_chagam">예정 차감</string>
     <string name="monthly_mujichul">무지출</string>
@@ -686,6 +680,15 @@
 
     <!-- ══ common ══ -->
     <string name="common_dwiro">뒤로</string>
+
+    <!-- 월 탭 캘린더 요일 헤더. "일"(날짜 단위)·"월"(달)과 값이 같아도 번역 단위가 다르므로 따로 둔다 -->
+    <string name="weekday_sun">일</string>
+    <string name="weekday_mon">월</string>
+    <string name="weekday_tue">화</string>
+    <string name="weekday_wed">수</string>
+    <string name="weekday_thu">목</string>
+    <string name="weekday_fri">금</string>
+    <string name="weekday_sat">토</string>
 
     <!-- 하단 탭바 -->
     <string name="tab_today">오늘</string>

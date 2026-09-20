@@ -517,7 +517,11 @@ private fun MonthCalendarCard(
             Row(
                 modifier = Modifier.fillMaxWidth()
             ) {
-                listOf(stringResource(R.string.onboarding_il), stringResource(R.string.monthly_weol), stringResource(R.string.monthly_hwa), stringResource(R.string.monthly_su), stringResource(R.string.monthly_mog), stringResource(R.string.monthly_geum), stringResource(R.string.monthly_to)).forEach { label ->
+                listOf(
+                    R.string.weekday_sun, R.string.weekday_mon, R.string.weekday_tue,
+                    R.string.weekday_wed, R.string.weekday_thu, R.string.weekday_fri,
+                    R.string.weekday_sat
+                ).map { stringResource(it) }.forEach { label ->
                     Text(
                         text = label,
                         style = MaterialTheme.typography.labelSmall,
