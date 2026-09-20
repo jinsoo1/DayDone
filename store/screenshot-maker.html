@@ -1,0 +1,110 @@
+<!--
+  Play 스크린샷 메이커 (1080×1920) — ko/ja 공용.
+
+  보기:   브라우저로 열면 5장을 한 줄로 미리 본다. 우상단 토글로 한국어/일본어 전환.
+  렌더:   ./store/render-store-graphics.sh  → store/out/screenshot-<lang>-0N.png
+          (?lang=ja&slot=3 처럼 열면 그 한 장만 1080×1920 으로 렌더된다 — 스크립트가 쓰는 모드)
+  원본:   store/raw/<lang>/01-today.png 02-vault.png 03-purchase.png 04-widget.png 05-privacy.png
+          기기 캡처(세로, 어떤 해상도든). 없으면 자리 표시가 뜬다.
+
+  캡션은 store/listing.md · listing-ja.md 의 "스크린샷 순서"와 같은 문구를 쓴다 — 여기서만 고치지 말 것.
+-->
+<meta charset="utf-8">
+<title>DayDone 스크린샷 메이커</title>
+<style>
+  :root { --w:1080px; --h:1920px; }
+  html, body { margin:0; padding:0; background:#111; }
+  body { font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Hiragino Sans","Hiragino Kaku Gothic ProN","Malgun Gothic","Noto Sans JP","Noto Sans KR",sans-serif; }
+
+  /* 미리보기 모드 */
+  .bar { position:fixed; top:0; left:0; right:0; z-index:9; display:flex; gap:12px; align-items:center;
+         padding:10px 16px; background:#1b1b1b; color:#ddd; font-size:14px; }
+  .bar button { padding:6px 14px; border-radius:8px; border:1px solid #444; background:#222; color:#eee; cursor:pointer; }
+  .bar button.on { background:#2E7DF7; border-color:#2E7DF7; }
+  .strip { display:flex; gap:24px; padding:64px 24px 24px; overflow-x:auto; }
+  .strip .frame { transform:scale(.3); transform-origin:top left; width:var(--w); height:var(--h); flex:0 0 calc(var(--w) * .3); }
+  .strip .slotwrap { height:calc(var(--h) * .3); }
+
+  /* 프레임 (실제 크기) */
+  .frame { width:var(--w); height:var(--h); position:relative; overflow:hidden; color:#fff;
+           background:linear-gradient(160deg,#2E7DF7 0%,#4E82F4 55%,#7C74F1 100%); }
+  .frame.alt { background:linear-gradient(160deg,#7C74F1 0%,#4E82F4 45%,#2E7DF7 100%); }
+  .cap { position:absolute; left:80px; right:80px; top:120px; }
+  .cap .t { font-size:76px; font-weight:700; letter-spacing:-2px; line-height:1.18; margin:0; word-break:keep-all; }
+  .cap .s { font-size:38px; font-weight:400; opacity:.9; line-height:1.4; margin:24px 0 0; word-break:keep-all; }
+  .frame[lang="ja"] .cap .t { font-size:70px; letter-spacing:-1px; }
+  .frame[lang="ja"] .cap .s { font-size:36px; }
+  .device { position:absolute; left:50%; transform:translateX(-50%); top:560px; width:840px; height:1700px;
+            border-radius:64px; background:#0b0b0b; padding:18px; box-sizing:border-box;
+            box-shadow:0 40px 90px rgba(0,0,0,.35); }
+  .device .screen { width:100%; height:100%; border-radius:48px; overflow:hidden; background:#f4f6fb; position:relative; }
+  .device img { width:100%; display:block; }
+  .device .missing { position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+                     color:#667; font-size:28px; text-align:center; padding:40px; line-height:1.5; }
+  /* 단독 렌더 모드: 프레임만, 바 없음 */
+  body.single { background:transparent; }
+  body.single .bar, body.single .strip { display:none; }
+</style>
+
+<div class="bar" id="bar">
+  <strong>DayDone 스크린샷 메이커</strong>
+  <button data-lang="ko" class="on">한국어</button>
+  <button data-lang="ja">日本語</button>
+  <span style="opacity:.6">원본: store/raw/&lt;lang&gt;/0N-*.png · 렌더: ./store/render-store-graphics.sh</span>
+</div>
+<div class="strip" id="strip"></div>
+<div id="single"></div>
+
+<script>
+  // 캡션 — listing.md / listing-ja.md "스크린샷 순서"와 동일하게 유지
+  const SLOTS = [
+    { file:"01-today",    ko:["오늘 얼마까지 써도 되는지,\n숫자 하나로","저축·고정비를 먼저 뺀 뒤 남은 돈으로"],
+                          ja:["今日いくらまで使えるか、\n数字ひとつで","貯金・固定費を先に引いた残りで"] },
+    { file:"02-vault",    ko:["큰 지출은 미리 나눠두면\n그 달이 편해요","자동차세·보험료·가족 생신"],
+                          ja:["大きな出費は先に分けておくと、\nその月が楽","自動車税・車検・帰省"] },
+    { file:"03-purchase", ko:["사기 전에 30초","지금 사면 하루 권장이 얼마나 바뀌는지"],
+                          ja:["買う前の30秒","1日の目安がどれだけ変わるか"] },
+    { file:"04-widget",   ko:["앱을 열지 않아도\n홈에서","지출을 적으면 위젯도 바로 따라와요"],
+                          ja:["アプリを開かなくても\nホーム画面で","支出を入れるとウィジェットもすぐ変わる"] },
+    { file:"05-privacy",  ko:["회원가입 없음.\n기록은 폰 안에만","서버가 없어서 유출될 곳 자체가 없어요"],
+                          ja:["登録なし。\n記録はスマホの中だけ","サーバーがないので、流出する場所がそもそもない"] },
+  ];
+
+  const q = new URLSearchParams(location.search);
+  const single = q.has("slot");
+  let lang = q.get("lang") || "ko";
+
+  function frame(i, lang) {
+    const s = SLOTS[i], [t, sub] = s[lang];
+    const src = `raw/${lang}/${s.file}.png`;
+    const el = document.createElement("div");
+    el.className = "frame" + (i % 2 ? " alt" : "");
+    el.setAttribute("lang", lang);
+    el.innerHTML = `
+      <div class="cap"><p class="t">${t.replace(/\n/g,"<br/>")}</p><p class="s">${sub}</p></div>
+      <div class="device"><div class="screen">
+        <img src="${src}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+        <div class="missing" style="display:none">store/${src}<br/>기기 캡처를 이 이름으로 넣어주세요</div>
+      </div></div>
+`;
+    return el;
+  }
+
+  function renderStrip() {
+    const strip = document.getElementById("strip");
+    strip.innerHTML = "";
+    SLOTS.forEach((_, i) => {
+      const wrap = document.createElement("div"); wrap.className = "slotwrap";
+      wrap.appendChild(frame(i, lang)); strip.appendChild(wrap);
+    });
+    document.querySelectorAll(".bar button").forEach(b => b.classList.toggle("on", b.dataset.lang === lang));
+  }
+
+  if (single) {
+    document.body.classList.add("single");
+    document.getElementById("single").appendChild(frame(Number(q.get("slot")) - 1, lang));
+  } else {
+    renderStrip();
+    document.querySelectorAll(".bar button").forEach(b => b.onclick = () => { lang = b.dataset.lang; renderStrip(); });
+  }
+</script>
