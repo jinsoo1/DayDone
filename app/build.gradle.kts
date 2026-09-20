@@ -166,9 +166,6 @@ dependencies {
  * 허용 목록은 "번역하면 안 되는 것"과 "1.6.0 에서 재작성할 것"뿐이다.
  */
 val hardcodedKoreanAllowList = listOf(
-    // 로케일화 금지 — 백업 폴더 경로. 바꾸면 기존 유저의 복원 목록이 빈다(§15).
-    "data/repository/BackupRepositoryImpl.kt",
-    "presentation/settings/SettingsScreen.kt",
     // 번역이 아니라 재작성 대상 — 1.6.0
     "domain/usecase/ClassifyExpenseCategoryUseCase.kt",
     "domain/usecase/BuildMonthlyReportUseCase.kt",

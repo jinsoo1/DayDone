@@ -397,7 +397,7 @@ Room 마이그레이션: 스키마 변경 시 정식 `Migration` 제공(데이�
 - 현황(주석 제외 실측): `strings.xml` 4줄, kt 안 한글 리터럴 **1,487개** — 그중 **740개(50%)가 `ClassifyExpenseCategoryUseCase` 키워드 사전**(번역이 아니라 **재작성**). 번역 대상은 **747개(고유 568)**, 보간 약 135개. **v1.5.0 상세 계획은 `docs/v1.5-design.md`**.
 - 한국어·일본어 모두 복수형이 없어 **`plurals` 불필요**(영어부터 갔으면 필요했다).
 - ⚠️ **domain 레이어가 표시용 한글을 만든다**(UseCase 22개 — 리포트·알림·`ExpenseCategory.label`). UseCase엔 Context가 없어 `stringResource`를 못 쓴다. `StringProvider` 주입은 쉽지만 **순수 JVM 테스트 134개가 깨진다** → 테스트 걸린 UseCase는 타입만 반환하고 문구는 presentation에서 조립, 단순 enum은 `@StringRes labelRes`로.
-- ⚠️ **백업 폴더명 `Download/DayDone/…`은 로케일화 금지** — `ListBackupFilesUseCase`가 이 경로로 조회한다. 파일명만 바꾼다. 백업 JSON에 한글 키는 없어서 `BACKUP_VERSION` 유지 가능.
+- ⚠️ **백업 루트 폴더 `Download/DayDone`은 로케일화 금지** — 목록 조회가 `Download/DayDone/%`로 이 경로를 본다. **하위 폴더(백업/엑셀)는 `folder_backup`/`folder_excel` 리소스라 로케일을 탄다**(ja=バックアップ/Excel) — 조회는 하위 폴더 무관이라 기존 파일이 계속 보인다. 백업 JSON에 한글 키는 없어서 `BACKUP_VERSION` 유지 가능.
 - 로케일별로 갈라야 할 **지식 주입 3종**: `GetBigSpendMonthNoticeUseCase`(일본은 전부 양력이라 음력 표 불필요 — 1월 お正月/4월 新生活/5월 GW+自動車税/8월 お盆/12월 年末年始), 카테고리 사전, 미래지출 프리셋(自動車税·車検·固定資産税). `MoneyFormat`은 `Locale.KOREA`+"원" 하드코딩이라 통화 위치(¥ 앞 / 円 뒤)를 다루도록 수정.
 - 🟡 車検은 **2년 주기**인데 `FutureExpense.repeat`는 ONCE/YEARLY뿐 — ONCE로 등록 가능하니 블로커는 아님.
 - 미국/영어권은 **격주 급여(bi-weekly)**가 흔해 §3의 "월당 기간 1개(anchorMonth 유일)" 불변식과 충돌한다 → 가려면 "월 예산 유저 한정"을 먼저 결정할 것. 일본은 월급제라 구조 변경 0.

@@ -55,7 +55,7 @@ class BackupRepositoryImpl @Inject constructor(
     override suspend fun exportToDownloads(): String = withContext(Dispatchers.IO) {
         val json = exportToJson()
         saveToDownloads(
-            subFolder = FOLDER_BACKUP,
+            subFolder = context.getString(R.string.folder_backup),
             fileName = datedFileName("daydone-backup", "json"),
             mimeType = "application/json",
             content = json.toByteArray()
@@ -68,7 +68,7 @@ class BackupRepositoryImpl @Inject constructor(
     override suspend fun exportExcelToDownloads(): String = withContext(Dispatchers.IO) {
         val workbook = XlsxWriter.build(listOf(buildHistorySheet(), buildDeductionSheet()))
         saveToDownloads(
-            subFolder = FOLDER_EXCEL,
+            subFolder = context.getString(R.string.folder_excel),
             fileName = datedFileName(context.getString(R.string.backup_daydone_naeyeog), "xlsx"),
             mimeType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             content = workbook
@@ -599,10 +599,9 @@ class BackupRepositoryImpl @Inject constructor(
     companion object {
         private const val BACKUP_VERSION = 1
         private const val BACKUP_FOLDER = "DayDone"
-        // ⚠️ 로케일화 금지 — ListBackupFilesUseCase 가 이 경로로 조회한다(§15).
-        // 번역하면 기존 유저의 복원 목록이 빈다. 바뀌어도 되는 건 파일명뿐이다.
-        private const val FOLDER_BACKUP = "백업"
-        private const val FOLDER_EXCEL = "엑셀"
+        // 하위 폴더명(백업/엑셀)은 folder_backup/folder_excel 리소스 — 로케일을 탄다.
+        // 목록 조회는 "Download/DayDone/%" 라 하위 폴더가 달라도 기존 파일이 계속 보인다.
+        // ⚠️ 루트 BACKUP_FOLDER("DayDone") 만은 로케일화 금지 — 조회 경로 자체다.
 
         private const val KEY_VERSION = "backupVersion"
         private const val KEY_APP = "app"

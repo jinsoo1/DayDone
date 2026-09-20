@@ -68,7 +68,7 @@
     <string name="report_advice_biggest_day">いちばん大きかった日は<xliff:g id="month" example="9">%1$d</xliff:g>月<xliff:g id="day" example="14">%2$d</xliff:g>日（<xliff:g id="amount" example="9,800円">%3$s</xliff:g>）でした。大きな出費の翌日をノーマネーデーにすると、ペースはすぐ戻ります。</string>
 
     <string name="report_advice_no_spend_praise">もうノーマネーデー<xliff:g id="days" example="5">%1$d</xliff:g>日！ お財布が休む日が積み重なっています。</string>
-    <string name="report_advice_essential_heavy">支出の<xliff:g id="percent" example="72">%1$d</xliff:g>%%が必須の支出でした。減らしにくい出費が多い期間だったので、自分を責めなくて大丈夫です。</string>
+    <string name="report_advice_essential_heavy">支出の<xliff:g id="percent" example="72">%1$d</xliff:g>%%が必要な支出でした。減らしにくい出費が多い期間だったので、自分を責めなくて大丈夫です。</string>
 
     <!-- レポートのカテゴリ -->
     <string name="category_pet">ペット</string>
@@ -110,7 +110,7 @@
     <string name="challenge_history_mujichul_dojeon_girog">ノーマネーデーの記録</string>
     <string name="challenge_history_ajig_kkeutnan_dojeoni_eobseoyo">終わったチャレンジはまだありません。\n最後まで続けると、ここに記録が積み重なります。</string>
     <string name="challenge_history_wanjeon_mujichul">完全ノーマネー</string>
-    <string name="challenge_history_pilsu_jichul_heoyong">必須の支出はOK</string>
+    <string name="challenge_history_pilsu_jichul_heoyong">必要な支出はOK</string>
     <string name="challenge_history_haru_iha">1日 %1$s 以下</string>
     <string name="challenge_history_il_dojeon_il_seonggong">%1$s日間 · 達成 %2$s日 · %3$s</string>
 
@@ -160,9 +160,9 @@
     <string name="challenge_settings_jinan_chaelrinjiga_kkeutnasseoyo_saero">前回のチャレンジが終わりました。新しく始めてみますか？</string>
     <string name="challenge_settings_seonggong_gijun">達成の条件</string>
     <string name="challenge_settings_geunal_jichuli_hanado_eobseoya">その日の支出がゼロなら達成</string>
-    <string name="challenge_settings_pilsu_jichul_ro_pyosihan">「必須の支出」にした分（交通費など）はOK</string>
+    <string name="challenge_settings_pilsu_jichul_ro_pyosihan">「必要な支出」にした分（交通費など）はOK</string>
     <string name="challenge_settings_geumaeg_sanghan">上限金額</string>
-    <string name="challenge_settings_pilsu_jeoe_haru_jichuli">必須分を除いた1日の支出が、決めた金額以下なら達成</string>
+    <string name="challenge_settings_pilsu_jeoe_haru_jichuli">必要な支出を除いた1日の支出が、決めた金額以下なら達成</string>
     <string name="challenge_settings_haru_heoyong_geumaeg">1日の上限</string>
     <string name="challenge_settings_weon">円</string>
     <string name="challenge_settings_dojeon_ilsu">日数</string>
@@ -312,8 +312,7 @@
     <string name="settings_deiteo_baegeob_daunrodeu_poldeoe">データのバックアップ（ダウンロードフォルダに保存）</string>
     <string name="settings_baegeob_paileseo_bogweon">バックアップファイルから復元</string>
     <string name="settings_jichul_naeyeog_naebonaegi_egsel">支出の明細を書き出す（Excel）</string>
-    <!-- ⚠️ フォルダ名「백업」「엑셀」は韓国語のまま（ローカライズ禁止パス）。review 文書の要決定事項 -->
-    <string name="settings_paileun_nae_pail_daunrodeu">ファイルは「ファイル」→「ダウンロード」→「DayDone」フォルダに保存されます（バックアップは「백업」フォルダ、Excelは「엑셀」フォルダ）。端末を替えたりアプリを入れ直すとデータは消えるので、ときどきバックアップを作っておくと、そのまま元に戻せます。Excelファイルには月ごとの支出明細と固定支出がシートに分かれて入ります。</string>
+    <string name="settings_paileun_nae_pail_daunrodeu">ファイルは「ファイル」→「ダウンロード」→「DayDone」フォルダに保存されます（バックアップは「バックアップ」フォルダ、Excelは「Excel」フォルダ）。端末を替えたりアプリを入れ直すとデータは消えるので、ときどきバックアップを作っておくと、そのまま元に戻せます。Excelファイルには月ごとの支出明細と固定支出がシートに分かれて入ります。</string>
     <string name="settings_modeun_girogeun_i_hyudaepon">🔒 すべての記録はこのスマホの中にだけ保存されます。DayDoneにはサーバーがないので、支出の記録が外に出たり流出したりする場所がそもそもありません。</string>
     <string name="settings_deiteo_chogihwa">データを初期化</string>
     <string name="settings_weol_suib_sujeong">月の収入を変更</string>
@@ -339,7 +338,7 @@
     <string name="settings_bogweonhamyeon_jigeum_deiteoga_modu">⚠️ 復元すると、いまのデータがすべて置き換わります</string>
     <string name="settings_jichul_jeochug_gojeongbi_geumgo">支出・貯金/固定費・積立・予算が、選んだバックアップファイルの内容にすべて置き換わります。</string>
     <string name="settings_doedolril_su_eobseuni_jigeum">元に戻せないので、いまのデータが必要なら先にバックアップを作っておいてください。</string>
-    <string name="settings_pyosihal_baegeob_paili_eobseoyo">表示できるバックアップファイルがありません。\n\nアプリを入れ直したり端末を替えた場合、この一覧には出ないことがあります。それでもファイルは「ファイル」→「ダウンロード」→「DayDone」→「백업」フォルダにそのまま残っているので、下のボタンから直接選んでください。</string>
+    <string name="settings_pyosihal_baegeob_paili_eobseoyo">表示できるバックアップファイルがありません。\n\nアプリを入れ直したり端末を替えた場合、この一覧には出ないことがあります。それでもファイルは「ファイル」→「ダウンロード」→「DayDone」→「バックアップ」フォルダにそのまま残っているので、下のボタンから直接選んでください。</string>
     <string name="settings_i_aebeseo_mandeun_baegeobman">このアプリで作ったバックアップだけが表示されます。ほかの端末や入れ直す前のファイルは、下のボタンから直接選んでください。</string>
     <string name="settings_poldeoeseo_jigjeob_seontaeg">フォルダから直接選ぶ</string>
     <string name="settings_backup_file_subtitle">%1$d年%2$d月%3$d日 · %4$dKB</string>
@@ -375,7 +374,7 @@
     <string name="report_mujichul">ノーマネーデー</string>
     <string name="report_il">%1$s日</string>
     <string name="report_il_2">%1$s %2$s日</string>
-    <string name="report_pilsu_bijung">必須の割合</string>
+    <string name="report_pilsu_bijung">必要な支出の割合</string>
     <string name="report_kadeu_arae_jinan_gigan">カードの下の「前の期間」は、前の期間全体を同じ方法で計算した値です。</string>
     <string name="report_kadeu_arae_jinan_gigan_2">カードの下の「前の期間の同じ頃」は、前の期間の同じ%1$s日目までだけを集めた値です。進行中の今期と公平に比べるためです。</string>
     <string name="report_jaju_sseun_gos">よく使った先</string>
@@ -505,7 +504,7 @@
     <string name="today_jinan_gigan_gyeolsan_ripoteuga">前の期間の振り返りレポートができました</string>
     <string name="today_bogi">見る</string>
     <string name="today_wanjeon_mujichul">完全ノーマネー</string>
-    <string name="today_pilsu_jichul_heoyong">必須の支出はOK</string>
+    <string name="today_pilsu_jichul_heoyong">必要な支出はOK</string>
     <string name="today_haru_iha">1日 %1$s 以下</string>
     <string name="today_mujichul_chaelrinjiga_kkeutnasseoyo_il">ノーマネーデーチャレンジが終わりました · %1$s日中 %2$s日達成 🎉</string>
     <string name="today_oneuldo_jigabi_swineun_jungieyo">今日もお財布はお休み中です</string>
@@ -552,7 +551,7 @@
     <string name="today_jichulmyeong">支出名</string>
     <string name="today_geumaeg">金額</string>
     <string name="today_naljja">日付</string>
-    <string name="today_pilsu_jichul">必須の支出</string>
+    <string name="today_pilsu_jichul">必要な支出</string>
     <string name="today_mujichul_chaelrinjieseo_i_jichuleun">ノーマネーデーチャレンジでこの支出はOKになります（交通費、薬代など）</string>
     <string name="today_sujeonghagi">変更する</string>
     <string name="today_chugahagi">追加する</string>
@@ -616,7 +615,7 @@
     <string name="ledger_junbigeum">積立</string>
     <string name="ledger_jeochug">貯金</string>
     <string name="ledger_gojeongbi">固定費</string>
-    <string name="ledger_pilsu">必須</string>
+    <string name="ledger_pilsu">必要</string>
 
     <!-- ══ settings (ViewModel) ══ -->
     <string name="settings_baegeobeul_jeojanghaesseoyo">バックアップを保存しました。\n%1$s</string>
@@ -650,7 +649,7 @@
     <string name="backup_gubun">区分</string>
     <string name="backup_ireum">名前</string>
     <string name="backup_geumaeg">金額</string>
-    <string name="backup_pilsu_jichul">必須の支出</string>
+    <string name="backup_pilsu_jichul">必要な支出</string>
     <string name="backup_memo">メモ</string>
     <string name="backup_ye">はい</string>
     <string name="backup_chulgeumil">引き落とし日</string>
@@ -685,6 +684,9 @@
     <string name="weekday_thu">木</string>
     <string name="weekday_fri">金</string>
     <string name="weekday_sat">土</string>
+
+    <string name="folder_backup">バックアップ</string>
+    <string name="folder_excel">Excel</string>
 
     <!-- 下部タブ -->
     <string name="tab_today">今日</string>

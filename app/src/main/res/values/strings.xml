@@ -690,6 +690,10 @@
     <string name="weekday_fri">금</string>
     <string name="weekday_sat">토</string>
 
+    <!-- 백업/엑셀 하위 폴더명. 루트 "DayDone" 은 코드 고정(조회 경로), 하위 폴더만 로케일을 탄다 -->
+    <string name="folder_backup">백업</string>
+    <string name="folder_excel">엑셀</string>
+
     <!-- 하단 탭바 -->
     <string name="tab_today">오늘</string>
     <string name="tab_monthly">월</string>

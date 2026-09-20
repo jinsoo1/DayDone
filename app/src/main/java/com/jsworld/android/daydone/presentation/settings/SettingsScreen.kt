@@ -597,9 +597,8 @@ private class OpenBackupDocument : ActivityResultContracts.OpenDocument() {
                 android.provider.DocumentsContract.EXTRA_INITIAL_URI,
                 android.provider.DocumentsContract.buildDocumentUri(
                     "com.android.externalstorage.documents",
-                    // ⚠️ 로케일화 금지 — ListBackupFilesUseCase 가 이 경로로 조회한다.
-                    // 번역하면 기존 유저의 복원 목록이 빈다(§15).
-                    "primary:Download/DayDone/백업"
+                    // 루트 "DayDone" 은 고정, 하위 폴더는 저장 쪽(BackupRepositoryImpl)과 같은 리소스
+                    "primary:Download/DayDone/" + context.getString(R.string.folder_backup)
                 )
             )
         }
