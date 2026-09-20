@@ -386,13 +386,8 @@ class BuildMonthlyReportUseCase @Inject constructor(
             }
         }
 
-        // 배달 빈도
-        // TODO(v1.5 3-6): 카테고리 사전과 같은 로케일별 지식 주입. 일본은 Uber Eats·出前館.
-        val deliveryKeywords = listOf("배달", "배민", "요기요", "쿠팡이츠")
-        val delivery = general.filter { expense ->
-            val t = expense.title.replace(" ", "")
-            deliveryKeywords.any { t.contains(it) }
-        }
+        // 배달 빈도 — 키워드는 카테고리 사전과 같은 로케일별 지식 주입
+        val delivery = general.filter { classifyExpenseCategoryUseCase.isDelivery(it.title) }
         if (delivery.size >= 3) {
             suggestions += ReportSuggestion.DeliveryFrequent(
                 count = delivery.size,

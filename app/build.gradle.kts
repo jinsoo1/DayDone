@@ -167,8 +167,7 @@ dependencies {
  */
 val hardcodedKoreanAllowList = listOf(
     // 번역이 아니라 재작성 대상 — 1.6.0
-    "domain/usecase/ClassifyExpenseCategoryUseCase.kt",
-    "domain/usecase/BuildMonthlyReportUseCase.kt",
+    "domain/usecase/category/KoreanExpenseCategoryDictionary.kt",
     // 통화 접미사("원") 자체
     "presentation/util/MoneyFormat.kt"
 )
