@@ -1,0 +1,713 @@
+<!--
+    日本語 — v1.6.0 初稿 (docs/v1.6-ja-review.md 参照)
+
+    ⚠️ 機械翻訳ではなく、CLAUDE.md §13 のトーン（追い込まない・安心感）を日本語で
+    組み直した初稿。**ネイティブ監修前**。用語の決定は review 文書の表に集約。
+
+    ⚠️ 1.6.0 のコード側対応（CurrencyStyle.JPY・日本のカレンダー・カテゴリ辞書・
+    少額しきい値・localeFilters "ja"）が入るまで、このファイルはビルドに含まれない
+    （localeFilters が "ko" のみ）。文言だけ先に置いてある。
+-->
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="app_name">DayDone</string>
+    <string name="widget_description">今日使っていい金額をホーム画面でひと目で</string>
+    <string name="notification_channel_name">1日のお知らせ</string>
+    <string name="notification_channel_description">今日の目安、記録のご案内、保留リストの通知</string>
+
+    <!-- 朝の通知 — 「目安」= 上限ではなく参考値。「推奨」より柔らかい -->
+    <string name="noti_morning_title">今日は<xliff:g id="amount" example="3,200円">%1$s</xliff:g>までなら大丈夫です</string>
+    <string name="noti_morning_title_no_budget">DayDoneからお知らせがあります</string>
+    <string name="noti_morning_report_line">前の期間の振り返りレポートができました。タップして確認できます。</string>
+    <string name="noti_morning_remaining_days">今期はあと<xliff:g id="days" example="12">%1$d</xliff:g>日です。</string>
+
+    <!-- 夜の通知: ノーマネーデー -->
+    <string name="noti_no_spend_title">今日はお財布がお休みでした 🎉</string>
+    <string name="noti_no_spend_body_streak">ノーマネーデー<xliff:g id="days" example="3">%1$d</xliff:g>日目、いい調子です。</string>
+    <string name="noti_no_spend_body_first">ノーマネーデー達成。明日も気楽にいきましょう。</string>
+
+    <!-- 夜の通知: 記録のご案内 -->
+    <string name="noti_record_title">今日の記録がまだありません</string>
+    <string name="noti_record_body">使ったものがあれば今入れておくと、明日の目安が正確になります。使っていなければそのままで大丈夫です。</string>
+
+    <!-- 夜の通知: 明日の引き落とし（目的は口座残高の確認。予算警告ではない） -->
+    <string name="noti_upcoming_title_single">明日、<xliff:g id="item" example="積立貯金">%1$s</xliff:g> <xliff:g id="amount" example="30,000円">%2$s</xliff:g>が引き落とされます</string>
+    <string name="noti_upcoming_title_multi">明日、<xliff:g id="count" example="2">%1$d</xliff:g>件 <xliff:g id="amount" example="45,000円">%2$s</xliff:g>が引き落とされます</string>
+    <string name="noti_upcoming_body">生活費からはもう差し引いてあるので、口座残高だけ確認しておけば大丈夫です。</string>
+    <string name="noti_upcoming_body_multi"><xliff:g id="items" example="積立貯金・通信費">%1$s</xliff:g>。生活費からはもう差し引いてあるので、口座残高だけ確認しておけば大丈夫です。</string>
+    <string name="noti_upcoming_name_separator">"・"</string>
+
+    <!-- 保留リスト 30日 -->
+    <string name="noti_held_title_single"><xliff:g id="item" example="ランニングシューズ">%1$s</xliff:g>、30日が経ちました</string>
+    <string name="noti_held_title_multi">保留中の<xliff:g id="count" example="3">%1$d</xliff:g>件が30日を過ぎました</string>
+    <string name="noti_held_body">まだ欲しければそのとき買えば大丈夫。ひとまず<xliff:g id="amount" example="12,000円">%1$s</xliff:g>を「浮いたお金」に入れておきました。</string>
+
+    <string name="noti_join_separator">" "</string>
+
+    <!-- レポートの提案 — §13: 追い込まない。「浪費」「失敗」は使わない -->
+    <string name="report_advice_over_budget_top">予算より<xliff:g id="over" example="5,400円">%1$s</xliff:g>多く使いました。いちばん大きい「<xliff:g id="category" example="食費">%2$s</xliff:g>」（<xliff:g id="category_total" example="22,000円">%3$s</xliff:g>）から振り返ると、理由が見えてきます。</string>
+    <string name="report_advice_over_budget">予算より<xliff:g id="over" example="5,400円">%1$s</xliff:g>多く使いました。支出の明細を一度見返してみましょう。</string>
+    <string name="report_advice_budget_too_small">毎月同じくらい超えるなら、予算が実際より小さめかもしれません。月タブで今月の予算を調整できます。</string>
+
+    <string name="report_advice_no_saving_with_leftover">貯金の項目がまだありません。今期は<xliff:g id="leftover" example="12,000円">%1$s</xliff:g>ほど残りそうなので、そこから始めてみませんか？</string>
+    <string name="report_advice_no_saving">貯金の項目がまだありません。5,000円のような小さな額からでも、未来の自分が助かります。</string>
+    <string name="report_advice_saving_excellent">収入の<xliff:g id="percent" example="32">%1$d</xliff:g>%%を貯金しています。とても良い割合です。</string>
+    <!-- 20%% は一人暮らしの目安貯蓄率（手取り基準）。日本でも同じ目安が一般的 -->
+    <string name="report_advice_saving_good">貯蓄率<xliff:g id="percent" example="24">%1$d</xliff:g>%% — 一人暮らしの目安（20%%）をしっかり守れています。</string>
+    <string name="report_advice_saving_low">貯蓄率<xliff:g id="percent" example="12">%1$d</xliff:g>%% — 来月はあと1〜2%%だけ上げて、20%%を目指してみませんか？</string>
+
+    <string name="report_advice_top_fixed">固定費の<xliff:g id="percent" example="45">%1$d</xliff:g>%%が「<xliff:g id="item" example="家賃">%2$s</xliff:g>」です。更新やプラン変更のタイミングで一度見比べてみる価値があります。</string>
+    <string name="report_advice_subscription">サブスク・通信系の支出<xliff:g id="total" example="3,200円">%1$s</xliff:g>が、ふつうの支出に混ざっています。毎月出ていくものなら貯金・固定費に登録すると、予算がより正確になります。</string>
+    <string name="report_advice_deduction_heavy">収入の半分以上（<xliff:g id="percent" example="58">%1$d</xliff:g>%%）が毎月、貯金・固定費として先に出ていきます。今すぐ減らすという意味ではありません — 更新時期が来たものから、軽く見直してみましょう。</string>
+
+    <string name="report_advice_day_of_week">支出は<xliff:g id="day" example="土">%1$s</xliff:g>曜日にいちばん集中しています（<xliff:g id="amount" example="18,000円">%2$s</xliff:g>・全体の<xliff:g id="percent" example="38">%3$d</xliff:g>%%）。その日だけ先に計画しておくと、ペースが安定します。</string>
+    <string name="report_advice_weekend">週末の1日平均（<xliff:g id="weekend" example="4,200円">%1$s</xliff:g>）が平日（<xliff:g id="weekday" example="2,100円">%2$s</xliff:g>）よりかなり大きめです。週末の予定だけ決めておくと、1か月が楽になります。</string>
+    <!-- ⚠️ しきい値 1万円未満 はコード（9,999）に合わせてある。日本なら 1,000円 が妥当 — review 文書参照 -->
+    <string name="report_advice_small_spends">1万円未満の支出が<xliff:g id="count" example="12">%1$d</xliff:g>回、合わせると<xliff:g id="total" example="6,400円">%2$s</xliff:g>です。小さな出費も集まると、1日の目安を軽く超えてしまいます。</string>
+    <string name="report_advice_cafe">カフェ・おやつに平均2日に1回以上立ち寄っています（<xliff:g id="count" example="9">%1$d</xliff:g>回・<xliff:g id="total" example="4,500円">%2$s</xliff:g>）。回数を半分にするだけで<xliff:g id="half" example="2,250円">%3$s</xliff:g>残ります。</string>
+    <string name="report_advice_delivery">デリバリーの注文が<xliff:g id="count" example="4">%1$d</xliff:g>回（<xliff:g id="total" example="8,200円">%2$s</xliff:g>）です。1回だけテイクアウトに変えても、配達料のぶん余裕ができます。</string>
+    <string name="report_advice_biggest_day">いちばん大きかった日は<xliff:g id="month" example="9">%1$d</xliff:g>月<xliff:g id="day" example="14">%2$d</xliff:g>日（<xliff:g id="amount" example="9,800円">%3$s</xliff:g>）でした。大きな出費の翌日をノーマネーデーにすると、ペースはすぐ戻ります。</string>
+
+    <string name="report_advice_no_spend_praise">もうノーマネーデー<xliff:g id="days" example="5">%1$d</xliff:g>日！ お財布が休む日が積み重なっています。</string>
+    <string name="report_advice_essential_heavy">支出の<xliff:g id="percent" example="72">%1$d</xliff:g>%%が必須の支出でした。減らしにくい出費が多い期間だったので、自分を責めなくて大丈夫です。</string>
+
+    <!-- レポートのカテゴリ -->
+    <string name="category_pet">ペット</string>
+    <string name="category_occasion">冠婚葬祭・プレゼント</string>
+    <string name="category_travel">旅行・宿泊</string>
+    <string name="category_education">教育・学び</string>
+    <string name="category_subscription">サブスク・通信</string>
+    <string name="category_health">医療・健康</string>
+    <string name="category_beauty">美容</string>
+    <string name="category_transport">交通・車</string>
+    <string name="category_alcohol">お酒・飲み会</string>
+    <string name="category_grocery">食料品・スーパー</string>
+    <string name="category_cafe">カフェ・おやつ</string>
+    <string name="category_food">食費</string>
+    <string name="category_fashion">ファッション・買い物</string>
+    <string name="category_living">日用品・生活</string>
+    <string name="category_culture">趣味・娯楽</string>
+    <string name="category_etc">その他</string>
+
+    <!-- 大きな出費の月 — ⚠️ カレンダー自体が日本用に差し替わるまで、旧正月/秋夕は韓国の暦のまま出る -->
+    <string name="big_spend_lunar">今月は<xliff:g id="holiday" example="旧正月">%1$s</xliff:g>があります。大きな出費が見込まれるなら、積立に少しずつ分けておくと楽です。</string>
+    <string name="big_spend_family_month">5月はGWや自動車税で出費が重なりやすい月です。少しずつ分けておくと、その月が楽になります。</string>
+    <string name="big_spend_year_end">12月は年末年始の集まりが増えます。少しずつ準備しておくと安心です。</string>
+    <string name="holiday_seollal">旧正月（ソルラル）</string>
+    <string name="holiday_chuseok">秋夕（チュソク）</string>
+
+    <!-- 積立: 記録に残る支出名（DBに保存される値） -->
+    <string name="vault_prepare_expense_title"><xliff:g id="item" example="自動車税">%1$s</xliff:g> 積立</string>
+    <string name="vault_payment_expense_title"><xliff:g id="item" example="自動車税">%1$s</xliff:g> 支払い</string>
+
+    <!-- ══ notices ══ -->
+    <string name="notices_gongjisahang">お知らせ</string>
+    <string name="notices_ajig_gongjisahangi_eobseoyo">まだお知らせはありません。</string>
+    <string name="notices_jeobgi">閉じる</string>
+    <string name="notices_pyeolchigi">開く</string>
+    <string name="notices_daeum_eobdeiteu_yejeong">次のアップデート予定</string>
+
+    <!-- ══ challenge_history ══ -->
+    <string name="challenge_history_mujichul_dojeon_girog">ノーマネーデーの記録</string>
+    <string name="challenge_history_ajig_kkeutnan_dojeoni_eobseoyo">終わったチャレンジはまだありません。\n最後まで続けると、ここに記録が積み重なります。</string>
+    <string name="challenge_history_wanjeon_mujichul">完全ノーマネー</string>
+    <string name="challenge_history_pilsu_jichul_heoyong">必須の支出はOK</string>
+    <string name="challenge_history_haru_iha">1日 %1$s 以下</string>
+    <string name="challenge_history_il_dojeon_il_seonggong">%1$s日間 · 達成 %2$s日 · %3$s</string>
+
+    <!-- ══ ledger ══ -->
+    <string name="ledger_naeyeog">明細</string>
+    <string name="ledger_i_giganen_ajig_girogi">この期間にはまだ記録がありません。\n支出を入れると、日付ごとにここに集まります。</string>
+    <string name="ledger_yeogiseon_bogiman_haeyo_gochiryeomyeon">ここでは見るだけです。直すときは、月タブのカレンダーでその日をタップしてください。</string>
+    <string name="ledger_oraedoen_nalbuteo">古い日から ↑</string>
+    <string name="ledger_choegeun_nalbuteo">新しい日から ↓</string>
+    <string name="ledger_nameun_saenghwalbi">残りの生活費</string>
+    <string name="ledger_nameun_geumaeg">残額</string>
+    <string name="ledger_weol_yesan">月の予算</string>
+    <string name="ledger_deuleoon_don">入ったお金</string>
+    <string name="ledger_sseun_don">使ったお金</string>
+    <string name="ledger_jeochug_gojeongbi">貯金・固定費</string>
+    <string name="ledger_mogrogeseo_jeochug_gojeongbi_sumgigi">一覧で貯金・固定費を隠す</string>
+    <string name="ledger_mogroge_jeochug_gojeongbi_boigi">一覧に貯金・固定費を表示</string>
+    <string name="ledger_mogrogeseo_sumgim">一覧では非表示</string>
+    <string name="ledger_oneul">今日</string>
+    <string name="ledger_jeochug_gojeongbi_2">貯金・固定費 %1$s</string>
+
+    <!-- ══ noti_settings ══ -->
+    <string name="noti_settings_teseuteu_alrim">テスト通知</string>
+    <string name="noti_settings_hwagin">OK</string>
+    <string name="noti_settings_alrim">通知</string>
+    <string name="noti_settings_achim_gweonjang_geumaeg">朝の目安金額</string>
+    <string name="noti_settings_oneul_sseodo_gwaenchanheun_geumaegeul">今日使っていい金額をお知らせします</string>
+    <string name="noti_settings_jeonyeog_girog_annae">夜の記録リマインド</string>
+    <string name="noti_settings_geunal_girogi_eobseul_ttaeman">その日の記録がないときだけ、一度お知らせします</string>
+    <string name="noti_settings_naeil_nagal_don">明日の引き落とし</string>
+    <string name="noti_settings_jeochug_gojeongbi_chulgeum_jeonnal">貯金・固定費の引き落とし前日の夜にお知らせします</string>
+    <string name="noti_settings_boryuham_30il">保留リスト 30日</string>
+    <string name="noti_settings_boryuhan_mulgeonmada_ttag_han">保留した品ごとに一度だけ</string>
+    <string name="noti_settings_gigan_gyeolsan_ripoteu">振り返りレポート</string>
+    <string name="noti_settings_sae_gigan_cheosnal_achim">新しい期間の初日の朝</string>
+    <string name="noti_settings_keun_jichuli_issneun_dal">大きな出費がある月のご案内</string>
+    <string name="noti_settings_myeongjeol_gajeongui_dalcheoreom_jichuli">年末年始やGWなど、出費が重なる月</string>
+    <string name="noti_settings_jigeum_teseuteu_alrim_bonaegi">今すぐテスト通知を送る（開発用）</string>
+    <string name="noti_settings_alrimeul_cheoeum_kyeol_ttaeman">🔒 通知の許可は、はじめてオンにするときだけお聞きします。オンにしなければ何も聞きません。\n「使いすぎ」を責めるような通知は送りません。\n同じ時刻に複数のお知らせがあるときは、1件にまとめて届きます。</string>
+    <string name="noti_settings_si">%1$s時</string>
+
+    <!-- ══ challenge_settings ══ -->
+    <string name="challenge_settings_mujichul_chaelrinji">ノーマネーデーチャレンジ</string>
+    <string name="challenge_settings_jigeum_iljjae_jinhaeng_jungieyo">いま%1$s日目です（目標 %2$s日）。</string>
+    <string name="challenge_settings_yesan_gigangwa_sanggwaneobsi_sijaghan">予算の期間とは関係なく、始めた日から続きます。やめても、いつでも新しく始められます。</string>
+    <string name="challenge_settings_chaelrinji_geumandugi">チャレンジをやめる</string>
+    <string name="challenge_settings_jinan_chaelrinjiga_kkeutnasseoyo_saero">前回のチャレンジが終わりました。新しく始めてみますか？</string>
+    <string name="challenge_settings_seonggong_gijun">達成の条件</string>
+    <string name="challenge_settings_geunal_jichuli_hanado_eobseoya">その日の支出がゼロなら達成</string>
+    <string name="challenge_settings_pilsu_jichul_ro_pyosihan">「必須の支出」にした分（交通費など）はOK</string>
+    <string name="challenge_settings_geumaeg_sanghan">上限金額</string>
+    <string name="challenge_settings_pilsu_jeoe_haru_jichuli">必須分を除いた1日の支出が、決めた金額以下なら達成</string>
+    <string name="challenge_settings_haru_heoyong_geumaeg">1日の上限</string>
+    <string name="challenge_settings_weon">円</string>
+    <string name="challenge_settings_dojeon_ilsu">日数</string>
+    <string name="challenge_settings_il">日</string>
+    <string name="challenge_settings_oneulbuteo_myeochil_dongan_dojeonhalji">今日から何日間続けるか（1〜31日）</string>
+    <string name="challenge_settings_yesan_gigangwa_mugwanhage_oneulbuteo">予算の期間とは関係なく、今日から始まります。積立・貯金・固定費はノーマネーデーを崩しません。</string>
+    <string name="challenge_settings_oneulbuteo_sijaghagi">今日から始める</string>
+    <string name="challenge_settings_chaelrinjireul_geumandulkkayo">チャレンジをやめますか？</string>
+    <string name="challenge_settings_jigeumkkaji_iljjae_jinhaeng_jungieyo">ここまで%1$s日目です。やめても、いつでも新しく始められます。</string>
+    <string name="challenge_settings_geumandugi">やめる</string>
+    <string name="challenge_settings_gyesoghagi">続ける</string>
+
+    <!-- ══ onboarding ══ -->
+    <string name="onboarding_deideon">DayDone</string>
+    <string name="onboarding_oneul_eolmakkaji_sseodo_doeneunji">今日いくらまで使っていいか、\nお伝えします</string>
+    <string name="onboarding_weol_suibeseo_jeochug_gojeongbi">月の収入から、貯金・固定費・先に準備しておくお金を差し引いて、残ったお金だけを安心して使えるようにお手伝いします。</string>
+    <string name="onboarding_weol_suib">月の収入</string>
+    <string name="onboarding_ye_3000000">例：250000</string>
+    <string name="onboarding_weon">円</string>
+    <string name="onboarding_maedal_gijuneuro_gyesanhaeyo">毎月 %1$s を基準に計算します。</string>
+    <string name="onboarding_sehu_silsuryeongaeg_gijuneuro_jeogneun">手取り額で入れるのがおすすめです。</string>
+    <string name="onboarding_yesan_sijagil">予算の開始日</string>
+    <string name="onboarding_il">日</string>
+    <string name="onboarding_han_dal_yesaneul_gyesanhaneun">1か月の予算を計算する基準日です（1〜31日）。給料日が月末なら31日にしてください — その月にない日付は月末として計算します。</string>
+    <string name="onboarding_maedal_naganeun_don_hana">毎月出ていくお金をひとつ入れておきますか？（任意）</string>
+    <string name="onboarding_jeoggeumina_weolsecheoreom_maedal_ppajineun">積立貯金や家賃のように毎月出ていくお金をひとつ登録すると、そのぶん差し引いた予算をすぐに見られます。残りはあとから追加できます。</string>
+    <string name="onboarding_jeochug">貯金</string>
+    <string name="onboarding_gojeongbi">固定費</string>
+    <string name="onboarding_hangmogmyeong">項目名</string>
+    <string name="onboarding_ye_jeoggeum">例：積立貯金</string>
+    <string name="onboarding_ye_weolse_boheomryo">例：家賃、保険料</string>
+    <string name="onboarding_geumaeg">金額</string>
+    <string name="onboarding_chulgeumil">引き落とし日</string>
+    <string name="onboarding_hangmogmyeong_geumaeg_chulgeumil_1">項目名・金額・引き落とし日（1〜31）をすべて入れるか、すべて空にしてください。</string>
+    <string name="onboarding_ibryeoghan_jeongboneun_i_hyudaeponeman">🔒 入力した情報はこのスマホの中にだけ保存されます。サーバーに送らないので、流出する場所がそもそもありません。</string>
+    <string name="onboarding_sijaghagi">はじめる</string>
+    <string name="onboarding_ireohge_gyesandwaeyo">こう計算されます</string>
+    <string name="onboarding_jeochug_gojeongbi">貯金 / 固定費</string>
+    <string name="onboarding_sseul_su_issneun_saenghwalbi">使える生活費</string>
+    <string name="onboarding_oneulbuteo_il_dongan">今日から%1$s日間</string>
+    <string name="onboarding_haru_aneseo_sseumyeon_gwaenchanhayo">1日 %1$s までなら大丈夫です</string>
+
+    <!-- ══ purchase ══ -->
+    <string name="purchase_geumgoe_junbihagi">積立で準備する</string>
+    <string name="purchase_geuraedo_salgeyo">それでも買う</string>
+    <string name="purchase_boryuhalgeyo">保留にする</string>
+    <string name="purchase_salgeyo">買う</string>
+    <string name="purchase_dadgi">閉じる</string>
+    <string name="purchase_salkka_malkka">買う？買わない？</string>
+    <string name="purchase_jigeum_samyeon_haru_gweonjang">今買うと、1日の目安がどう変わるかをお見せします。決めるのはそのあとで遅くありません。</string>
+    <string name="purchase_pummogmyeong">品名</string>
+    <string name="purchase_ye_museon_ieopon">例：ワイヤレスイヤホン</string>
+    <string name="purchase_gagyeog">価格</string>
+    <string name="purchase_ibryeoghan_gagyeog">入力した価格：%1$s</string>
+    <string name="purchase_eolmana_dalrajineunji_bogi">どう変わるか見る</string>
+    <string name="purchase_i_jeongdoneun_tido_jal">この程度ならほとんど変わりません。\n買っても大丈夫です。</string>
+    <string name="purchase_sado_gwaenchanhayo_nameun_yesan">買っても大丈夫です。\n残りの予算の中で収まります。</string>
+    <string name="purchase_sal_suneun_isseoyo_daman">買えないことはありません。ただ、残り%1$s日が少しきつくなります。\nいったん保留にしてみますか？</string>
+    <string name="purchase_ibeon_gigan_saenghwalbiga_imi">今期の生活費はもう使い切っています。\n積立で分けて準備すると、次の期間が楽になります。</string>
+    <string name="purchase_ibeon_gigan_saenghwalbironeun_eoryeoweoyo">今期の生活費だけでは難しそうです。\n積立で何か月かに分けて準備すれば、安心して買えます。</string>
+    <string name="purchase_jigeum_nameun_saenghwalbineun_ieyo">いま残っている生活費は%1$sです。</string>
+    <string name="purchase_oneul_gijun_haru_gweonjang">今日時点の1日の目安（残り%1$s日）</string>
+    <string name="purchase_samyeon">買うと %1$s</string>
+    <string name="purchase_nameun_saenghwalbi">残りの生活費 %1$s → %2$s</string>
+    <string name="purchase_boryuhame_neoheodweosseoyo">保留リストに入れました</string>
+    <string name="purchase_30il_dwiedo_saenggagnamyeon_geuttae">30日たってもまだ欲しければ、そのとき買えば大丈夫。買わなければ、そのぶん「浮いたお金」になります。\n積立タブの下の「保留リスト」からいつでも見られます。</string>
+    <string name="purchase_hwagin">OK</string>
+
+    <!-- ══ held ══ -->
+    <string name="held_sobi_boryuham">保留リスト</string>
+    <string name="held_ajig_boryuhan_mulgeoni_eobseoyo">保留中の品はまだありません。\n買うか迷っているものは、下の「+」→「買う？買わない？」でいったん保留にしてみてください。30日たってもまだ欲しければ、そのとき買えば大丈夫です。</string>
+    <string name="held_boryu_jung">保留中</string>
+    <string name="held_jinan_girog">これまでの記録</string>
+    <string name="held_girogeul_taebhamyeon_sagjehal_su">記録をタップすると削除できます。</string>
+    <string name="held_boryuhameuro_akkin_don">保留で浮いたお金</string>
+    <string name="held_an_sagil_jalhan_geosdeuli">買わなくてよかったものが、積み重なっています。</string>
+    <string name="held_an_sagiro_han_mulgeonui">買わないと決めた品の金額が、ここに積み重なります。</string>
+    <string name="held_30ili_jinasseoyo_ajigdo_pilyohamyeon">30日が経ちました。まだ欲しければそのとき買えば大丈夫 — ひとまず浮いたお金に入れておきました。</string>
+    <string name="held_geuraedo_sasseoyo">結局買った</string>
+    <string name="held_akkin_doneuro">浮いたお金にする</string>
+    <string name="held_d_iljjae_boryu_jung">保留 %1$s日目 · あと%2$s日で浮いたお金になります</string>
+    <string name="held_taebhamyeon_oneul_gijuneuro_dasi">タップすると今日の時点で計算し直します</string>
+    <string name="held_jigeum_salgeyo">いま買う</string>
+    <string name="held_an_salraeyo">買わない</string>
+    <string name="held_boryuhameseo_sagjehagi">保留リストから削除</string>
+    <string name="held_eul_reul_sagjehalkkayo">「%1$s」を削除しますか？</string>
+    <string name="held_i_hangmogeun_akkin_doneuro">この品は浮いたお金として集計されているため、削除すると合計からも外れます。元に戻せません。</string>
+    <string name="held_boryuhameseo_i_hangmogi_sarajigo">保留リストからこの品が消え、元に戻せません。</string>
+    <string name="held_sagje">削除</string>
+    <string name="held_chwiso">キャンセル</string>
+
+    <!-- ══ monthly ══ -->
+    <string name="monthly_weolbyeol_yesan">月ごとの予算</string>
+    <string name="monthly_ibeon_dalro">今月へ</string>
+    <string name="monthly_ibeon_gigan_ripoteu">今期のレポート</string>
+    <string name="monthly_jigeum_peiseuga_eotteonji_hwaginhaeboseyo">いまのペースを確認してみましょう</string>
+    <string name="monthly_gigan_gyeolsan_ripoteu">振り返りレポート</string>
+    <string name="monthly_i_giganeul_eotteohge_bonaessneunji">この期間をどう過ごしたか振り返ります</string>
+    <string name="monthly_naeyeog_jeonche_bogi">明細をすべて見る</string>
+    <string name="monthly_i_gigane_deuleoogo_nagan">この期間に入ったお金と出たお金を日付順にずらっと</string>
+    <string name="monthly_jinan_dal_gyeolsan">先月の振り返り</string>
+    <string name="monthly_ibeon_dal_jinhaeng_jung">今月 進行中</string>
+    <string name="monthly_dagaol_dal_gyehoeg">来月の計画</string>
+    <string name="monthly_ijeon_dal">前の月</string>
+    <string name="monthly_daeum_dal">次の月</string>
+    <string name="monthly_choejong_nameun_geumaeg">最終的な残額</string>
+    <string name="monthly_nameun_geumaeg">残額</string>
+    <string name="monthly_yesang_nameun_geumaeg">残額の見込み</string>
+    <string name="monthly_yesan_yoyag">予算のまとめ</string>
+    <string name="monthly_jeobgi">閉じる</string>
+    <string name="monthly_jasehi">くわしく</string>
+    <string name="monthly_weol_yesan">月の予算</string>
+    <string name="monthly_chuga_suig">臨時収入</string>
+    <string name="monthly_sayong_ganeung_yesan">使える予算</string>
+    <string name="monthly_chong_jichul">支出の合計</string>
+    <string name="monthly_i_dal_yesan_sujeong">この月の予算を変更</string>
+    <string name="monthly_jeochug_gojeongbi">貯金 / 固定費</string>
+    <string name="monthly_weol_il">%1$s月%2$s日 · %3$s</string>
+    <string name="monthly_jichul">支出</string>
+    <string name="monthly_yejeong_chagam">引き落とし予定</string>
+    <string name="monthly_mujichul">ノーマネーデー</string>
+    <string name="monthly_mujichul_seonggong">ノーマネーデー達成</string>
+    <string name="monthly_i_naleun_girogdoen_naeyeogi">この日は記録がありません。</string>
+    <string name="monthly_yejeong">%1$s 予定 · %2$s</string>
+    <string name="monthly_suig">%1$s（収入）</string>
+    <string name="monthly_yesan_sujeong">%1$s の予算を変更</string>
+    <string name="monthly_i_dalbuteo_jeogyongdoel_yesanieyo">この月から適用される予算です。翌月以降は、変更するまでこの金額を引き継ぎます。</string>
+    <string name="monthly_seoljeongdoel_yesan">設定される予算：%1$s</string>
+    <string name="monthly_jeojang">保存</string>
+
+    <!-- ══ settings ══ -->
+    <string name="settings_seoljeong">設定</string>
+    <string name="settings_gongjisahang">お知らせ</string>
+    <string name="settings_weol_suib">月の収入</string>
+    <string name="settings_yesan_sijagil">予算の開始日</string>
+    <string name="settings_maeweol_malil">毎月末日</string>
+    <string name="settings_maeweol_il">毎月%1$s日</string>
+    <string name="settings_mujichul_chaelrinji">ノーマネーデーチャレンジ</string>
+    <string name="settings_iljjae_jinhaeng_jung">%1$s/%2$s日目 進行中</string>
+    <string name="settings_jinan_chaelrinji_wanryo">前回のチャレンジ 終了</string>
+    <string name="settings_sijaghagi">はじめる</string>
+    <string name="settings_dojeon_girog">チャレンジの記録</string>
+    <string name="settings_alrim">通知</string>
+    <string name="settings_gae_kyeojim">%1$s件 オン</string>
+    <string name="settings_kkeojim">オフ</string>
+    <string name="settings_jeochug_gojeongbineun_oneul_taeb">貯金・固定費は今日タブ下の「+」ボタンから、積立項目は積立タブで管理できます。</string>
+    <string name="settings_deiteo_baegeob_daunrodeu_poldeoe">データのバックアップ（ダウンロードフォルダに保存）</string>
+    <string name="settings_baegeob_paileseo_bogweon">バックアップファイルから復元</string>
+    <string name="settings_jichul_naeyeog_naebonaegi_egsel">支出の明細を書き出す（Excel）</string>
+    <!-- ⚠️ フォルダ名「백업」「엑셀」は韓国語のまま（ローカライズ禁止パス）。review 文書の要決定事項 -->
+    <string name="settings_paileun_nae_pail_daunrodeu">ファイルは「ファイル」→「ダウンロード」→「DayDone」フォルダに保存されます（バックアップは「백업」フォルダ、Excelは「엑셀」フォルダ）。端末を替えたりアプリを入れ直すとデータは消えるので、ときどきバックアップを作っておくと、そのまま元に戻せます。Excelファイルには月ごとの支出明細と固定支出がシートに分かれて入ります。</string>
+    <string name="settings_modeun_girogeun_i_hyudaepon">🔒 すべての記録はこのスマホの中にだけ保存されます。DayDoneにはサーバーがないので、支出の記録が外に出たり流出したりする場所がそもそもありません。</string>
+    <string name="settings_deiteo_chogihwa">データを初期化</string>
+    <string name="settings_weol_suib_sujeong">月の収入を変更</string>
+    <string name="settings_ibeon_giganbuteo_jeogyongdwaeyo_jinan">今期から適用されます。過去の期間の金額はそのまま残り、特定の月だけ変えたいときは月タブでその月を変更してください。</string>
+    <string name="settings_weon">円</string>
+    <string name="settings_yesan_sijagil_sujeong">予算の開始日を変更</string>
+    <string name="settings_han_dal_yesaneul_gyesanhaneun">1か月の予算を計算する基準日です（1〜31日）。31日のようにその月にない日付は、その月の末日として計算します。</string>
+    <string name="settings_il">日</string>
+    <string name="settings_bakkumyeon_modeun_gigani_dasi">変更すると、すべての期間が区切り直されます</string>
+    <string name="settings_jinan_girogeul_pohamhan_modeun">過去の記録を含むすべての月が、新しい開始日を基準に計算し直されます。</string>
+    <string name="settings_naljjae_ttara_jichul_jeochug">日付によっては、支出・貯金/固定費が隣の月の期間に移って見えることがあります。</string>
+    <string name="settings_ye_10il_25ilro_bakkumyeon">例：10日 → 25日に変えると、7月15日の支出は「6月」の期間（6/25〜7/24）に入ります。</string>
+    <string name="settings_i_baegeobeuro_bogweonhalkkayo">このバックアップから復元しますか？</string>
+    <string name="settings_jigeum_aebe_issneun_jichul">%1$s\n%2$s\n\n⚠️ いまアプリにある支出・貯金/固定費・積立・予算がすべてこのファイルの内容に置き換わり、元に戻せません。</string>
+    <string name="settings_bogweon">復元</string>
+    <string name="settings_chwiso">キャンセル</string>
+    <string name="settings_baegeob">バックアップ</string>
+    <string name="settings_hwagin">OK</string>
+    <string name="settings_modeun_deiteoreul_jiulkkayo">すべてのデータを消しますか？</string>
+    <string name="settings_jichul_suig_jeochug_gojeongbi">支出・収入・貯金/固定費・積立項目・予算の設定がすべて削除され、最初の状態に戻ります。元に戻せません。</string>
+    <string name="settings_chogihwa">初期化</string>
+    <string name="settings_jeojang">保存</string>
+    <string name="settings_bogweonhamyeon_jigeum_deiteoga_modu">⚠️ 復元すると、いまのデータがすべて置き換わります</string>
+    <string name="settings_jichul_jeochug_gojeongbi_geumgo">支出・貯金/固定費・積立・予算が、選んだバックアップファイルの内容にすべて置き換わります。</string>
+    <string name="settings_doedolril_su_eobseuni_jigeum">元に戻せないので、いまのデータが必要なら先にバックアップを作っておいてください。</string>
+    <string name="settings_pyosihal_baegeob_paili_eobseoyo">表示できるバックアップファイルがありません。\n\nアプリを入れ直したり端末を替えた場合、この一覧には出ないことがあります。それでもファイルは「ファイル」→「ダウンロード」→「DayDone」→「백업」フォルダにそのまま残っているので、下のボタンから直接選んでください。</string>
+    <string name="settings_i_aebeseo_mandeun_baegeobman">このアプリで作ったバックアップだけが表示されます。ほかの端末や入れ直す前のファイルは、下のボタンから直接選んでください。</string>
+    <string name="settings_poldeoeseo_jigjeob_seontaeg">フォルダから直接選ぶ</string>
+    <string name="settings_backup_file_subtitle">%1$d年%2$d月%3$d日 · %4$dKB</string>
+
+    <!-- ══ report ══ -->
+    <string name="report_gigan_gyeolsan_ripoteu">振り返りレポート</string>
+    <string name="report_ibeon_gigan_ripoteu">今期のレポート</string>
+    <string name="report_weol_ilbuteo_girogeul_sijaghaesseoyo">🌱 %1$s月%2$s日から記録を始めました。それより前の日はレポートに含まれないため、今期は実際と少し違って見えることがあります。次の期間からは完全な形でお見せします。</string>
+    <string name="report_yesan_aneseo_hulryunghage_bonaesseoyo">予算の中で、とても上手に過ごせました</string>
+    <string name="report_gyehoeghan_peiseudaero_jal_machyeosseoyo">計画どおりのペースで終えられました</string>
+    <string name="report_ibeonen_peiseuga_jom_ppalrasseoyo">今回はペースが少し速めでした</string>
+    <string name="report_yesaneul_jogeum_neomgyeosseoyo_daeum">予算を少し超えました。次の期間で立て直しましょう</string>
+    <string name="report_yesaneul_manhi_neomgin_giganieosseoyo">予算をだいぶ超えた期間でした。理由がわかれば、次は変わります</string>
+    <string name="report_yesan_daebi_hulryunghage_sseuneun">予算に対して、とても上手に使えています</string>
+    <string name="report_ttag_joheun_peiseuro_gago">ちょうどいいペースで進んでいます</string>
+    <string name="report_peiseuga_jogeum_ppalrayo_gati">ペースが少し速めです。一緒に調整してみましょうか</string>
+    <string name="report_yesaneul_neomeosseoyo_jigeumbuteon_kkog">予算を超えました。ここからは本当に必要なものだけ、一緒に見ていきましょう</string>
+    <string name="report_yesaneul_manhi_neomeosseoyo_arae">予算をだいぶ超えました。下の「よく使った先」で理由を探してみましょう</string>
+    <string name="report_gigani_kkeutnasseoyo_saenghwalbiui_reul">期間が終わりました · 生活費の%1$s%%を使いました</string>
+    <string name="report_giganeun_jinassgo_saenghwalbineun_sseosseoyo">期間は%1$s%%経過、生活費は%2$s%%使いました</string>
+    <string name="report_gigan_jongryo">期間終了 · %1$s</string>
+    <string name="report_iljjae">%1$s日目 · %2$s</string>
+    <string name="report_sseun_don">使った分 %1$s%%</string>
+    <string name="report_oneul">今日 %1$s%%</string>
+    <string name="report_jinan_giganboda_deol_sseosseoyo">前の期間より%1$s少なく使いました</string>
+    <string name="report_jinan_gigan_imamttaeboda_deol">前の期間の同じ頃より%1$s少なめです</string>
+    <string name="report_jinan_giganboda_deo_sseosseoyo">前の期間より%1$s多く使いました</string>
+    <string name="report_jinan_gigan_imamttaeboda_deo">前の期間の同じ頃より%1$s多めです</string>
+    <string name="report_jinan_gigangwa_biseushage_sseugo">前の期間と同じくらいのペースです</string>
+    <string name="report_jinan_gigan">前の期間</string>
+    <string name="report_jinan_gigan_imamttae">前の期間の同じ頃</string>
+    <string name="report_haru_pyeonggyun">1日平均</string>
+    <string name="report_mujichul">ノーマネーデー</string>
+    <string name="report_il">%1$s日</string>
+    <string name="report_il_2">%1$s %2$s日</string>
+    <string name="report_pilsu_bijung">必須の割合</string>
+    <string name="report_kadeu_arae_jinan_gigan">カードの下の「前の期間」は、前の期間全体を同じ方法で計算した値です。</string>
+    <string name="report_kadeu_arae_jinan_gigan_2">カードの下の「前の期間の同じ頃」は、前の期間の同じ%1$s日目までだけを集めた値です。進行中の今期と公平に比べるためです。</string>
+    <string name="report_jaju_sseun_gos">よく使った先</string>
+    <string name="report_ajig_ibeon_gigan_jichuli">今期の支出はまだありません。</string>
+    <string name="report_jichulmyeongeul_bogo_jadongeuro_mukkeosseoyo">支出名を見て自動で分類しました。判別できなかったものは「その他」にまとまります。</string>
+    <string name="report_hoe">%1$s %2$s · %3$s回</string>
+    <string name="report_hoe_2">%1$s · %2$s回</string>
+    <string name="report_oe_gae">ほか%1$s件</string>
+    <string name="report_ibeon_gigan_gyeolsan">今期の振り返り</string>
+    <string name="report_saenghwalbieseo">生活費から </string>
+    <string name="report_eul_jikyeonaesseoyo_day_done">を守りきりました。Day Done! 🎉</string>
+    <string name="report_namgin_doneun_geumgoui_junbi">残ったお金は積立や貯金に移して、次の大きな出費に備えてみてください</string>
+    <string name="report_ibeon_giganen_yesanboda_deo">今期は予算より%1$s多く使いました。大丈夫です — 新しい期間は新しい予算で仕切り直しです。</string>
+    <string name="report_nameun_il_ireohge_gamyeon">残り%1$s日、このままいくと</string>
+    <string name="report_jigeum_peiseumyeon_majimag_nal">今のペースなら最終日に </string>
+    <string name="report_i_namayo_haru">残ります。\n1日 </string>
+    <string name="report_aneseo_sseumyeon_neogneoghaeyo"> までなら余裕があります。</string>
+    <string name="report_namneun_doneun_geumgoui_junbi">余りそうなお金は、先に積立項目へ移しておくのもおすすめです</string>
+    <string name="report_jigeum_peiseuga_ieojimyeon_yesaneul">今のペースが続くと、予算を少し超えるかもしれません。大丈夫です — 1日 </string>
+    <string name="report_aneseo_sseumyeon_nameun_nale"> までなら、残りの日で自然に収まります。</string>
+    <string name="report_gojeongjichul_deulyeodabogi">固定支出を見てみる</string>
+    <string name="report_suibui_ga_maedal_jeochug">収入の%1$s%%が毎月、貯金・固定費として先に出ていきます。</string>
+    <string name="report_jeochug">貯金</string>
+    <string name="report_gojeongbi">固定費</string>
+    <string name="report_sangse_bunseog">くわしい分析</string>
+    <string name="report_taebhaeseo_sangse_bunseog_yeolgi">タップしてくわしい分析を開く</string>
+    <string name="report_hangmogbyeol_bijung_jeochugryul_pyeongga">項目ごとの割合 · 貯蓄率の評価 · あなたへの提案 %1$s件</string>
+    <string name="report_chulsi_ginyeom_muryo_gonggae">リリース記念で無料公開中</string>
+    <string name="report_jeochug_2"> · 貯金</string>
+    <string name="report_gojeongbi_2"> · 固定費</string>
+    <string name="report_suibui">%1$s · 収入の%2$s%%</string>
+    <string name="report_majchum_jean">あなたへの提案</string>
+    <string name="report_geon">%1$s件</string>
+
+    <!-- ══ vault（積立）══ -->
+    <string name="vault_geumgo">積立</string>
+    <string name="vault_junbi_jungin_hangmog">積立中の項目</string>
+    <string name="vault_nabbu_wanryo">支払い済み</string>
+    <string name="vault_junbi_hangmog_chuga">+ 積立項目を追加</string>
+    <string name="vault_sobi_boryuham">保留リスト</string>
+    <string name="vault_akkin_don_boryu_jung">浮いたお金 %1$s · 保留中 %2$s件</string>
+    <string name="vault_gomindoeneun_mulgeoneun_salkka_malkka">迷っているものは「買う？買わない？」でいったん保留にしてみてください</string>
+    <string name="vault_ttaro_olmgyeodugi">%1$s · 別口座へ移す</string>
+    <string name="vault_ibeon_dal_chucheon_saenghwalbi">今月のおすすめは%1$sです。生活費の口座とは別の口座に移してから、移した金額を入れてください。そのぶん今日の生活費から差し引かれます。</string>
+    <string name="vault_olmgin_geumaeg">移した金額</string>
+    <string name="vault_olmgyeodweosseoyo">移しました</string>
+    <string name="vault_miri_junbihaneun_geumgo">先に備える積立</string>
+    <string name="vault_aebi_doneul_bogwanhajin_anhayo">アプリがお金を預かるわけではありません。大きな出費が来る前に、いつから いくらずつ別に分けておくといいかをお伝えします。</string>
+    <string name="vault_yereul_deuleo_6weole_nael">たとえば、5月に払う自動車税 4万円</string>
+    <string name="vault_6weole_han_beone_naemyeon">5月に一度に払うと、その月がぐらつきます。\n1月から毎月1万円ずつ別口座に移しておけば、5月にはもう準備できています。</string>
+    <string name="vault_junbi_hangmogeul_chugahaeyo">積立項目を追加します</string>
+    <string name="vault_ye_jadongchase_40man_weon">例：自動車税 4万円 · 5月に支払い</string>
+    <string name="vault_maedal_chucheon_geumaegmankeum_ttaro">毎月おすすめの金額だけ別口座に移します</string>
+    <string name="vault_olmgin_dwi_olmgyeodweosseoyo_reul">移したあと「移しました」を押すと、そのぶん生活費から差し引かれます</string>
+    <string name="vault_mogpyohan_dale_nabbu_wanryo">目標の月に「支払い済み」</string>
+    <string name="vault_miri_olmgyeodun_doneuro_gyeolje">先に移しておいたお金で支払うので、その月は改めて引かれません</string>
+    <string name="vault_saenghwalbi_tongjanggwa_seokkiji_anhge">生活費の口座と混ざらないよう、別の口座に分けておくとより確実です。</string>
+    <string name="vault_ttaro_olmgyeodun_mankeumeun_imi">別に移した分は、もう生活費から差し引いてあります。目標の月にはそのお金で支払えば大丈夫です。毎月おすすめの金額だけ移し続けてください。</string>
+    <string name="vault_ibeon_dal_olmgyeodugi_jean">今月のおすすめ</string>
+    <string name="vault_ibeon_dal_olmgil_mankeum">今月の分はすべて移しました ✓</string>
+    <string name="vault_ttaro_tongjange_olmgyeodumyeon_johayo">別口座に移しておくと安心です</string>
+    <string name="vault_ibeon_dal_olmgim">✓ 今月 %1$s 移動済み</string>
+    <string name="vault_chucheon_olmgim">おすすめ %1$s · 移動済み %2$s</string>
+    <string name="vault_deo_olmgigi">さらに移す</string>
+    <string name="vault_olmgyeodugi">移しておく</string>
+    <string name="vault_junbidoem">積立済み %1$s</string>
+    <string name="vault_nameun">あと %1$s</string>
+    <string name="vault_mogpyo">目標 %1$s</string>
+    <string name="vault_taebhayeo_gwanri_nabbu">タップして管理・支払い</string>
+    <string name="vault_nabbu_wanryo_2">%1$s · 支払い済み</string>
+    <string name="vault_junbi_hangmog_sujeong">積立項目を変更</string>
+    <string name="vault_junbi_hangmog_chuga_2">積立項目を追加</string>
+    <string name="vault_hangmogmyeong">項目名</string>
+    <string name="vault_ye_jadongchase_eomma_saengsin">例：自動車税、母の誕生日プレゼント</string>
+    <string name="vault_mogpyo_geumaeg">目標金額</string>
+    <string name="vault_mogpyoweol_nabbu_ibenteu">目標月（支払い / イベント）</string>
+    <string name="vault_junbi_sijagweol">積立を始める月</string>
+    <string name="vault_1hoe">1回だけ</string>
+    <string name="vault_maenyeon">毎年</string>
+    <string name="vault_memo">メモ</string>
+    <string name="vault_seontaeg_ibryeog">任意</string>
+    <string name="vault_sujeonghagi">変更する</string>
+    <string name="vault_chugahagi">追加する</string>
+    <string name="vault_ibeon_saikeul_junbiham">今回の積立額 %1$s</string>
+    <string name="vault_junbigeum_ppaegi">積立金を戻す</string>
+    <string name="vault_nabbu_wanryo_chwiso">支払い済みを取り消す</string>
+    <string name="vault_sagjehagi">削除する</string>
+    <string name="vault_nabbu_wanryoro_cheorihalkkayo">支払い済みにしますか？</string>
+    <string name="vault_junbihan_mankeumeun_imi_saenghwalbieseo">積み立てた分はもう生活費から差し引いてあり、不足分があれば今月の支出として追加されます。毎年の項目なら、次の回に進みます。</string>
+    <string name="vault_sagjehalkkayo">削除しますか？</string>
+    <string name="vault_i_junbi_hangmoggwa_geudongan">この積立項目と、これまでの積立の記録がまとめて削除され、積立金は生活費に戻ります。</string>
+    <string name="vault_sagje">削除</string>
+    <string name="vault_nabbu_wanryoreul_chwisohalkkayo">支払い済みを取り消しますか？</string>
+    <string name="vault_i_hangmogeul_dasi_junbi">この項目を「積立中」に戻します。すでに積み立てた金額はそのまま残ります。</string>
+    <string name="vault_dadgi">閉じる</string>
+    <string name="vault_choedae_kkaji_ppael_su">最大%1$sまで戻せます。戻した分は生活費に戻ります。</string>
+    <string name="vault_ppaeneun_geumaeg">戻す金額</string>
+    <string name="vault_ppaegi">戻す</string>
+    <string name="vault_ijeon_dal">前の月</string>
+    <string name="vault_nyeon_weol">%1$s年%2$s月</string>
+    <string name="vault_daeum_dal">次の月</string>
+    <string name="vault_segeum">税金</string>
+    <string name="vault_boheom">保険</string>
+    <string name="vault_ginyeomil">記念日</string>
+    <string name="vault_gita">その他</string>
+
+    <!-- ══ today ══ -->
+    <string name="today_oneul_gweonjang_geumaeg">今日の目安</string>
+    <string name="today_oneul_gweonjangboda_jogeum_deo">今日の目安を少し超えました</string>
+    <string name="today_oneul_imankeum_namasseoyo">今日はあとこれだけ使えます</string>
+    <string name="today_oneul_gweonjang_geumaeg_boda">今日の目安 %1$s より %2$s 多く使いました。</string>
+    <string name="today_oneul_gweonjang_geumaeg_jung">今日の目安 %1$s のうち %2$s 使いました。</string>
+    <string name="today_ibeon_gigan_il_nameum">今期はあと%1$s日</string>
+    <string name="today_geumgoe_junbihagi">積立に移す ›</string>
+    <string name="today_sae_gigani_sijagdwaeyo">新しい期間が始まります</string>
+    <string name="today_naeilbuteo">明日から</string>
+    <string name="today_buteo_oneulkkaji_sseun_doni">%1$sから今日までに使ったお金があれば</string>
+    <string name="today_neoheoya_oneul_sseul_su">入れておくと、今日使える金額が正確になります</string>
+    <string name="today_neohgi">入れる</string>
+    <string name="today_imi_sseun_don_neohgi">もう使ったお金を入れる</string>
+    <string name="today_buteo_eojekkaji_sseun_geumaegeul">%1$sから昨日までに使った金額を、だいたいで入れてください。正確でなくて大丈夫です — 銀行アプリをちらっと見て、ざっくりで十分です。</string>
+    <string name="today_jeojanghamyeon_ijeon_jichul_ro">保存すると「以前の支出」として記録され、月タブのカレンダーの%1$sの明細からいつでも直せます。</string>
+    <string name="today_daeryag_sseun_geumaeg">だいたい使った金額</string>
+    <string name="today_weon">円</string>
+    <string name="today_jeojang">保存</string>
+    <string name="today_geonneottwigi">スキップ</string>
+    <string name="today_jinan_gigan_gyeolsan_ripoteuga">前の期間の振り返りレポートができました</string>
+    <string name="today_bogi">見る</string>
+    <string name="today_wanjeon_mujichul">完全ノーマネー</string>
+    <string name="today_pilsu_jichul_heoyong">必須の支出はOK</string>
+    <string name="today_haru_iha">1日 %1$s 以下</string>
+    <string name="today_mujichul_chaelrinjiga_kkeutnasseoyo_il">ノーマネーデーチャレンジが終わりました · %1$s日中 %2$s日達成 🎉</string>
+    <string name="today_oneuldo_jigabi_swineun_jungieyo">今日もお財布はお休み中です</string>
+    <string name="today_oneul_jigabi_swineun_jungieyo">今日はお財布がお休み中です</string>
+    <string name="today_oneuleun_jichuli_isseosseoyo_naeil">今日は支出がありました。また明日から続けましょう</string>
+    <string name="today_mujichul_chaelrinji">ノーマネーデーチャレンジ · %1$s</string>
+    <string name="today_il_yeonsog">🔥 %1$s日連続</string>
+    <string name="today_il_seonggong_il_dojeon">達成 %1$s日 / %2$s日間</string>
+    <string name="today_iljjae_seonggong_il_il">%1$s日目 · 達成 %2$s日 / %3$s日間</string>
+    <string name="today_geuman_bogi">もう表示しない</string>
+    <string name="today_saero_dojeonhagi">もう一度挑戦する</string>
+    <string name="today_ibeon_gigan_yoyag">今期のまとめ</string>
+    <string name="today_jeobgi">閉じる</string>
+    <string name="today_jasehi">くわしく</string>
+    <string name="today_nameun_sunsu_saenghwalbi">使える生活費の残り</string>
+    <string name="today_jeochuggwa_gojeongbineun_imi_saenghwalbieseo">貯金と固定費は、生活費から先に差し引いてあります。</string>
+    <string name="today_weol_yesan">月の予算</string>
+    <string name="today_chuga_suig">臨時収入</string>
+    <string name="today_sayong_ganeung_yesan">使える予算</string>
+    <string name="today_chagam_yejeong_geumaeg">先取り分</string>
+    <string name="today_oneul_ijeon_jichul">今日より前の支出</string>
+    <string name="today_oneul_jichul">今日の支出</string>
+    <string name="today_yejeong_chagam">引き落とし予定</string>
+    <string name="today_jeochug">貯金</string>
+    <string name="today_gojeongbi">固定費</string>
+    <string name="today_ibeon_gigane_nagal_doneun">今期に出ていくお金は、生活費から先に差し引いてあります。</string>
+    <string name="today_weol_il">%1$s月%2$s日 · %3$s</string>
+    <string name="today_oneul">今日</string>
+    <string name="today_ppareun_jichul">クイック入力</string>
+    <string name="today_jaju_sseuneun_jichul_chugahagi">よく使う支出を追加</string>
+    <string name="today_ppareun_jichul_sagje">クイック入力を削除</string>
+    <string name="today_chuga">+ 追加</string>
+    <string name="today_jeonche_bogi">すべて見る ›</string>
+    <string name="today_ajig_girogdoen_naeyeogi_eobseoyo">まだ記録がありません。</string>
+    <string name="today_chong_jichul">支出の合計</string>
+    <string name="today_yejeong">%1$s 予定</string>
+    <string name="today_imi_saenghwalbieseo_jeoehaedueosseoyo">生活費から先に差し引いてあります。</string>
+    <string name="today_suig">%1$s（収入）</string>
+    <string name="today_nyeon_weol_il">%1$s: %2$s年%3$s月%4$s日</string>
+    <string name="today_hwagin">OK</string>
+    <string name="today_chwiso">キャンセル</string>
+    <string name="today_jichul_sujeong">支出を変更</string>
+    <string name="today_jichul_chuga">支出を追加</string>
+    <string name="today_jichulmyeong">支出名</string>
+    <string name="today_geumaeg">金額</string>
+    <string name="today_naljja">日付</string>
+    <string name="today_pilsu_jichul">必須の支出</string>
+    <string name="today_mujichul_chaelrinjieseo_i_jichuleun">ノーマネーデーチャレンジでこの支出はOKになります（交通費、薬代など）</string>
+    <string name="today_sujeonghagi">変更する</string>
+    <string name="today_chugahagi">追加する</string>
+    <string name="today_sagjehagi">削除する</string>
+    <string name="today_yesan_seoljeong">予算の設定</string>
+    <string name="today_weol_suib">月の収入</string>
+    <string name="today_yesan_sijagil">予算の開始日</string>
+    <string name="today_il">日</string>
+    <string name="today_1_31il_sairo_ibryeoghae">1〜31日の間で入力してください。31日は毎月末日として計算します。</string>
+    <string name="today_sijagileul_bakkumyeon_modeun_gigani">開始日を変えると、すべての期間が区切り直されます</string>
+    <string name="today_jinan_girogeul_pohamhan_modeun">過去の記録を含むすべての月が、新しい開始日を基準に計算し直されます。</string>
+    <string name="today_naljjae_ttara_jichul_jeochug">日付によっては、支出・貯金/固定費が隣の月の期間に移って見えることがあります。</string>
+    <string name="today_jeojanghagi">保存する</string>
+    <string name="today_0weon">0円</string>
+    <string name="today_jeochug_gojeongbi_sujeong">貯金 / 固定費を変更</string>
+    <string name="today_jeochug_gojeongbi_chuga">貯金 / 固定費を追加</string>
+    <string name="today_hangmogmyeong">項目名</string>
+    <string name="today_ye_jeoggeum">例：積立貯金</string>
+    <string name="today_ye_boheomryo">例：保険料</string>
+    <string name="today_ye_700000">例：50000</string>
+    <string name="today_ibryeoghan_geumaeg">入力した金額：%1$s</string>
+    <string name="today_chulgeumil">引き落とし日</string>
+    <string name="today_ye_26">例：27</string>
+    <string name="today_maeweol_1_31il_sairo">毎月1〜31日の間で入力してください。</string>
+    <string name="today_ibeon_dalkkajiman_hago_jongryo">今月までで終了</string>
+    <string name="today_ibeon_dalkkajiman_hago_jongryohalkkayo">今月までで終了しますか？</string>
+    <string name="today_jeoggeum_mangina_wannabcheoreom_ije">積立の満期や完済など、もう出ていかない項目に使います。今月まではそのまま反映され、来月から引き落とし予定に出なくなります。過去の記録は残ります。</string>
+    <string name="today_jongryo">終了</string>
+    <string name="today_sagjehalkkayo">削除しますか？</string>
+    <string name="today_i_hangmogi_modeun_gigan">この項目がすべての期間（過去の月を含む）から消え、元に戻せません。今月までで終わらせたいときは「終了」を使ってください。</string>
+    <string name="today_sagje">削除</string>
+    <string name="today_ppareun_jichul_chuga">クイック入力を追加</string>
+    <string name="today_jaju_sseuneun_jichuleul_ppareuge">よく使う支出をすばやく記録できるようにしますか？</string>
+    <string name="today_ye_sigbi_kape_gyotong">例：ランチ、カフェ、交通</string>
+    <string name="today_ye_8000">例：800</string>
+    <string name="today_girogdoel_geumaeg">記録される金額：%1$s</string>
+    <string name="today_chuga_suig_sujeong">臨時収入を変更</string>
+    <string name="today_chuga_suig_girog">臨時収入を記録</string>
+    <string name="today_ibeon_yesan_gigane_chugaro">今期に追加で入ったお金を足しておきます。</string>
+    <string name="today_ye_hwangeubgeum_junggogeorae_busuib">例：還付金、フリマの売上、副収入</string>
+    <string name="today_ye_100000">例：10000</string>
+    <string name="today_deohaejil_geumaeg">足される金額：%1$s</string>
+    <string name="today_memo">メモ</string>
+    <string name="today_seontaeg_ibryeog">任意</string>
+
+    <string name="today_ijeon_jichul">以前の支出</string>
+    <string name="today_gwaenchanhayo_nameun_nale_dasi">大丈夫です。残りの日で分け直します。</string>
+    <string name="today_jigeum_peiseumyeon_ibeon_gigani">今のペースなら、今期の終わりに%1$s残ります。先に積立に移しておくと、次の大きな出費が楽になります。</string>
+    <string name="today_i_geumaegeun_nameun_nalro">この金額は、残りの日数で均等に割った値です。節約したぶんだけ、あとになるほど増えます。</string>
+    <string name="today_oneuleun_i_geumaeg_aneseo">今日はこの金額までなら大丈夫です。</string>
+    <string name="today_weol_il_2">%1$d月%2$d日</string>
+    <string name="today_oneul_naeyeog">今日の明細</string>
+    <string name="today_weol_il_naeyeog">%1$d月%2$d日の明細</string>
+    <string name="today_weol_il_yejeong">%1$d月%2$d日の予定</string>
+    <string name="today_deideon">DayDone</string>
+
+    <!-- ══ ledger ══ -->
+    <string name="ledger_nyeon_weol_naeyeog">%1$d年%2$d月の明細</string>
+    <string name="ledger_weol_il_weol_il">%1$d月%2$d日 〜 %3$d月%4$d日</string>
+    <string name="ledger_weol">%1$d月</string>
+    <string name="ledger_junbigeum">積立</string>
+    <string name="ledger_jeochug">貯金</string>
+    <string name="ledger_gojeongbi">固定費</string>
+    <string name="ledger_pilsu">必須</string>
+
+    <!-- ══ settings (ViewModel) ══ -->
+    <string name="settings_baegeobeul_jeojanghaesseoyo">バックアップを保存しました。\n%1$s</string>
+    <string name="settings_naebonaegie_silpaehaesseoyo_dasi_sidohae">書き出しに失敗しました。もう一度お試しください。</string>
+    <string name="settings_egsel_paileul_jeojanghaesseoyo_weolbyeol">Excelファイルを保存しました。月ごとの支出明細と固定支出のシートが入っています。\n%1$s</string>
+    <string name="settings_baegeob_paileul_jeojanghaesseoyo">バックアップファイルを保存しました。</string>
+    <string name="settings_bogweonhaesseoyo_oneul_taebeseo_hwaginhaeboseyo">復元しました。今日タブで確認してみてください。</string>
+    <string name="settings_paileul_ilgeul_su_eobseoyo">ファイルを読み込めません。フォルダから直接選んでください。</string>
+    <string name="settings_paileul_ilgeul_su_eobseoyo_2">ファイルを読み込めません。DayDoneのバックアップファイルかご確認ください。</string>
+
+    <!-- ══ held (ViewModel) ══ -->
+    <string name="held_30il_dongan_an_sasseoyo">30日間 買いませんでした — 浮いたお金になりました</string>
+    <string name="held_il_mane_an_sagiro">%1$d日で「買わない」と決めました</string>
+    <string name="held_il_gominhago_sasseoyo">%1$d日考えてから買いました</string>
+
+    <!-- ══ monthly (ViewModel) ══ -->
+    <string name="monthly_nyeon_weol">%1$d年%2$d月</string>
+
+    <!-- ══ noti_settings (ViewModel) ══ -->
+    <string name="noti_settings_geon_bonaesseoyo">%1$d件 送りました</string>
+    <string name="noti_settings_kyeojin_alrimi_eobseoyo">オンになっている通知がありません</string>
+    <string name="noti_settings_jigeumeun_bonael_alrimi_eobseoyo">いまは送る通知がありません（今日すでに支出があるか、条件に合っていません）</string>
+
+    <!-- ══ backup（Excel）══ -->
+    <string name="backup_daydone_naeyeog">daydone-明細</string>
+    <string name="backup_junbigeum">積立</string>
+    <string name="backup_jichul">支出</string>
+    <string name="backup_chugasuig">臨時収入</string>
+    <string name="backup_yesanweol">予算月</string>
+    <string name="backup_naljja">日付</string>
+    <string name="backup_gubun">区分</string>
+    <string name="backup_ireum">名前</string>
+    <string name="backup_geumaeg">金額</string>
+    <string name="backup_pilsu_jichul">必須の支出</string>
+    <string name="backup_memo">メモ</string>
+    <string name="backup_ye">はい</string>
+    <string name="backup_chulgeumil">引き落とし日</string>
+    <string name="backup_sijagweol">開始月</string>
+    <string name="backup_jongryoweol">終了月</string>
+    <string name="backup_jeochug">貯金</string>
+    <string name="backup_gojeongbi">固定費</string>
+    <string name="backup_gojeongjichul">固定支出</string>
+    <string name="backup_nyeon_weol_jichul_naeyeog">%1$s年%2$s月の支出明細</string>
+    <string name="backup_paileul_ilgeul_su_eobseoyo">ファイルを読み込めません。フォルダから直接選んでください。</string>
+    <string name="backup_i_gigieseoneun_poldeoreul_jigjeob">この端末ではフォルダを直接作成できません。</string>
+    <string name="backup_jeojanghal_wichireul_mandeul_su">保存先を作成できません。</string>
+    <string name="backup_paileul_sseul_su_eobseoyo">ファイルを書き込めません。</string>
+    <string name="backup_deideon_baegeob_paili_anieyo">DayDoneのバックアップファイルではありません。</string>
+    <string name="backup_jiweonhaji_anhneun_baegeob_beojeonieyo">対応していないバックアップのバージョンです。</string>
+
+    <!-- ══ widget ══ -->
+    <string name="widget_oneuleun_jogeum_neomgyeosseoyo_naeilbuteo">今日は少し超えました · 明日から</string>
+    <string name="widget_oneuleun_jogeum_neomgyeosseoyo">今日は少し超えました</string>
+    <string name="widget_oneul_nameun_geumaeg">今日の残り</string>
+    <string name="widget_weol_il_weol_il">%1$d月%2$d日 〜 %3$d月%4$d日</string>
+    <string name="widget_oneul_gweonjang_jung_sseum">目安 %1$s のうち %2$s 使用</string>
+
+    <!-- ══ common ══ -->
+    <string name="common_dwiro">戻る</string>
+
+    <!-- 月タブ カレンダーの曜日 -->
+    <string name="weekday_sun">日</string>
+    <string name="weekday_mon">月</string>
+    <string name="weekday_tue">火</string>
+    <string name="weekday_wed">水</string>
+    <string name="weekday_thu">木</string>
+    <string name="weekday_fri">金</string>
+    <string name="weekday_sat">土</string>
+
+    <!-- 下部タブ -->
+    <string name="tab_today">今日</string>
+    <string name="tab_monthly">月</string>
+    <string name="tab_vault">積立</string>
+    <string name="tab_settings">設定</string>
+
+    <!-- ══ main ══ -->
+    <string name="main_chuga">追加</string>
+    <string name="main_mueoseul_chugahalkkayo">何を追加しますか？</string>
+    <string name="main_jichul">支出</string>
+    <string name="main_suig">収入</string>
+    <string name="main_jeochug_gojeongbi">貯金 / 固定費</string>
+    <string name="main_ibeon_dal_yesan">今月の予算</string>
+    <string name="main_sagi_jeone_jigeum_samyeon">買う前に — 今買うと1日の目安がどう変わるか、先に見てみましょう</string>
+    <string name="main_salkka_malkka">買う？買わない？</string>
+
+    <!-- ══ widget ══ -->
+    <string name="widget_bulreooneun_jungieyo">読み込み中です</string>
+    <string name="widget_yesaneul_meonjeo_seoljeonghae_juseyo">先に予算を設定してください</string>
+    <string name="widget_taebhamyeon_deideoni_yeolryeoyo">タップするとDayDoneが開きます</string>
+    <string name="widget_jamsi_hu_dasi_boyeodeurilgeyo">少ししてからもう一度表示します</string>
+    <string name="widget_taebhamyeon_oneul_geumaegeul_bol">タップすると今日の金額が見られます</string>
+    <string name="widget_il_nameum">あと%1$d日</string>
+    <string name="widget_naeil">明日 %1$s</string>
+</resources>
