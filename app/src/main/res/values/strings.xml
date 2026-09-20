@@ -361,12 +361,12 @@
     <string name="report_peiseuga_jogeum_ppalrayo_gati">페이스가 조금 빨라요. 같이 조절해볼까요</string>
     <string name="report_yesaneul_neomeosseoyo_jigeumbuteon_kkog">예산을 넘었어요. 지금부턴 꼭 필요한 것만 함께 지켜봐요</string>
     <string name="report_yesaneul_manhi_neomeosseoyo_arae">예산을 많이 넘었어요. 아래 \'자주 쓴 곳\'에서 원인을 찾아봐요</string>
-    <string name="report_gigani_kkeutnasseoyo_saenghwalbiui_reul">기간이 끝났어요 · 생활비의 %1$s%를 썼어요</string>
-    <string name="report_giganeun_jinassgo_saenghwalbineun_sseosseoyo">기간은 %1$s% 지났고, 생활비는 %2$s% 썼어요</string>
+    <string name="report_gigani_kkeutnasseoyo_saenghwalbiui_reul">기간이 끝났어요 · 생활비의 %1$s%%를 썼어요</string>
+    <string name="report_giganeun_jinassgo_saenghwalbineun_sseosseoyo">기간은 %1$s%% 지났고, 생활비는 %2$s%% 썼어요</string>
     <string name="report_gigan_jongryo">기간 종료 · %1$s</string>
     <string name="report_iljjae">%1$s일째 · %2$s</string>
-    <string name="report_sseun_don">쓴 돈 %1$s%</string>
-    <string name="report_oneul">오늘 %1$s%</string>
+    <string name="report_sseun_don">쓴 돈 %1$s%%</string>
+    <string name="report_oneul">오늘 %1$s%%</string>
     <string name="report_jinan_giganboda_deol_sseosseoyo">지난 기간보다 %1$s 덜 썼어요</string>
     <string name="report_jinan_gigan_imamttaeboda_deol">지난 기간 이맘때보다 %1$s 덜 쓰고 있어요</string>
     <string name="report_jinan_giganboda_deo_sseosseoyo">지난 기간보다 %1$s 더 썼어요</string>
@@ -400,7 +400,7 @@
     <string name="report_jigeum_peiseuga_ieojimyeon_yesaneul">지금 페이스가 이어지면 예산을 조금 넘을 수 있어요. 괜찮아요 — 하루 </string>
     <string name="report_aneseo_sseumyeon_nameun_nale"> 안에서 쓰면 남은 날에 자연스럽게 맞춰져요.</string>
     <string name="report_gojeongjichul_deulyeodabogi">고정지출 들여다보기</string>
-    <string name="report_suibui_ga_maedal_jeochug">수입의 %1$s%가 매달 저축·고정비로 먼저 빠져나가요.</string>
+    <string name="report_suibui_ga_maedal_jeochug">수입의 %1$s%%가 매달 저축·고정비로 먼저 빠져나가요.</string>
     <string name="report_jeochug">저축</string>
     <string name="report_gojeongbi">고정비</string>
     <string name="report_sangse_bunseog">상세 분석</string>
@@ -409,7 +409,7 @@
     <string name="report_chulsi_ginyeom_muryo_gonggae">출시 기념 무료 공개 중</string>
     <string name="report_jeochug_2"> · 저축</string>
     <string name="report_gojeongbi_2"> · 고정비</string>
-    <string name="report_suibui">%1$s · 수입의 %2$s%</string>
+    <string name="report_suibui">%1$s · 수입의 %2$s%%</string>
     <string name="report_majchum_jean">맞춤 제안</string>
     <string name="report_geon">%1$s건</string>
 
