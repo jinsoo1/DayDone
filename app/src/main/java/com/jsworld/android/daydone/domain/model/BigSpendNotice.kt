@@ -17,6 +17,18 @@ sealed interface BigSpendNotice {
 
     /** 12월 — 연말 모임. */
     data object YearEnd : BigSpendNotice
+
+    /** 일본 — 전부 양력 고정이라 표 없이 월 규칙만으로 끝난다. */
+    data class JapaneseSeason(val season: JapaneseBigSpendSeason) : BigSpendNotice
 }
 
 enum class KoreanLunarHoliday { SEOLLAL, CHUSEOK }
+
+/** 일본에서 출비가 몰리는 달. 월이 고정이라 해마다 갱신할 표가 없다. */
+enum class JapaneseBigSpendSeason(val month: Int) {
+    NEW_YEAR(1),     // お正月 — 帰省・お年玉・初売り
+    NEW_LIFE(4),     // 新生活 — 引っ越し・歓迎会
+    GOLDEN_WEEK(5),  // GW + 自動車税 통지
+    OBON(8),         // お盆 — 帰省
+    YEAR_END(12)     // 年末年始 — 忘年会・帰省
+}

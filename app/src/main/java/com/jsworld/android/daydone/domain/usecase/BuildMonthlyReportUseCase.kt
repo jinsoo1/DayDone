@@ -13,6 +13,7 @@ import com.jsworld.android.daydone.domain.model.ReportPace
 import com.jsworld.android.daydone.domain.model.ReportSuggestion
 import com.jsworld.android.daydone.domain.model.ScheduledDeduction
 import com.jsworld.android.daydone.domain.model.ScheduledDeductionType
+import com.jsworld.android.daydone.presentation.util.CurrencyStyle
 import jakarta.inject.Inject
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
@@ -365,8 +366,8 @@ class BuildMonthlyReportUseCase @Inject constructor(
             }
         }
 
-        // 소액 다건 습관
-        val smallOnes = general.filter { it.amount in 1..9_999 }
+        // 소액 다건 습관 — 상한은 통화별(KRW 9,999 / JPY 999). 문구도 같은 숫자를 말한다.
+        val smallOnes = general.filter { it.amount in 1..CurrencyStyle.current.smallSpendCeiling }
         if (smallOnes.size >= 8) {
             suggestions += ReportSuggestion.ManySmallSpends(
                 count = smallOnes.size,

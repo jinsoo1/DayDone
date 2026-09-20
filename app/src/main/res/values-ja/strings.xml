@@ -61,8 +61,8 @@
 
     <string name="report_advice_day_of_week">支出は<xliff:g id="day" example="土">%1$s</xliff:g>曜日にいちばん集中しています（<xliff:g id="amount" example="18,000円">%2$s</xliff:g>・全体の<xliff:g id="percent" example="38">%3$d</xliff:g>%%）。その日だけ先に計画しておくと、ペースが安定します。</string>
     <string name="report_advice_weekend">週末の1日平均（<xliff:g id="weekend" example="4,200円">%1$s</xliff:g>）が平日（<xliff:g id="weekday" example="2,100円">%2$s</xliff:g>）よりかなり大きめです。週末の予定だけ決めておくと、1か月が楽になります。</string>
-    <!-- ⚠️ しきい値 1万円未満 はコード（9,999）に合わせてある。日本なら 1,000円 が妥当 — review 文書参照 -->
-    <string name="report_advice_small_spends">1万円未満の支出が<xliff:g id="count" example="12">%1$d</xliff:g>回、合わせると<xliff:g id="total" example="6,400円">%2$s</xliff:g>です。小さな出費も集まると、1日の目安を軽く超えてしまいます。</string>
+    <!-- しきい値 1,000円未満 は CurrencyStyle.JPY.smallSpendCeiling(999) と同じ数字 -->
+    <string name="report_advice_small_spends">1,000円未満の支出が<xliff:g id="count" example="12">%1$d</xliff:g>回、合わせると<xliff:g id="total" example="6,400円">%2$s</xliff:g>です。小さな出費も集まると、1日の目安を軽く超えてしまいます。</string>
     <string name="report_advice_cafe">カフェ・おやつに平均2日に1回以上立ち寄っています（<xliff:g id="count" example="9">%1$d</xliff:g>回・<xliff:g id="total" example="4,500円">%2$s</xliff:g>）。回数を半分にするだけで<xliff:g id="half" example="2,250円">%3$s</xliff:g>残ります。</string>
     <string name="report_advice_delivery">デリバリーの注文が<xliff:g id="count" example="4">%1$d</xliff:g>回（<xliff:g id="total" example="8,200円">%2$s</xliff:g>）です。1回だけテイクアウトに変えても、配達料のぶん余裕ができます。</string>
     <string name="report_advice_biggest_day">いちばん大きかった日は<xliff:g id="month" example="9">%1$d</xliff:g>月<xliff:g id="day" example="14">%2$d</xliff:g>日（<xliff:g id="amount" example="9,800円">%3$s</xliff:g>）でした。大きな出費の翌日をノーマネーデーにすると、ペースはすぐ戻ります。</string>
@@ -88,10 +88,15 @@
     <string name="category_culture">趣味・娯楽</string>
     <string name="category_etc">その他</string>
 
-    <!-- 大きな出費の月 — ⚠️ カレンダー自体が日本用に差し替わるまで、旧正月/秋夕は韓国の暦のまま出る -->
+    <!-- 大きな出費の月 — ja では JapaneseBigSpendCalendar が big_spend_jp_* を出す。旧正月/秋夕は韓国用 -->
     <string name="big_spend_lunar">今月は<xliff:g id="holiday" example="旧正月">%1$s</xliff:g>があります。大きな出費が見込まれるなら、積立に少しずつ分けておくと楽です。</string>
     <string name="big_spend_family_month">5月はGWや自動車税で出費が重なりやすい月です。少しずつ分けておくと、その月が楽になります。</string>
     <string name="big_spend_year_end">12月は年末年始の集まりが増えます。少しずつ準備しておくと安心です。</string>
+    <string name="big_spend_jp_new_year">1月は帰省やお年玉、初売りで出費が重なりやすい月です。少しずつ分けておくと楽です。</string>
+    <string name="big_spend_jp_new_life">4月は新生活が始まる月で、出費が増えがちです。少しずつ準備しておくと安心です。</string>
+    <string name="big_spend_jp_golden_week">5月はゴールデンウィークと自動車税が重なります。少しずつ分けておくと、その月が楽になります。</string>
+    <string name="big_spend_jp_obon">8月はお盆の帰省で出費が増えがちです。少しずつ準備しておくと安心です。</string>
+    <string name="big_spend_jp_year_end">12月は年末年始の集まりや帰省が重なります。少しずつ準備しておくと安心です。</string>
     <string name="holiday_seollal">旧正月（ソルラル）</string>
     <string name="holiday_chuseok">秋夕（チュソク）</string>
 

@@ -1,6 +1,7 @@
 package com.jsworld.android.daydone.domain.usecase
 
 import com.jsworld.android.daydone.domain.model.BigSpendNotice
+import com.jsworld.android.daydone.domain.model.JapaneseBigSpendSeason
 import com.jsworld.android.daydone.domain.model.KoreanLunarHoliday
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
@@ -61,5 +62,43 @@ class GetBigSpendMonthNoticeUseCaseTest {
             useCase(YearMonth.of(2028, 10))
         )
         assertNull(useCase(YearMonth.of(2028, 2)))
+    }
+}
+
+/** 일본 달력 — 전부 양력 고정이라 표가 없다. 5개 달만 말한다. */
+class JapaneseBigSpendCalendarTest {
+
+    private val calendar = JapaneseBigSpendCalendar
+
+    @Test
+    fun `양력 고정 5개 달만 안내한다`() {
+        val expected = mapOf(
+            1 to JapaneseBigSpendSeason.NEW_YEAR,
+            4 to JapaneseBigSpendSeason.NEW_LIFE,
+            5 to JapaneseBigSpendSeason.GOLDEN_WEEK,
+            8 to JapaneseBigSpendSeason.OBON,
+            12 to JapaneseBigSpendSeason.YEAR_END
+        )
+        for (month in 1..12) {
+            val notice = calendar.noticeFor(YearMonth.of(2027, month))
+            val season = expected[month]
+            if (season == null) {
+                assertNull("$month 월은 안내 없음", notice)
+            } else {
+                assertEquals(BigSpendNotice.JapaneseSeason(season), notice)
+            }
+        }
+    }
+
+    @Test
+    fun `해가 바뀌어도 같다 - 음력 표가 없으므로`() {
+        assertEquals(calendar.noticeFor(YearMonth.of(2026, 5)), calendar.noticeFor(YearMonth.of(2031, 5)))
+    }
+
+    @Test
+    fun `로케일로 달력을 고른다`() {
+        assertEquals(KoreanBigSpendCalendar, BigSpendCalendar.forLocale(java.util.Locale.KOREA))
+        assertEquals(JapaneseBigSpendCalendar, BigSpendCalendar.forLocale(java.util.Locale.JAPAN))
+        assertEquals(KoreanBigSpendCalendar, BigSpendCalendar.forLocale(java.util.Locale.US))
     }
 }

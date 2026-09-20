@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.annotation.StringRes
 import com.jsworld.android.daydone.R
 import com.jsworld.android.daydone.domain.model.BigSpendNotice
+import com.jsworld.android.daydone.domain.model.JapaneseBigSpendSeason
 import com.jsworld.android.daydone.domain.model.KoreanLunarHoliday
 
 /**
@@ -19,7 +20,18 @@ fun BigSpendNotice.text(context: Context): String = when (this) {
 
     BigSpendNotice.FamilyMonth -> context.getString(R.string.big_spend_family_month)
     BigSpendNotice.YearEnd -> context.getString(R.string.big_spend_year_end)
+    is BigSpendNotice.JapaneseSeason -> context.getString(season.textRes)
 }
+
+@get:StringRes
+private val JapaneseBigSpendSeason.textRes: Int
+    get() = when (this) {
+        JapaneseBigSpendSeason.NEW_YEAR -> R.string.big_spend_jp_new_year
+        JapaneseBigSpendSeason.NEW_LIFE -> R.string.big_spend_jp_new_life
+        JapaneseBigSpendSeason.GOLDEN_WEEK -> R.string.big_spend_jp_golden_week
+        JapaneseBigSpendSeason.OBON -> R.string.big_spend_jp_obon
+        JapaneseBigSpendSeason.YEAR_END -> R.string.big_spend_jp_year_end
+    }
 
 @get:StringRes
 private val KoreanLunarHoliday.labelRes: Int

@@ -95,6 +95,12 @@
     <string name="big_spend_lunar">이번 달엔 <xliff:g id="holiday" example="설날">%1$s</xliff:g>이 있어요. 큰 지출이 예상되면 금고에 미리 나눠 담아두면 편해요.</string>
     <string name="big_spend_family_month">5월엔 가정의 달 행사가 몰려요. 미리 나눠 담아두면 그 달이 편해져요.</string>
     <string name="big_spend_year_end">12월엔 연말 모임이 늘어나요. 미리 조금씩 준비해두면 좋아요.</string>
+    <!-- 일본 달력 (ja 에서만 뜸. 키 동등성 때문에 여기도 둔다) -->
+    <string name="big_spend_jp_new_year">1월엔 귀성·세뱃돈·신년 세일로 지출이 몰려요. 미리 나눠 담아두면 편해요.</string>
+    <string name="big_spend_jp_new_life">4월은 새 생활이 시작되는 달이라 지출이 늘어요. 미리 조금씩 준비해두면 좋아요.</string>
+    <string name="big_spend_jp_golden_week">5월엔 골든위크와 자동차세가 겹쳐요. 미리 나눠 담아두면 그 달이 편해져요.</string>
+    <string name="big_spend_jp_obon">8월엔 오봉 귀성으로 지출이 늘어요. 미리 조금씩 준비해두면 좋아요.</string>
+    <string name="big_spend_jp_year_end">12월엔 연말연시 모임과 귀성이 몰려요. 미리 조금씩 준비해두면 좋아요.</string>
     <string name="holiday_seollal">설날</string>
     <string name="holiday_chuseok">추석</string>
 
