@@ -3,6 +3,7 @@ package com.jsworld.android.daydone.data.repository
 import android.content.Context
 import com.jsworld.android.daydone.domain.model.Notice
 import com.jsworld.android.daydone.domain.repository.NoticeRepository
+import com.jsworld.android.daydone.presentation.util.AppLocale
 import dagger.hilt.android.qualifiers.ApplicationContext
 import jakarta.inject.Inject
 import kotlinx.coroutines.Dispatchers
@@ -14,7 +15,7 @@ class NoticeRepositoryImpl @Inject constructor(
 ) : NoticeRepository {
 
     override suspend fun getNotices(): List<Notice> = withContext(Dispatchers.IO) {
-        val raw = context.assets.open(FILE_NAME)
+        val raw = context.assets.open(fileName())
             .bufferedReader()
             .use { it.readText() }
 
@@ -44,7 +45,12 @@ class NoticeRepositoryImpl @Inject constructor(
         }.sortedByDescending { it.date }
     }
 
-    companion object {
-        private const val FILE_NAME = "ddaydone_notices.json"
+    /**
+     * 공지는 언어별로 **따로 관리**한다 — 번역이 아니라 각 나라 유저에게 할 말이 다르다.
+     * 일본어 공지는 1.5.0(일본어 첫 출시)이 첫 공지고, 한국어 공지의 과거 이력은 담지 않는다.
+     */
+    private fun fileName(): String = when (AppLocale.current.language) {
+        "ja" -> "notices_ja.json"
+        else -> "notices_ko.json"
     }
 }

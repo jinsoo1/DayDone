@@ -383,6 +383,8 @@ Room 마이그레이션: 스키마 변경 시 정식 `Migration` 제공(데이�
 - 포지션: "서버가 없어서 유출될 곳 자체가 없어요" — **구조적 사실**만 말하고 타사 유출 언급·공포 마케팅 금지(§13 톤).
 - 위치: ① 온보딩 하단 🔒 한 줄 ② 설정 탭 백업 카드 아래 🔒 안내. 스토어 자세한 설명에도 동일 포지션 반영됨.
 
+**✅ 공지사항 언어별 분리 (v1.5.0)** — `assets/notices_ko.json` · `notices_ja.json`. 번역이 아니라 **각 나라 유저에게 할 말이 다르다**는 전제로 따로 쓴다. 일본어는 1.5.0 이 첫 공지(한국어 과거 이력 없음). 새 릴리즈마다 두 파일에 각각 쓴다. `NoticeRepositoryImpl.fileName()` 이 `AppLocale` 로 고른다.
+
 **✅ 데이터 초기화 (구현됨)**
 - 설정 탭에서 확인 다이얼로그 후 `DataResetRepository.resetAll()` = Room **`clearAllTables()`**(전 테이블 자동, 새 테이블 추가돼도 누락 없음) + DataStore clear. 초기화하면 온보딩 플래그도 지워져 온보딩부터 재시작.
 
@@ -393,8 +395,8 @@ Room 마이그레이션: 스키마 변경 시 정식 `Migration` 제공(데이�
 - 리포트 무지출 일수는 `max(period.start, 전체 기록의 최초 지출 날짜)`부터 집계(기록 시작 전 가짜 무지출 방지 — firstUseDate 대신 데이터 파생, §12 리포트 참고). 챌린지는 유저가 시작일을 정하므로 clamp 안 함.
 
 **🌏 해외 배포 (일본 먼저) — 2단계 분할 결정**
-- **v1.5.0 = 국제화 기반만, 한국어 그대로 출시**(유저 체감 변화 0) / **v1.6.0 = 일본어 리소스 추가**. 한 번에 하면 회귀 범위가 앱 전체가 돼서 나눴다.
-- **ja 상태(2026-09)**: `values-ja` 624개 초벌 + 코드 9항목 완료, 스위치 켜짐(`feature/v1.6-ja-draft`). 상세·용어 결정·감수 포인트는 `docs/v1.6-ja-review.md`. **로케일 게이트는 `AppLocale.SUPPORTED`** — `localeFilters`·`locales_config.xml`과 같은 목록이어야 하고, 통화(`CurrencyStyle`)·달력(`BigSpendCalendar`)·사전(`ExpenseCategoryDictionary`)·문장부호가 전부 이 하나를 본다. 새 언어는 세 곳을 한 커밋에.
+- 원래 계획은 **v1.5.0 = 기반만 / v1.6.0 = 일본어**였으나, 기반 작업이 끝난 시점에 일본어까지 붙어 있어 **1.5.0 에 일본어를 함께 출시**하기로 결정(2026-09-20). 회귀 분리 이점은 포기했고, 대신 한국어 단말 변화 0 은 `AppLocale.of(ko)` 가 KOREA 를 돌려주는 구조로 보장한다.
+- **ja 상태(2026-09)**: `values-ja` 초벌 + 코드 9항목 완료, 스위치 켜짐, **1.5.0 에 포함**. 상세·용어 결정·감수 포인트는 `docs/v1.6-ja-review.md`. **로케일 게이트는 `AppLocale.SUPPORTED`** — `localeFilters`·`locales_config.xml`과 같은 목록이어야 하고, 통화(`CurrencyStyle`)·달력(`BigSpendCalendar`)·사전(`ExpenseCategoryDictionary`)·문장부호가 전부 이 하나를 본다. 새 언어는 세 곳을 한 커밋에.
 - 현황(주석 제외 실측): `strings.xml` 4줄, kt 안 한글 리터럴 **1,487개** — 그중 **740개(50%)가 `ClassifyExpenseCategoryUseCase` 키워드 사전**(번역이 아니라 **재작성**). 번역 대상은 **747개(고유 568)**, 보간 약 135개. **v1.5.0 상세 계획은 `docs/v1.5-design.md`**.
 - 한국어·일본어 모두 복수형이 없어 **`plurals` 불필요**(영어부터 갔으면 필요했다).
 - ⚠️ **domain 레이어가 표시용 한글을 만든다**(UseCase 22개 — 리포트·알림·`ExpenseCategory.label`). UseCase엔 Context가 없어 `stringResource`를 못 쓴다. `StringProvider` 주입은 쉽지만 **순수 JVM 테스트 134개가 깨진다** → 테스트 걸린 UseCase는 타입만 반환하고 문구는 presentation에서 조립, 단순 enum은 `@StringRes labelRes`로.

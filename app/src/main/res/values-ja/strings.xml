@@ -170,7 +170,7 @@
     <string name="challenge_settings_pilsu_jeoe_haru_jichuli">必要な支出を除いた1日の支出が、決めた金額以下なら達成</string>
     <string name="challenge_settings_haru_heoyong_geumaeg">1日の上限</string>
     <string name="challenge_settings_weon">円</string>
-    <string name="challenge_settings_dojeon_ilsu">日数</string>
+    <string name="challenge_settings_dojeon_ilsu">チャレンジ日数</string>
     <string name="challenge_settings_il">日</string>
     <string name="challenge_settings_oneulbuteo_myeochil_dongan_dojeonhalji">今日から何日間続けるか（1〜31日）</string>
     <string name="challenge_settings_yesan_gigangwa_mugwanhage_oneulbuteo">予算の期間とは関係なく、今日から始まります。積立・貯金・固定費はノーマネーデーを崩しません。</string>
