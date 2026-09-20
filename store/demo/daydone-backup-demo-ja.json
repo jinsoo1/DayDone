@@ -1,0 +1,708 @@
+{
+  "backupVersion": 1,
+  "app": "daydone",
+  "exportedAt": 1789889081450,
+  "settings": {
+    "monthlyIncome": 230000,
+    "payday": 25,
+    "budgetStartDay": 1,
+    "firstUseDate": "2026-07-15",
+    "onboardingDone": true,
+    "preJoinSpendHandled": true,
+    "challengeEnabled": true,
+    "challengeMode": "ESSENTIAL_ALLOWED",
+    "challengeCapAmount": 0,
+    "challengeTargetDays": 14,
+    "challengeStartDate": "2026-09-14"
+  },
+  "expenses": [
+    {
+      "id": 1,
+      "title": "ランチ",
+      "amount": 980,
+      "date": "2026-08-01",
+      "type": "GENERAL",
+      "futureExpenseId": null,
+      "memo": null,
+      "isEssential": false,
+      "createdAt": 1789889081450
+    },
+    {
+      "id": 2,
+      "title": "業スー",
+      "amount": 3980,
+      "date": "2026-08-02",
+      "type": "GENERAL",
+      "futureExpenseId": null,
+      "memo": null,
+      "isEssential": false,
+      "createdAt": 1789889081450
+    },
+    {
+      "id": 3,
+      "title": "電車",
+      "amount": 450,
+      "date": "2026-08-03",
+      "type": "GENERAL",
+      "futureExpenseId": null,
+      "memo": null,
+      "isEssential": true,
+      "createdAt": 1789889081450
+    },
+    {
+      "id": 4,
+      "title": "スタバ",
+      "amount": 640,
+      "date": "2026-08-04",
+      "type": "GENERAL",
+      "futureExpenseId": null,
+      "memo": null,
+      "isEssential": false,
+      "createdAt": 1789889081450
+    },
+    {
+      "id": 5,
+      "title": "ユニクロ",
+      "amount": 2990,
+      "date": "2026-08-06",
+      "type": "GENERAL",
+      "futureExpenseId": null,
+      "memo": null,
+      "isEssential": false,
+      "createdAt": 1789889081450
+    },
+    {
+      "id": 6,
+      "title": "ライフ",
+      "amount": 2450,
+      "date": "2026-08-07",
+      "type": "GENERAL",
+      "futureExpenseId": null,
+      "memo": null,
+      "isEssential": false,
+      "createdAt": 1789889081450
+    },
+    {
+      "id": 7,
+      "title": "ランチ",
+      "amount": 1100,
+      "date": "2026-08-08",
+      "type": "GENERAL",
+      "futureExpenseId": null,
+      "memo": null,
+      "isEssential": false,
+      "createdAt": 1789889081450
+    },
+    {
+      "id": 8,
+      "title": "ドラッグストア",
+      "amount": 1560,
+      "date": "2026-08-10",
+      "type": "GENERAL",
+      "futureExpenseId": null,
+      "memo": null,
+      "isEssential": false,
+      "createdAt": 1789889081450
+    },
+    {
+      "id": 9,
+      "title": "飲み会",
+      "amount": 4200,
+      "date": "2026-08-11",
+      "type": "GENERAL",
+      "futureExpenseId": null,
+      "memo": null,
+      "isEssential": false,
+      "createdAt": 1789889081450
+    },
+    {
+      "id": 10,
+      "title": "サイゼ",
+      "amount": 1480,
+      "date": "2026-08-13",
+      "type": "GENERAL",
+      "futureExpenseId": null,
+      "memo": null,
+      "isEssential": false,
+      "createdAt": 1789889081450
+    },
+    {
+      "id": 11,
+      "title": "帰省 お土産",
+      "amount": 3200,
+      "date": "2026-08-15",
+      "type": "GENERAL",
+      "futureExpenseId": null,
+      "memo": null,
+      "isEssential": false,
+      "createdAt": 1789889081450
+    },
+    {
+      "id": 12,
+      "title": "電車",
+      "amount": 450,
+      "date": "2026-08-17",
+      "type": "GENERAL",
+      "futureExpenseId": null,
+      "memo": null,
+      "isEssential": true,
+      "createdAt": 1789889081450
+    },
+    {
+      "id": 13,
+      "title": "ミスド",
+      "amount": 520,
+      "date": "2026-08-18",
+      "type": "GENERAL",
+      "futureExpenseId": null,
+      "memo": null,
+      "isEssential": false,
+      "createdAt": 1789889081450
+    },
+    {
+      "id": 14,
+      "title": "イオン",
+      "amount": 3860,
+      "date": "2026-08-20",
+      "type": "GENERAL",
+      "futureExpenseId": null,
+      "memo": null,
+      "isEssential": false,
+      "createdAt": 1789889081450
+    },
+    {
+      "id": 15,
+      "title": "ラーメン",
+      "amount": 980,
+      "date": "2026-08-22",
+      "type": "GENERAL",
+      "futureExpenseId": null,
+      "memo": null,
+      "isEssential": false,
+      "createdAt": 1789889081450
+    },
+    {
+      "id": 16,
+      "title": "映画",
+      "amount": 1900,
+      "date": "2026-08-24",
+      "type": "GENERAL",
+      "futureExpenseId": null,
+      "memo": null,
+      "isEssential": false,
+      "createdAt": 1789889081450
+    },
+    {
+      "id": 17,
+      "title": "カフェ",
+      "amount": 680,
+      "date": "2026-08-25",
+      "type": "GENERAL",
+      "futureExpenseId": null,
+      "memo": null,
+      "isEssential": false,
+      "createdAt": 1789889081450
+    },
+    {
+      "id": 18,
+      "title": "ランチ",
+      "amount": 950,
+      "date": "2026-08-27",
+      "type": "GENERAL",
+      "futureExpenseId": null,
+      "memo": null,
+      "isEssential": false,
+      "createdAt": 1789889081450
+    },
+    {
+      "id": 19,
+      "title": "コンビニ",
+      "amount": 560,
+      "date": "2026-08-29",
+      "type": "GENERAL",
+      "futureExpenseId": null,
+      "memo": null,
+      "isEssential": false,
+      "createdAt": 1789889081450
+    },
+    {
+      "id": 20,
+      "title": "業スー",
+      "amount": 3120,
+      "date": "2026-08-31",
+      "type": "GENERAL",
+      "futureExpenseId": null,
+      "memo": null,
+      "isEssential": false,
+      "createdAt": 1789889081450
+    },
+    {
+      "id": 21,
+      "title": "スタバ",
+      "amount": 620,
+      "date": "2026-09-01",
+      "type": "GENERAL",
+      "futureExpenseId": null,
+      "memo": null,
+      "isEssential": false,
+      "createdAt": 1789889081450
+    },
+    {
+      "id": 22,
+      "title": "ランチ",
+      "amount": 980,
+      "date": "2026-09-01",
+      "type": "GENERAL",
+      "futureExpenseId": null,
+      "memo": null,
+      "isEssential": false,
+      "createdAt": 1789889081450
+    },
+    {
+      "id": 23,
+      "title": "業スー",
+      "amount": 3480,
+      "date": "2026-09-02",
+      "type": "GENERAL",
+      "futureExpenseId": null,
+      "memo": null,
+      "isEssential": false,
+      "createdAt": 1789889081450
+    },
+    {
+      "id": 24,
+      "title": "電車",
+      "amount": 450,
+      "date": "2026-09-02",
+      "type": "GENERAL",
+      "futureExpenseId": null,
+      "memo": null,
+      "isEssential": true,
+      "createdAt": 1789889081450
+    },
+    {
+      "id": 25,
+      "title": "ランチ",
+      "amount": 1100,
+      "date": "2026-09-03",
+      "type": "GENERAL",
+      "futureExpenseId": null,
+      "memo": null,
+      "isEssential": false,
+      "createdAt": 1789889081450
+    },
+    {
+      "id": 26,
+      "title": "マツキヨ",
+      "amount": 1280,
+      "date": "2026-09-03",
+      "type": "GENERAL",
+      "futureExpenseId": null,
+      "memo": null,
+      "isEssential": false,
+      "createdAt": 1789889081450
+    },
+    {
+      "id": 27,
+      "title": "サイゼ",
+      "amount": 1650,
+      "date": "2026-09-05",
+      "type": "GENERAL",
+      "futureExpenseId": null,
+      "memo": null,
+      "isEssential": false,
+      "createdAt": 1789889081450
+    },
+    {
+      "id": 28,
+      "title": "セブン",
+      "amount": 540,
+      "date": "2026-09-05",
+      "type": "GENERAL",
+      "futureExpenseId": null,
+      "memo": null,
+      "isEssential": false,
+      "createdAt": 1789889081450
+    },
+    {
+      "id": 29,
+      "title": "ユニクロ",
+      "amount": 4990,
+      "date": "2026-09-06",
+      "type": "GENERAL",
+      "futureExpenseId": null,
+      "memo": null,
+      "isEssential": false,
+      "createdAt": 1789889081450
+    },
+    {
+      "id": 30,
+      "title": "カフェ",
+      "amount": 700,
+      "date": "2026-09-06",
+      "type": "GENERAL",
+      "futureExpenseId": null,
+      "memo": null,
+      "isEssential": false,
+      "createdAt": 1789889081450
+    },
+    {
+      "id": 31,
+      "title": "ライフ",
+      "amount": 2860,
+      "date": "2026-09-07",
+      "type": "GENERAL",
+      "futureExpenseId": null,
+      "memo": null,
+      "isEssential": false,
+      "createdAt": 1789889081450
+    },
+    {
+      "id": 32,
+      "title": "ランチ",
+      "amount": 950,
+      "date": "2026-09-08",
+      "type": "GENERAL",
+      "futureExpenseId": null,
+      "memo": null,
+      "isEssential": false,
+      "createdAt": 1789889081450
+    },
+    {
+      "id": 33,
+      "title": "電車",
+      "amount": 450,
+      "date": "2026-09-08",
+      "type": "GENERAL",
+      "futureExpenseId": null,
+      "memo": null,
+      "isEssential": true,
+      "createdAt": 1789889081450
+    },
+    {
+      "id": 34,
+      "title": "ミスド",
+      "amount": 480,
+      "date": "2026-09-09",
+      "type": "GENERAL",
+      "futureExpenseId": null,
+      "memo": null,
+      "isEssential": false,
+      "createdAt": 1789889081450
+    },
+    {
+      "id": 35,
+      "title": "ラーメン",
+      "amount": 1050,
+      "date": "2026-09-11",
+      "type": "GENERAL",
+      "futureExpenseId": null,
+      "memo": null,
+      "isEssential": false,
+      "createdAt": 1789889081450
+    },
+    {
+      "id": 36,
+      "title": "ドラッグストア",
+      "amount": 890,
+      "date": "2026-09-11",
+      "type": "GENERAL",
+      "futureExpenseId": null,
+      "memo": null,
+      "isEssential": false,
+      "createdAt": 1789889081450
+    },
+    {
+      "id": 37,
+      "title": "飲み会",
+      "amount": 4500,
+      "date": "2026-09-12",
+      "type": "GENERAL",
+      "futureExpenseId": null,
+      "memo": null,
+      "isEssential": false,
+      "createdAt": 1789889081450
+    },
+    {
+      "id": 38,
+      "title": "イオン",
+      "amount": 3120,
+      "date": "2026-09-13",
+      "type": "GENERAL",
+      "futureExpenseId": null,
+      "memo": null,
+      "isEssential": false,
+      "createdAt": 1789889081450
+    },
+    {
+      "id": 39,
+      "title": "映画",
+      "amount": 1900,
+      "date": "2026-09-13",
+      "type": "GENERAL",
+      "futureExpenseId": null,
+      "memo": null,
+      "isEssential": false,
+      "createdAt": 1789889081450
+    },
+    {
+      "id": 40,
+      "title": "電車",
+      "amount": 450,
+      "date": "2026-09-14",
+      "type": "GENERAL",
+      "futureExpenseId": null,
+      "memo": null,
+      "isEssential": true,
+      "createdAt": 1789889081450
+    },
+    {
+      "id": 41,
+      "title": "電車",
+      "amount": 450,
+      "date": "2026-09-16",
+      "type": "GENERAL",
+      "futureExpenseId": null,
+      "memo": null,
+      "isEssential": true,
+      "createdAt": 1789889081450
+    },
+    {
+      "id": 42,
+      "title": "電車",
+      "amount": 450,
+      "date": "2026-09-18",
+      "type": "GENERAL",
+      "futureExpenseId": null,
+      "memo": null,
+      "isEssential": true,
+      "createdAt": 1789889081450
+    },
+    {
+      "id": 43,
+      "title": "電車",
+      "amount": 450,
+      "date": "2026-09-19",
+      "type": "GENERAL",
+      "futureExpenseId": null,
+      "memo": null,
+      "isEssential": true,
+      "createdAt": 1789889081450
+    },
+    {
+      "id": 44,
+      "title": "電車",
+      "amount": 450,
+      "date": "2026-09-20",
+      "type": "GENERAL",
+      "futureExpenseId": null,
+      "memo": null,
+      "isEssential": true,
+      "createdAt": 1789889081450
+    },
+    {
+      "id": 45,
+      "title": "自動車税 積立",
+      "amount": 10000,
+      "date": "2026-09-03",
+      "type": "FUTURE_PREPARE",
+      "futureExpenseId": 1,
+      "memo": null,
+      "isEssential": false,
+      "createdAt": 1789889081450
+    },
+    {
+      "id": 46,
+      "title": "年末の帰省 積立",
+      "amount": 12000,
+      "date": "2026-09-10",
+      "type": "FUTURE_PREPARE",
+      "futureExpenseId": 2,
+      "memo": null,
+      "isEssential": false,
+      "createdAt": 1789889081450
+    }
+  ],
+  "scheduledDeductions": [
+    {
+      "id": 1,
+      "title": "家賃",
+      "amount": 65000,
+      "type": "FIXED",
+      "withdrawalDay": 27,
+      "startYearMonth": "2026-07",
+      "endYearMonth": null,
+      "memo": null,
+      "createdAt": 1789889081450
+    },
+    {
+      "id": 2,
+      "title": "積立貯金",
+      "amount": 30000,
+      "type": "SAVING",
+      "withdrawalDay": 26,
+      "startYearMonth": "2026-07",
+      "endYearMonth": null,
+      "memo": null,
+      "createdAt": 1789889081450
+    },
+    {
+      "id": 3,
+      "title": "保険料",
+      "amount": 8000,
+      "type": "FIXED",
+      "withdrawalDay": 10,
+      "startYearMonth": "2026-07",
+      "endYearMonth": null,
+      "memo": null,
+      "createdAt": 1789889081450
+    },
+    {
+      "id": 4,
+      "title": "スマホ代",
+      "amount": 4500,
+      "type": "FIXED",
+      "withdrawalDay": 20,
+      "startYearMonth": "2026-07",
+      "endYearMonth": null,
+      "memo": null,
+      "createdAt": 1789889081450
+    }
+  ],
+  "scheduledDeductionAmounts": [],
+  "extraIncomes": [
+    {
+      "id": 1,
+      "title": "メルカリ",
+      "amount": 3200,
+      "date": "2026-09-07",
+      "memo": null,
+      "createdAt": 1789889081450
+    }
+  ],
+  "monthlyBudgets": [
+    {
+      "anchorMonth": "2026-07",
+      "income": 230000
+    },
+    {
+      "anchorMonth": "2026-08",
+      "income": 230000
+    },
+    {
+      "anchorMonth": "2026-09",
+      "income": 230000
+    }
+  ],
+  "quickExpenses": [
+    {
+      "id": 1,
+      "title": "ランチ",
+      "amount": 1000,
+      "sortOrder": 0,
+      "isActive": true,
+      "createdAt": 1789889081450
+    },
+    {
+      "id": 2,
+      "title": "カフェ",
+      "amount": 600,
+      "sortOrder": 1,
+      "isActive": true,
+      "createdAt": 1789889081450
+    },
+    {
+      "id": 3,
+      "title": "電車",
+      "amount": 450,
+      "sortOrder": 2,
+      "isActive": true,
+      "createdAt": 1789889081450
+    },
+    {
+      "id": 4,
+      "title": "コンビニ",
+      "amount": 500,
+      "sortOrder": 3,
+      "isActive": true,
+      "createdAt": 1789889081450
+    }
+  ],
+  "futureExpenses": [
+    {
+      "id": 1,
+      "title": "自動車税",
+      "category": "TAX",
+      "totalAmount": 39500,
+      "targetYearMonth": "2027-05",
+      "prepareStartYearMonth": "2026-09",
+      "repeatRule": "YEARLY",
+      "memo": null,
+      "lastPaidYearMonth": null,
+      "createdAt": 1789889081450
+    },
+    {
+      "id": 2,
+      "title": "年末の帰省",
+      "category": "ETC",
+      "totalAmount": 40000,
+      "targetYearMonth": "2026-12",
+      "prepareStartYearMonth": "2026-09",
+      "repeatRule": "ONCE",
+      "memo": "新幹線とお土産",
+      "lastPaidYearMonth": null,
+      "createdAt": 1789889081450
+    },
+    {
+      "id": 3,
+      "title": "車検",
+      "category": "TAX",
+      "totalAmount": 90000,
+      "targetYearMonth": "2027-03",
+      "prepareStartYearMonth": "2026-09",
+      "repeatRule": "ONCE",
+      "memo": null,
+      "lastPaidYearMonth": null,
+      "createdAt": 1789889081450
+    }
+  ],
+  "noSpendRecords": [
+    {
+      "startDate": "2026-08-04",
+      "targetDays": 7,
+      "successDays": 5,
+      "mode": "FULL",
+      "capAmount": 0,
+      "createdAt": 1789889081450
+    }
+  ],
+  "heldPurchases": [
+    {
+      "id": 1,
+      "title": "ワイヤレスイヤホン",
+      "amount": 12800,
+      "heldAt": "2026-09-05",
+      "status": "HELD",
+      "resolvedAt": null,
+      "createdAt": 1789889081450
+    },
+    {
+      "id": 2,
+      "title": "ランニングシューズ",
+      "amount": 9900,
+      "heldAt": "2026-08-10",
+      "status": "PASSED",
+      "resolvedAt": "2026-08-28",
+      "createdAt": 1789889081450
+    },
+    {
+      "id": 3,
+      "title": "キャンプチェア",
+      "amount": 6500,
+      "heldAt": "2026-08-12",
+      "status": "HELD",
+      "resolvedAt": null,
+      "createdAt": 1789889081450
+    }
+  ]
+}
