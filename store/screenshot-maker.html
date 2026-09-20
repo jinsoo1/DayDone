@@ -1,110 +1,314 @@
-<!--
-  Play 스크린샷 메이커 (1080×1920) — ko/ja 공용.
-
-  보기:   브라우저로 열면 5장을 한 줄로 미리 본다. 우상단 토글로 한국어/일본어 전환.
-  렌더:   ./store/render-store-graphics.sh  → store/out/screenshot-<lang>-0N.png
-          (?lang=ja&slot=3 처럼 열면 그 한 장만 1080×1920 으로 렌더된다 — 스크립트가 쓰는 모드)
-  원본:   store/raw/<lang>/01-today.png 02-vault.png 03-purchase.png 04-widget.png 05-privacy.png
-          기기 캡처(세로, 어떤 해상도든). 없으면 자리 표시가 뜬다.
-
-  캡션은 store/listing.md · listing-ja.md 의 "스크린샷 순서"와 같은 문구를 쓴다 — 여기서만 고치지 말 것.
--->
-<meta charset="utf-8">
-<title>DayDone 스크린샷 메이커</title>
+<title>데이던 스토어 스크린샷 만들기 (ko/ja)</title>
 <style>
-  :root { --w:1080px; --h:1920px; }
-  html, body { margin:0; padding:0; background:#111; }
-  body { font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Hiragino Sans","Hiragino Kaku Gothic ProN","Malgun Gothic","Noto Sans JP","Noto Sans KR",sans-serif; }
-
-  /* 미리보기 모드 */
-  .bar { position:fixed; top:0; left:0; right:0; z-index:9; display:flex; gap:12px; align-items:center;
-         padding:10px 16px; background:#1b1b1b; color:#ddd; font-size:14px; }
-  .bar button { padding:6px 14px; border-radius:8px; border:1px solid #444; background:#222; color:#eee; cursor:pointer; }
-  .bar button.on { background:#2E7DF7; border-color:#2E7DF7; }
-  .strip { display:flex; gap:24px; padding:64px 24px 24px; overflow-x:auto; }
-  .strip .frame { transform:scale(.3); transform-origin:top left; width:var(--w); height:var(--h); flex:0 0 calc(var(--w) * .3); }
-  .strip .slotwrap { height:calc(var(--h) * .3); }
-
-  /* 프레임 (실제 크기) */
-  .frame { width:var(--w); height:var(--h); position:relative; overflow:hidden; color:#fff;
-           background:linear-gradient(160deg,#2E7DF7 0%,#4E82F4 55%,#7C74F1 100%); }
-  .frame.alt { background:linear-gradient(160deg,#7C74F1 0%,#4E82F4 45%,#2E7DF7 100%); }
-  .cap { position:absolute; left:80px; right:80px; top:120px; }
-  .cap .t { font-size:76px; font-weight:700; letter-spacing:-2px; line-height:1.18; margin:0; word-break:keep-all; }
-  .cap .s { font-size:38px; font-weight:400; opacity:.9; line-height:1.4; margin:24px 0 0; word-break:keep-all; }
-  .frame[lang="ja"] .cap .t { font-size:70px; letter-spacing:-1px; }
-  .frame[lang="ja"] .cap .s { font-size:36px; }
-  .device { position:absolute; left:50%; transform:translateX(-50%); top:560px; width:840px; height:1700px;
-            border-radius:64px; background:#0b0b0b; padding:18px; box-sizing:border-box;
-            box-shadow:0 40px 90px rgba(0,0,0,.35); }
-  .device .screen { width:100%; height:100%; border-radius:48px; overflow:hidden; background:#f4f6fb; position:relative; }
-  .device img { width:100%; display:block; }
-  .device .missing { position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
-                     color:#667; font-size:28px; text-align:center; padding:40px; line-height:1.5; }
-  /* 단독 렌더 모드: 프레임만, 바 없음 */
-  body.single { background:transparent; }
-  body.single .bar, body.single .strip { display:none; }
+  :root{
+    --bg:#f6f7f9; --card:#fff; --line:#e3e6ea; --text:#16191d; --dim:#5f6772;
+    --accent:#2f5bea;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font:14px/1.55 -apple-system,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;
+       background:var(--bg);color:var(--text)}
+  header{padding:28px 32px 20px;border-bottom:1px solid var(--line);background:var(--card)}
+  h1{margin:0 0 6px;font-size:20px;letter-spacing:-.01em}
+  header p{margin:0;color:var(--dim);max-width:760px}
+  .bar{display:flex;gap:10px;align-items:center;margin-top:16px;flex-wrap:wrap}
+  button{font:inherit;font-weight:600;border:1px solid var(--line);background:var(--card);
+         color:var(--text);border-radius:9px;padding:8px 14px;cursor:pointer}
+  button:hover{border-color:#c8ccd2}
+  button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+  main{padding:24px 32px 80px;display:grid;gap:20px;
+       grid-template-columns:repeat(auto-fill,minmax(560px,1fr))}
+  .frame{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;
+         display:grid;grid-template-columns:262px 1fr;gap:18px}
+  canvas{width:262px;height:466px;border-radius:8px;display:block;
+         box-shadow:0 2px 10px rgba(0,0,0,.13);background:#ddd}
+  .ctl{display:flex;flex-direction:column;gap:9px;min-width:0}
+  .slot{font-size:11px;font-weight:700;letter-spacing:.06em;color:var(--accent)}
+  .shoot{font-size:12px;color:var(--dim);background:#f0f2f5;border-radius:8px;padding:8px 10px}
+  label{font-size:11px;font-weight:600;color:var(--dim);display:block;margin-bottom:3px}
+  input[type=text],textarea,select{width:100%;font:inherit;padding:6px 8px;border:1px solid var(--line);
+       border-radius:7px;background:#fbfcfd;color:var(--text)}
+  textarea{resize:vertical;min-height:46px}
+  .row{display:flex;gap:8px}.row>*{flex:1;min-width:0}
+  input[type=range]{width:100%}
+  input[type=file]{font-size:11px;width:100%}
+  .mini{font-size:11px;color:var(--dim)}
 </style>
 
-<div class="bar" id="bar">
-  <strong>DayDone 스크린샷 메이커</strong>
-  <button data-lang="ko" class="on">한국어</button>
-  <button data-lang="ja">日本語</button>
-  <span style="opacity:.6">원본: store/raw/&lt;lang&gt;/0N-*.png · 렌더: ./store/render-store-graphics.sh</span>
-</div>
-<div class="strip" id="strip"></div>
-<div id="single"></div>
+<header>
+  <h1>데이던 스토어 스크린샷 만들기</h1>
+  <p>앱 화면을 캡처해 각 칸에 넣으면 1080×1920 스토어 스크린샷으로 만들어 줍니다.
+     확대·위치 슬라이더로 핵심 카드가 크게 보이도록 맞추세요. 문구는 그 자리에서 고칠 수 있고 새로 고쳐도 남습니다.
+     캡션 언어를 日本語로 바꾸면 일본어 기본 문구·일본어 폰트로 바뀌고, 캡처는 <b>일본어로 설정한 단말</b>에서 찍은 것을 넣습니다. 내려받는 파일명에 언어가 붙습니다(daydone-ja-01.png).</p>
+  <div class="bar">
+    <button class="primary" id="dlAll">전체 PNG 내려받기</button>
+    <button id="reset">문구 기본값으로</button>
+    <span class="mini" style="margin-left:8px">캡션 언어</span>
+    <button id="langKo">한국어</button>
+    <button id="langJa">日本語</button>
+    <span class="mini">캡처는 상태바까지 포함해 그대로. 배터리·알림이 깔끔한 상태로 찍으세요.</span>
+  </div>
+</header>
+<main id="main"></main>
 
 <script>
-  // 캡션 — listing.md / listing-ja.md "스크린샷 순서"와 동일하게 유지
-  const SLOTS = [
-    { file:"01-today",    ko:["오늘 얼마까지 써도 되는지,\n숫자 하나로","저축·고정비를 먼저 뺀 뒤 남은 돈으로"],
-                          ja:["今日いくらまで使えるか、\n数字ひとつで","貯金・固定費を先に引いた残りで"] },
-    { file:"02-vault",    ko:["큰 지출은 미리 나눠두면\n그 달이 편해요","자동차세·보험료·가족 생신"],
-                          ja:["大きな出費は先に分けておくと、\nその月が楽","自動車税・車検・帰省"] },
-    { file:"03-purchase", ko:["사기 전에 30초","지금 사면 하루 권장이 얼마나 바뀌는지"],
-                          ja:["買う前の30秒","1日の目安がどれだけ変わるか"] },
-    { file:"04-widget",   ko:["앱을 열지 않아도\n홈에서","지출을 적으면 위젯도 바로 따라와요"],
-                          ja:["アプリを開かなくても\nホーム画面で","支出を入れるとウィジェットもすぐ変わる"] },
-    { file:"05-privacy",  ko:["회원가입 없음.\n기록은 폰 안에만","서버가 없어서 유출될 곳 자체가 없어요"],
-                          ja:["登録なし。\n記録はスマホの中だけ","サーバーがないので、流出する場所がそもそもない"] },
-  ];
+const W=1080,H=1920,PAD=88;
+// 캡션 언어: ko / ja. 도구 UI(라벨·촬영 안내)는 개발자용이라 한국어 고정.
+const LANG=localStorage.getItem('daydone-ss-lang')||'ko';
+const FONT=LANG==='ja'
+  ? '"Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP",-apple-system,sans-serif'
+  : '"Apple SD Gothic Neo",-apple-system,"Noto Sans KR",sans-serif';
 
-  const q = new URLSearchParams(location.search);
-  const single = q.has("slot");
-  let lang = q.get("lang") || "ko";
+const BGS=[
+  {n:'딥블루',   a:'#2547C8', b:'#5B3FD8', fg:'light'},
+  {n:'블루',     a:'#2F6BEA', b:'#4A9AF0', fg:'light'},
+  {n:'네이비',   a:'#141B33', b:'#28336B', fg:'light'},
+  {n:'퍼플',     a:'#5A34C9', b:'#8B45D6', fg:'light'},
+  {n:'그린',     a:'#12796A', b:'#2FA37C', fg:'light'},
+  {n:'인디고',   a:'#33409B', b:'#5E5BC9', fg:'light'},
+  {n:'틸',       a:'#0F6E86', b:'#2E9BAE', fg:'light'},
+  {n:'라이트',   a:'#EEF1F7', b:'#DCE3F0', fg:'dark'}
+];
 
-  function frame(i, lang) {
-    const s = SLOTS[i], [t, sub] = s[lang];
-    const src = `raw/${lang}/${s.file}.png`;
-    const el = document.createElement("div");
-    el.className = "frame" + (i % 2 ? " alt" : "");
-    el.setAttribute("lang", lang);
-    el.innerHTML = `
-      <div class="cap"><p class="t">${t.replace(/\n/g,"<br/>")}</p><p class="s">${sub}</p></div>
-      <div class="device"><div class="screen">
-        <img src="${src}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
-        <div class="missing" style="display:none">store/${src}<br/>기기 캡처를 이 이름으로 넣어주세요</div>
-      </div></div>
-`;
-    return el;
-  }
+const DEFAULTS_KO=[
+ {head:'오늘 얼마 써도 될까?', sub:'저축·고정비를 먼저 빼고\n오늘 쓸 수 있는 생활비를 알려드려요',
+  bg:0, mode:'card',
+  shoot:'오늘 탭 상단 권장 금액 카드. 금액이 화면 절반을 차지하도록 확대하세요. 금액은 65,602원처럼 딱 떨어지지 않는 값이 믿음이 갑니다.'},
 
-  function renderStrip() {
-    const strip = document.getElementById("strip");
-    strip.innerHTML = "";
-    SLOTS.forEach((_, i) => {
-      const wrap = document.createElement("div"); wrap.className = "slotwrap";
-      wrap.appendChild(frame(i, lang)); strip.appendChild(wrap);
+ {head:'진짜 생활비만 남겨요', sub:'월급에서 저축과 고정비를\n먼저 빼두고 계산해요',
+  bg:1, mode:'phone',
+  shoot:'오늘 탭 “이번 기간 요약”을 펼친 화면, 또는 설정 탭의 고정비 관리 목록. 항목이 3개 이상 들어있어야 합니다.'},
+
+ {head:'앱을 열지 않아도', sub:'홈 화면 위젯으로\n오늘 쓸 금액을 바로 확인해요',
+  bg:2, mode:'phone',
+  shoot:'실제 홈 화면에 위젯을 올린 상태로 캡처. 다른 앱 아이콘이 같이 보여야 진짜 홈 화면으로 읽힙니다. 목업 안에 위젯만 넣지 마세요.'},
+
+ {head:'이거 사도 괜찮을까?', sub:'지금 사면 하루 권장 금액이\n얼마나 달라지는지 보여드려요',
+  bg:3, mode:'card',
+  shoot:'살까 말까 시트에 가격을 넣어 “지금 / 사면” 두 금액이 같이 보이는 상태. 하단 버튼까지 들어가게 잡으세요.'},
+
+ {head:'큰 지출은 미리 조금씩', sub:'자동차세·보험료·여행비를\n목표월까지 나눠 준비해요',
+  bg:4, mode:'phone',
+  shoot:'금고 탭. 준비 항목 2~3개가 진행 바와 함께 보이고, 하나는 절반쯤 채워진 상태가 좋습니다.'},
+
+ {head:'이번 기간은 어땠을까?', sub:'페이스와 자주 쓴 곳을\n한 화면에서 확인해요',
+  bg:5, mode:'phone',
+  shoot:'리포트 화면 상단. 페이스 카드와 미니 지표(하루 평균·무지출·필수 비중)까지 한 장에.'},
+
+ {head:'안 쓴 날이 쌓이면', sub:'무지출 챌린지로\n남은 생활비에 여유가 생겨요',
+  bg:6, mode:'card',
+  shoot:'오늘 탭 무지출 챌린지 카드. 연속 일수 불꽃이 붙은 상태로 확대하세요.'},
+
+ {head:'서버가 없어요', sub:'로그인도, 은행 연동도 없어요\n기록은 내 폰에만 있어요',
+  bg:7, mode:'none',
+  shoot:'이미지 없이 문구만 씁니다. 넣고 싶다면 설정 탭의 백업 카드를 아래쪽에 작게.'},
+];
+
+// 일본어 기본 캡션 — 한국어의 번역이 아니라 같은 화면에 맞춰 다시 쓴 문구.
+// 용어는 앱 안(values-ja)과 같게: 目安·積立·ノーマネーデー·浮いたお金.
+const DEFAULTS_JA=[
+ {head:'今日、いくらまで使える？', sub:'貯金・固定費を先に引いて\n今日使える生活費をお伝えします',
+  bg:0, mode:'card',
+  shoot:'오늘 탭 상단 목안 카드(今日の目安). 금액이 화면 절반을 차지하도록 확대. 예: 3,277円처럼 딱 떨어지지 않는 값.'},
+
+ {head:'本当の生活費だけを残す', sub:'給料から貯金と固定費を\n先に差し引いて計算します',
+  bg:1, mode:'phone',
+  shoot:'오늘 탭 "今期のまとめ"를 펼친 화면. 항목 3개 이상.'},
+
+ {head:'アプリを開かなくても', sub:'ホーム画面のウィジェットで\n今日使える金額をすぐ確認',
+  bg:2, mode:'phone',
+  shoot:'일본어 단말 홈 화면에 위젯을 올린 상태로 캡처. 다른 앱 아이콘이 함께 보여야 함.'},
+
+ {head:'これ、買っても大丈夫？', sub:'今買うと1日の目安が\nどれだけ変わるかをお見せします',
+  bg:3, mode:'card',
+  shoot:'買う？買わない？ 시트에 가격을 넣어 "今日時点 / 買うと" 두 금액이 보이는 상태.'},
+
+ {head:'大きな出費は先に少しずつ', sub:'自動車税・車検・旅行費を\n目標の月まで分けて備えます',
+  bg:4, mode:'phone',
+  shoot:'積立 탭. 항목 2~3개(自動車税 등) 진행 바, 하나는 절반쯤 채워진 상태.'},
+
+ {head:'今期はどうだった？', sub:'ペースとよく使った先を\nひとつの画面で振り返り',
+  bg:5, mode:'phone',
+  shoot:'리포트 상단. 페이스 카드와 미니 지표(1日平均·ノーマネーデー·必要な支出の割合)까지.'},
+
+ {head:'使わなかった日が積み重なると', sub:'ノーマネーデーチャレンジで\n残りの生活費に余裕が生まれます',
+  bg:6, mode:'card',
+  shoot:'오늘 탭 ノーマネーデー 카드. 🔥 연속 일수가 붙은 상태로 확대.'},
+
+ {head:'サーバーがありません', sub:'ログインも銀行連携もなし\n記録はあなたのスマホの中だけ',
+  bg:7, mode:'none',
+  shoot:'이미지 없이 문구만. 넣고 싶다면 설정 탭의 🔒 백업 카드를 아래쪽에 작게.'},
+];
+
+const DEFAULTS=LANG==='ja'?DEFAULTS_JA:DEFAULTS_KO;
+const KEY='daydone-ss-v1-'+LANG; // 언어별로 따로 저장 — 한쪽을 고쳐도 다른 쪽이 안 바뀐다
+const saved=JSON.parse(localStorage.getItem(KEY)||'null');
+const state=DEFAULTS.map((d,i)=>Object.assign({zoom:1,ox:0,oy:0},d,(saved&&saved[i])||{}));
+state.forEach(s=>{s.img=null});
+
+function save(){
+  localStorage.setItem(KEY,JSON.stringify(state.map(s=>({
+    head:s.head,sub:s.sub,bg:s.bg,mode:s.mode,zoom:s.zoom,ox:s.ox,oy:s.oy
+  }))));
+}
+
+function rrect(x,r0,y,w,h,r){
+  if(x.roundRect){x.beginPath();x.roundRect(r0,y,w,h,r);return}
+  x.beginPath();
+  x.moveTo(r0+r,y);x.arcTo(r0+w,y,r0+w,y+h,r);x.arcTo(r0+w,y+h,r0,y+h,r);
+  x.arcTo(r0,y+h,r0,y,r);x.arcTo(r0,y,r0+w,y,r);x.closePath();
+}
+
+function wrap(x,text,maxW){
+  const out=[];
+  String(text).split('\n').forEach(p=>{
+    if(!p){out.push('');return}
+    let line='';
+    p.split(' ').forEach(word=>{
+      let w=word;
+      while(x.measureText(w).width>maxW){
+        let cut=1;
+        while(cut<w.length&&x.measureText(w.slice(0,cut+1)).width<=maxW)cut++;
+        if(line){out.push(line);line=''}
+        out.push(w.slice(0,cut));w=w.slice(cut);
+      }
+      const t=line?line+' '+w:w;
+      if(line&&x.measureText(t).width>maxW){out.push(line);line=w}else line=t;
     });
-    document.querySelectorAll(".bar button").forEach(b => b.classList.toggle("on", b.dataset.lang === lang));
-  }
+    out.push(line);
+  });
+  return out;
+}
 
-  if (single) {
-    document.body.classList.add("single");
-    document.getElementById("single").appendChild(frame(Number(q.get("slot")) - 1, lang));
-  } else {
-    renderStrip();
-    document.querySelectorAll(".bar button").forEach(b => b.onclick = () => { lang = b.dataset.lang; renderStrip(); });
+const VP={
+  card :{w:920,h:820, y:800, r:34},
+  phone:{w:604,h:1250,y:600, r:42}
+};
+
+function render(i){
+  const s=state[i],c=s.canvas,x=c.getContext('2d'),bg=BGS[s.bg];
+  x.clearRect(0,0,W,H);
+
+  const g=x.createLinearGradient(0,0,W*.35,H);
+  g.addColorStop(0,bg.a);g.addColorStop(1,bg.b);
+  x.fillStyle=g;x.fillRect(0,0,W,H);
+
+  x.save();
+  x.globalAlpha=bg.fg==='light'?.10:.55;
+  x.fillStyle='#fff';
+  x.beginPath();x.arc(W*0.92,H*0.16,430,0,7);x.fill();
+  x.restore();
+
+  const light=bg.fg==='light';
+  const maxW=W-PAD*2;
+
+  x.textBaseline='top';
+  x.fillStyle=light?'#fff':'#151A22';
+  let hs=82, hl;
+  for(;;){
+    x.font='700 '+hs+'px '+FONT;
+    hl=wrap(x,s.head,maxW);
+    if(hl.length<=2||hs<=52)break;
+    hs-=4;
   }
+  let y=178;
+  hl.forEach(l=>{x.fillText(l,PAD,y);y+=Math.round(hs*1.22)});
+
+  y+=26;
+  x.fillStyle=light?'rgba(255,255,255,.80)':'rgba(21,26,34,.66)';
+  x.font='500 40px '+FONT;
+  wrap(x,s.sub,maxW).forEach(l=>{x.fillText(l,PAD,y);y+=57});
+
+  if(s.mode==='none'||!s.img)return;
+  const v=VP[s.mode],vx=(W-v.w)/2,vy=v.y;
+
+  x.save();
+  x.shadowColor='rgba(0,0,0,.34)';x.shadowBlur=54;x.shadowOffsetY=22;
+  x.fillStyle='#000';rrect(x,vx,vy,v.w,v.h,v.r);x.fill();
+  x.restore();
+
+  x.save();
+  rrect(x,vx,vy,v.w,v.h,v.r);x.clip();
+  const img=s.img;
+  const sc=Math.max(v.w/img.width,v.h/img.height)*s.zoom;
+  const dw=img.width*sc,dh=img.height*sc;
+  x.drawImage(img, vx+(v.w-dw)/2+s.ox*v.w, vy+(v.h-dh)/2+s.oy*v.h, dw, dh);
+  x.restore();
+
+  x.save();
+  x.strokeStyle='rgba(255,255,255,.30)';x.lineWidth=3;
+  rrect(x,vx+1.5,vy+1.5,v.w-3,v.h-3,v.r);x.stroke();
+  x.restore();
+}
+
+function download(i){
+  state[i].canvas.toBlob(b=>{
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(b);
+    a.download='daydone-'+LANG+'-'+String(i+1).padStart(2,'0')+'.png';
+    a.click();setTimeout(()=>URL.revokeObjectURL(a.href),4000);
+  },'image/png');
+}
+
+const main=document.getElementById('main');
+state.forEach((s,i)=>{
+  const el=document.createElement('div');el.className='frame';
+  el.innerHTML=`
+    <canvas width="${W}" height="${H}"></canvas>
+    <div class="ctl">
+      <div class="slot">${i+1}번째 스크린샷</div>
+      <div class="shoot">📷 ${s.shoot}</div>
+      <div><label>헤드라인</label><input type="text" class="h"></div>
+      <div><label>설명</label><textarea class="s"></textarea></div>
+      <div class="row">
+        <div><label>배경</label><select class="bg">${
+          BGS.map((b,j)=>`<option value="${j}">${b.n}</option>`).join('')}</select></div>
+        <div><label>화면 틀</label><select class="m">
+          <option value="phone">폰 전체</option>
+          <option value="card">카드 크롭</option>
+          <option value="none">이미지 없음</option>
+        </select></div>
+      </div>
+      <div><label>캡처 파일</label><input type="file" accept="image/*" class="f"></div>
+      <div class="row">
+        <div><label>확대</label><input type="range" class="z" min="1" max="3.2" step="0.01"></div>
+        <div><label>좌우</label><input type="range" class="x" min="-1" max="1" step="0.005"></div>
+        <div><label>위아래</label><input type="range" class="y" min="-1.6" max="1.6" step="0.005"></div>
+      </div>
+      <div><button class="d">PNG 내려받기</button></div>
+    </div>`;
+  main.appendChild(el);
+
+  s.canvas=el.querySelector('canvas');
+  const q=k=>el.querySelector(k);
+  const h=q('.h'),sb=q('.s'),bg=q('.bg'),m=q('.m'),z=q('.z'),ox=q('.x'),oy=q('.y');
+  h.value=s.head;sb.value=s.sub;bg.value=s.bg;m.value=s.mode;
+  z.value=s.zoom;ox.value=s.ox;oy.value=s.oy;
+
+  const upd=()=>{
+    s.head=h.value;s.sub=sb.value;s.bg=+bg.value;s.mode=m.value;
+    s.zoom=+z.value;s.ox=+ox.value;s.oy=+oy.value;
+    render(i);save();
+  };
+  [h,sb,bg,m,z,ox,oy].forEach(n=>n.addEventListener('input',upd));
+
+  q('.f').addEventListener('change',e=>{
+    const file=e.target.files[0];if(!file)return;
+    const img=new Image();
+    img.onload=()=>{s.img=img;render(i)};
+    img.src=URL.createObjectURL(file);
+  });
+  q('.d').addEventListener('click',()=>download(i));
+  render(i);
+});
+
+document.getElementById('dlAll').addEventListener('click',()=>{
+  state.forEach((s,i)=>setTimeout(()=>download(i),i*420));
+});
+function setLang(l){localStorage.setItem('daydone-ss-lang',l);location.reload()}
+document.getElementById('langKo').addEventListener('click',()=>setLang('ko'));
+document.getElementById('langJa').addEventListener('click',()=>setLang('ja'));
+document.getElementById(LANG==='ja'?'langJa':'langKo').classList.add('primary');
+document.getElementById('reset').addEventListener('click',()=>{
+  localStorage.removeItem(KEY);location.reload();
+});
 </script>
