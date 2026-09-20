@@ -108,9 +108,13 @@ class DayDoneNotifier @Inject constructor(
         return NotificationManagerCompat.from(context).areNotificationsEnabled()
     }
 
+    /**
+     * 채널은 매번 다시 만든다 — 같은 id 로 createNotificationChannel 을 부르면 새로 만드는 게
+     * 아니라 이름·설명만 갱신된다(중요도 등 유저가 바꾼 설정은 유지). 처음 만들 때의 언어로
+     * 이름이 고정되면 단말 언어를 바꿔도 시스템 설정에 옛 언어의 채널명이 남는다.
+     */
     private fun ensureChannel() {
         val manager = context.getSystemService(NotificationManager::class.java) ?: return
-        if (manager.getNotificationChannel(CHANNEL_ID) != null) return
 
         manager.createNotificationChannel(
             NotificationChannel(

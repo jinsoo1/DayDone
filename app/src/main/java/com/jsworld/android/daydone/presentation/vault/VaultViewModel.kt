@@ -25,6 +25,7 @@ import com.jsworld.android.daydone.presentation.vault.model.VaultItemUiModel
 import com.jsworld.android.daydone.presentation.vault.model.VaultSuggestionUiModel
 import com.jsworld.android.daydone.presentation.vault.model.VaultUiState
 import com.jsworld.android.daydone.R
+import com.jsworld.android.daydone.presentation.util.LocaleState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import jakarta.inject.Inject
@@ -76,8 +77,9 @@ class VaultViewModel @Inject constructor(
         combine(
             observeBudgetProfileUseCase(),
             observeFutureExpenseStatusesUseCase(),
-            observeFuturePrepareExpensesUseCase()
-        ) { profile: BudgetProfile, statuses, prepares ->
+            observeFuturePrepareExpensesUseCase(),
+            LocaleState.flow // 언어가 바뀌면 문구를 다시 조립
+        ) { profile: BudgetProfile, statuses, prepares, _ ->
             Triple(profile, statuses, prepares)
         }.onEach { (profile, statuses, prepares) ->
             val today = LocalDate.now()

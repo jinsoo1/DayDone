@@ -14,6 +14,7 @@ import com.jsworld.android.daydone.domain.usecase.ObserveDailyBudgetUseCase
 import com.jsworld.android.daydone.domain.usecase.ObserveHeldPurchasesUseCase
 import com.jsworld.android.daydone.domain.usecase.ResolveHeldPurchaseUseCase
 import com.jsworld.android.daydone.presentation.today.model.PurchaseEvaluationUiModel
+import com.jsworld.android.daydone.presentation.util.LocaleState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import jakarta.inject.Inject
@@ -100,8 +101,9 @@ class HeldPurchasesViewModel @Inject constructor(
     init {
         combine(
             observeHeldPurchasesUseCase(),
-            observeDailyBudgetUseCase(today)
-        ) { items, budget -> items to budget }
+            observeDailyBudgetUseCase(today),
+            LocaleState.flow // 언어가 바뀌면 문구를 다시 조립
+        ) { items, budget, _ -> items to budget }
             .onEach { (items, budget) ->
                 currentItems = items
                 currentBudget = budget

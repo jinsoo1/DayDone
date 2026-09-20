@@ -40,6 +40,7 @@ import com.jsworld.android.daydone.presentation.monthly.model.MonthlyUiState
 import com.jsworld.android.daydone.presentation.today.model.ScheduledDeductionSummaryUiModel
 import com.jsworld.android.daydone.presentation.today.model.TodayExpenseUiModel
 import com.jsworld.android.daydone.presentation.today.model.TodayExtraIncomeUiModel
+import com.jsworld.android.daydone.presentation.util.LocaleState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import jakarta.inject.Inject
@@ -118,8 +119,9 @@ class MonthlyViewModel @Inject constructor(
     private fun observeMonthlyData() {
         combine(
             observeBudgetProfileUseCase(),
-            selectedMonth
-        ) { profile, yearMonth ->
+            selectedMonth,
+            LocaleState.flow // 언어가 바뀌면 문구를 다시 조립
+        ) { profile, yearMonth, _ ->
             profile to yearMonth
         }.flatMapLatest { (profile, yearMonth) ->
             val period = getBudgetPeriodForMonthUseCase(

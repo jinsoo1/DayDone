@@ -31,6 +31,7 @@ import com.jsworld.android.daydone.presentation.ledger.model.LedgerEntryUiModel
 import com.jsworld.android.daydone.presentation.ledger.model.LedgerUiState
 import com.jsworld.android.daydone.presentation.util.toMoneyText
 import com.jsworld.android.daydone.presentation.util.toWeekText
+import com.jsworld.android.daydone.presentation.util.LocaleState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import jakarta.inject.Inject
@@ -154,6 +155,7 @@ class LedgerViewModel @Inject constructor(
             .combine(observeLedgerDeductionsVisibleUseCase()) { (data, asc), showDeductions ->
                 Triple(data, asc, showDeductions)
             }
+            .combine(LocaleState.flow) { triple, _ -> triple } // 언어가 바뀌면 문구를 다시 조립
             .onEach { (data, asc, showDeductions) -> render(data, asc, showDeductions) }
             .launchIn(viewModelScope)
     }

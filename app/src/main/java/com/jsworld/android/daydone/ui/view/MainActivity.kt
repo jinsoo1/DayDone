@@ -92,6 +92,7 @@ import com.jsworld.android.daydone.presentation.settings.SettingsRoute
 import com.jsworld.android.daydone.presentation.today.TodayRoute
 import com.jsworld.android.daydone.presentation.vault.VaultRoute
 import com.jsworld.android.daydone.ui.theme.DayDoneTheme
+import com.jsworld.android.daydone.presentation.util.LocaleState
 import com.jsworld.android.daydone.widget.refreshDayDoneWidget
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -108,6 +109,12 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         notificationTarget.value = intent?.getStringExtra(DayDoneNotifier.EXTRA_TARGET)
+
+        // 단말 언어가 바뀌면 Activity 는 다시 만들어지지만 ViewModel·위젯은 옛 언어의 문구를
+        // 들고 있다. 여기서 로케일 흐름을 갱신해 ViewModel 이 다시 조립하고, 위젯도 다시 그린다.
+        if (LocaleState.refresh()) {
+            lifecycleScope.launch { refreshDayDoneWidget(applicationContext) }
+        }
 
         setContent {
             DayDoneTheme {

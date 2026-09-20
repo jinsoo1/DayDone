@@ -60,6 +60,7 @@ import com.jsworld.android.daydone.presentation.today.model.TodayExtraIncomeUiMo
 import com.jsworld.android.daydone.presentation.today.model.TodayScheduledDeductionUiModel
 import com.jsworld.android.daydone.presentation.today.model.TodayUiState
 import com.jsworld.android.daydone.presentation.util.toMoneyText
+import com.jsworld.android.daydone.presentation.util.LocaleState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import jakarta.inject.Inject
@@ -172,8 +173,9 @@ class TodayViewModel @Inject constructor(
     private fun observeChallenge() {
         combine(
             observeNoSpendChallengeUseCase(),
-            todayFlow
-        ) { settings, _ -> settings }
+            todayFlow,
+            LocaleState.flow // 언어가 바뀌면 문구를 다시 조립
+        ) { settings, _, _ -> settings }
             .flatMapLatest { settings ->
                 val start = settings.startDate
                 if (!settings.enabled || start == null || settings.targetDays <= 0) {
@@ -292,8 +294,9 @@ class TodayViewModel @Inject constructor(
     private fun observeTodayData() {
         combine(
             observeBudgetProfileUseCase(),
-            todayFlow
-        ) { budgetProfile: BudgetProfile, today: LocalDate -> budgetProfile to today }
+            todayFlow,
+            LocaleState.flow // 언어가 바뀌면 문구를 다시 조립
+        ) { budgetProfile: BudgetProfile, today: LocalDate, _ -> budgetProfile to today }
             .flatMapLatest { (budgetProfile, today) ->
                 val budgetPeriod = getCurrentBudgetPeriodUseCase(
                     today = today,
