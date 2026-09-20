@@ -394,6 +394,7 @@ Room 마이그레이션: 스키마 변경 시 정식 `Migration` 제공(데이�
 
 **🌏 해외 배포 (일본 먼저) — 2단계 분할 결정**
 - **v1.5.0 = 국제화 기반만, 한국어 그대로 출시**(유저 체감 변화 0) / **v1.6.0 = 일본어 리소스 추가**. 한 번에 하면 회귀 범위가 앱 전체가 돼서 나눴다.
+- **ja 상태(2026-09)**: `values-ja` 624개 초벌 + 코드 9항목 완료, 스위치 켜짐(`feature/v1.6-ja-draft`). 상세·용어 결정·감수 포인트는 `docs/v1.6-ja-review.md`. **로케일 게이트는 `AppLocale.SUPPORTED`** — `localeFilters`·`locales_config.xml`과 같은 목록이어야 하고, 통화(`CurrencyStyle`)·달력(`BigSpendCalendar`)·사전(`ExpenseCategoryDictionary`)·문장부호가 전부 이 하나를 본다. 새 언어는 세 곳을 한 커밋에.
 - 현황(주석 제외 실측): `strings.xml` 4줄, kt 안 한글 리터럴 **1,487개** — 그중 **740개(50%)가 `ClassifyExpenseCategoryUseCase` 키워드 사전**(번역이 아니라 **재작성**). 번역 대상은 **747개(고유 568)**, 보간 약 135개. **v1.5.0 상세 계획은 `docs/v1.5-design.md`**.
 - 한국어·일본어 모두 복수형이 없어 **`plurals` 불필요**(영어부터 갔으면 필요했다).
 - ⚠️ **domain 레이어가 표시용 한글을 만든다**(UseCase 22개 — 리포트·알림·`ExpenseCategory.label`). UseCase엔 Context가 없어 `stringResource`를 못 쓴다. `StringProvider` 주입은 쉽지만 **순수 JVM 테스트 134개가 깨진다** → 테스트 걸린 UseCase는 타입만 반환하고 문구는 presentation에서 조립, 단순 enum은 `@StringRes labelRes`로.

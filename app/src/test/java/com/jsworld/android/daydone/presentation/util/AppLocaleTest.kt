@@ -7,9 +7,8 @@ import java.util.Locale
 /**
  * 로케일 분기 — 문구가 있는 언어(SUPPORTED)만 따라가고, 나머지는 한국어로 폴백한다.
  *
- * ⚠️ 1.6.0 에서 SUPPORTED 에 "ja" 를 넣으면 `일본어 단말은 아직 한국어` 케이스가
- * 실패한다. 그건 의도된 실패다 — localeFilters·locales_config 와 함께 세 곳을 바꾸고
- * 그 테스트를 뒤집을 것.
+ * SUPPORTED 는 localeFilters·locales_config.xml 과 같은 목록이어야 한다. 새 언어를
+ * 켤 때 세 곳을 한 커밋에 바꾸고 여기 케이스를 더한다.
  */
 class AppLocaleTest {
 
@@ -26,9 +25,9 @@ class AppLocaleTest {
     }
 
     @Test
-    fun `일본어 단말은 아직 한국어 - ja 를 켜기 전까지`() {
-        // localeFilters 에 "ja" 가 없어서 문구가 한국어인데 금액만 円이 되면 안 된다
-        assertEquals(Locale.KOREA, AppLocale.of(Locale.JAPAN))
+    fun `일본어 단말은 일본`() {
+        assertEquals(Locale.JAPAN, AppLocale.of(Locale.JAPAN))
+        assertEquals(Locale.JAPAN, AppLocale.of(Locale("ja")))
     }
 
     @Test

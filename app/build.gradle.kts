@@ -32,10 +32,9 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         // 담을 언어를 못 박는다. 이게 없으면 의존성이 끌고 온 수십 개 로케일이
-        // 그대로 들어가고, 단말 언어가 일본어면 시스템 문구만 일본어로 섞인다.
-        // 1.6.0 에서 "ja" 를 더한다.
+        // 그대로 들어간다. ⚠️ AppLocale.SUPPORTED · locales_config.xml 과 같은 목록일 것.
         androidResources {
-            localeFilters += listOf("ko")
+            localeFilters += listOf("ko", "ja")
         }
     }
 
@@ -111,8 +110,8 @@ android {
         // 못한다. 이 앱은 XML 화면이 없어서 실질 효과가 0이었다 — 추출 누락은
         // checkHardcodedKorean 태스크(아래)가 잡는다.
         enable += setOf("HardcodedText")
-        // 번역이 없는 1.5.0 에선 MissingTranslation 이 의미가 없다. 1.6.0 에서 켠다.
-        disable += setOf("MissingTranslation")
+        // ja 가 들어왔으니 번역 누락은 오류다(#8). StringResourcesFormatTest 도 같은 걸 본다.
+        error += setOf("MissingTranslation")
     }
 }
 

@@ -12,7 +12,7 @@ import java.util.Locale
  */
 object AppLocale {
     /** 문구가 있는 언어. localeFilters 와 맞출 것. */
-    private val SUPPORTED = setOf("ko")
+    private val SUPPORTED = setOf("ko", "ja")
 
     private const val FALLBACK = "ko"
 
