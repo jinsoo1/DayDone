@@ -638,16 +638,22 @@ private fun NoSpendChallengeCard(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                // 제목이 길면(일본어) 연속 표시가 밀려 한 글자씩 줄바꿈되던 것 — 제목이 남는 폭을
+                // 차지하고, 연속 표시는 한 줄로 고정한다.
                 Text(
                     text = stringResource(R.string.today_mujichul_chaelrinji, modeText),
-                    style = MaterialTheme.typography.titleMedium
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.weight(1f)
                 )
 
                 if (uiState.challengeStreak > 0 && !uiState.challengeFinished) {
                     Text(
                         text = stringResource(R.string.today_il_yeonsog, uiState.challengeStreak),
                         style = MaterialTheme.typography.labelLarge,
-                        color = MaterialTheme.colorScheme.primary
+                        color = MaterialTheme.colorScheme.primary,
+                        maxLines = 1,
+                        softWrap = false,
+                        modifier = Modifier.padding(start = 8.dp)
                     )
                 }
             }

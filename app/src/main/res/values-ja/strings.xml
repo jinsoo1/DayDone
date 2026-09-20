@@ -515,7 +515,7 @@
     <string name="today_oneuldo_jigabi_swineun_jungieyo">今日もお財布はお休み中です</string>
     <string name="today_oneul_jigabi_swineun_jungieyo">今日はお財布がお休み中です</string>
     <string name="today_oneuleun_jichuli_isseosseoyo_naeil">今日は支出がありました。また明日から続けましょう</string>
-    <string name="today_mujichul_chaelrinji">ノーマネーデーチャレンジ · %1$s</string>
+    <string name="today_mujichul_chaelrinji">ノーマネーデー · %1$s</string>
     <string name="today_il_yeonsog">🔥 %1$s日連続</string>
     <string name="today_il_seonggong_il_dojeon">達成 %1$s日 / %2$s日間</string>
     <string name="today_iljjae_seonggong_il_il">%1$s日目 · 達成 %2$s日 / %3$s日間</string>
